@@ -45,8 +45,10 @@ public class FindCommand extends Command {
 
             // https://stackoverflow.com/questions/12835077/java-multithread-multiple-requests-approach
             // Worker Threads
-            // More threads
-            ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
+            // https://engineering.zalando.com/posts/2019/04/how-to-set-an-ideal-thread-pool-size.html
+            // Set ideal thread pool size
+            int NumOfThreads = Runtime.getRuntime().availableProcessors() * (1 + 50/5);
+            ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(NumOfThreads);
             for (String proxy : proxies) {
                 Runnable worker = new ProxyCheckerTask(proxy);
                 executor.execute(worker);

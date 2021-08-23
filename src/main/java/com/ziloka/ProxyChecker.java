@@ -9,9 +9,9 @@ public class ProxyChecker {
     public static void main(String[] args) {
 
         CommandManagerService commandManagerService = new CommandManagerService();
-        Command CommandFound = commandManagerService.get("find");
+        Command CommandFound = commandManagerService.get(args[0]);
         CommandFound.run(args);
-//        System.out.println(CommandFound.);
+        System.out.println(commandManagerService.get("test"));
 
     }
 

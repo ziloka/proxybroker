@@ -61,4 +61,8 @@ public class CommandManagerService {
         }
     }
 
+    public Object getOptions(){
+        return new Object();
+    }
+
 }
