@@ -2,7 +2,7 @@ package com.ziloka.services;
 
 import java.io.IOException;
 
-public class ProxyCheckerTask extends Thread {
+public class ProxyCheckerTask implements Runnable {
 
     String proxy;
 
@@ -14,10 +14,13 @@ public class ProxyCheckerTask extends Thread {
 
         try {
             ProxyCheckerService proxyCheckerService = new ProxyCheckerService();
-            proxyCheckerService.check(proxy);
-            System.out.println();
+            boolean isOnline = proxyCheckerService.check(proxy);
+            if(isOnline){
+
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            // Don't print anything
+//            e.printStackTrace();
         }
 
     }

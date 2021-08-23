@@ -36,19 +36,18 @@ public class ProxyCheckerService {
             con.setRequestMethod("GET");
             con.setRequestProperty("User-Agent", "Mozilla/5.0");
             con.setConnectTimeout(3000);
-            System.out.println("Test");
             con.connect();
 
             int responseCode = con.getResponseCode();
-            System.out.println("ProxyCheckerService, "+ host+ ":" + port + " " + responseCode);
+//            System.out.println("ProxyCheckerService, "+ host+ ":" + port + " " + responseCode);
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                System.out.println("******, "+ host+ ":" + port + " OK" );
+                System.out.println(host+ ":" + port);
                 isOnline = true;
             } else {
 
             }
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
 
         return isOnline;
