@@ -1,44 +1,25 @@
 package com.ziloka.services;
 
-import java.util.concurrent.TimeUnit;
+import java.io.IOException;
 
 public class ProxyCheckerTask implements Runnable {
 
+    String proxy;
 
-    String types;
-    String countries;
-    String lvl;
-    int limit;
-    int totalProxyServerCount;
-
-    public ProxyCheckerTask(
-            String types
-            , String countries
-            , String lvl
-            , int limit
-
-    ) {
-        this.types = types;
-        this.countries = countries;
-        this.lvl = lvl;
-        this.limit = limit;
+    public ProxyCheckerTask(String proxy) {
+        this.proxy = proxy;
     }
 
     public void run() {
 
-
-        ProxyCheckerService proxyCheckerService = new ProxyCheckerService();
-        proxyCheckerService.check()
         try {
-            Long duration = (long) (Math.random() * 10);
-            System.out.println("Executing : " + name);
-            TimeUnit.SECONDS.sleep(duration);
-        } catch (InterruptedException e) {
+            ProxyCheckerService proxyCheckerService = new ProxyCheckerService();
+            proxyCheckerService.check(proxy);
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
 
-    private void
 
 }
