@@ -1,0 +1,13 @@
+{
+  "http": [
+    "https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=10000&country=all&ssl=all&anonymity=all"
+  ],
+  "https": [
+  ],
+  "socks4": [
+    "https://api.proxyscrape.com/v2/?request=getproxies&protocol=socks4&timeout=10000&country=all"
+  ],
+  "socks5": [
+    "https://api.proxyscrape.com/v2/?request=getproxies&protocol=socks5&timeout=10000&country=all"
+  ]
+}

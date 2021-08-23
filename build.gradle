@@ -1,0 +1,41 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.springframework.boot' version '2.5.4'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+}
+
+group = 'com.ziloka'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+application {
+    mainClass = 'com.ziloka.ProxyChecker'
+}
+
+compileJava {
+    options.compilerArgs << '-Xlint:unchecked'
+    // https://github.com/remkop/picocli/tree/master/picocli-codegen#223-javac
+//    options.compilerArgs << '-Aproject=${project.group}/${project.name}'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // https://docs.gradle.org/current/userguide/java_library_plugin.html#sec:java_library_configurations_graph
+    implementation 'info.picocli:picocli-spring-boot-starter:4.6.1'
+    // https://picocli.info/#_how_do_i_create_a_native_image_for_my_application
+    // https://github.com/remkop/picocli/tree/master/picocli-codegen#213-gradle
+    // Require picocli-codegen to build java code to executable
+    annotationProcessor 'info.picocli:picocli-codegen:4.6.1'
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation 'commons-io:commons-io:2.11.0'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+    useJUnitPlatform()
+}
