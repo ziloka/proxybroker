@@ -1,0 +1,1 @@
+.\gradlew run --args="find --types HTTP"
