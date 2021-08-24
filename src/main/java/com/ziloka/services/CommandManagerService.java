@@ -1,7 +1,5 @@
 package com.ziloka.services;
 
-import com.ziloka.cmds.FindCommand;
-
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
@@ -10,10 +8,15 @@ import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CommandManagerService {
 
@@ -61,8 +64,34 @@ public class CommandManagerService {
         }
     }
 
-    public Object getOptions(){
-        return new Object();
+    public HashMap<String, ArrayList<String>> parseOptions(String[] args){
+        // Example "--types http HTTPS --countries US --limit 10 --outfile ./proxies.txt"
+        HashMap<String, ArrayList<String>> options = new HashMap<String, ArrayList<String>>();
+
+        String lastOptionName = "";
+        for(String argument: Arrays.copyOfRange(args, 1, args.length)){
+            String lowerCaseArgument = argument.toLowerCase();
+            if(lowerCaseArgument.matches("^-{1,2}\\w+")){
+                Pattern optionNamePattern = Pattern.compile("(?!^-{1,2})\\w+");
+                Matcher matcher = optionNamePattern.matcher(lowerCaseArgument);
+                matcher.find();
+                String optionName = matcher.group(0);
+                lastOptionName = optionName;
+            } else {
+                ArrayList<String> currentValue = options.get(lastOptionName);
+                ArrayList<String> arrayList = currentValue == null ? new ArrayList<String>() : currentValue;
+                arrayList.add(argument);
+                options.put(lastOptionName, arrayList);
+            }
+        }
+
+        // Parsed options
+//        options.entrySet().forEach(entry -> {
+//            System.out.println(entry.getKey() + " " + entry.getValue());
+//        });
+
+
+        return options;
     }
 
 }

@@ -6,18 +6,16 @@ import com.ziloka.services.ProxyCheckerTask;
 import com.ziloka.services.ProxyCollectorService;
 
 import java.io.IOException;
+import java.net.CacheRequest;
 import java.util.ArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.concurrent.*;
 
 public class FindCommand extends Command {
 
     String name = "find";
 
-    public FindCommand(){
-        super();
-    }
+//    public FindCommand(){}
 
     @Override
     public String getCommand() {
@@ -36,28 +34,27 @@ public class FindCommand extends Command {
 
     static ArrayList<String> proxies;
 
-    public void run(String[] args) {
+    public void run(HashMap<String, ArrayList<String>> options) {
 
-//        ProxyCollectorService proxyProvider = new ProxyCollectorService(types, countries, lvl, limit);
         ProxyCollectorService proxyProvider = new ProxyCollectorService("http", "", "", 10);
         proxyProvider.setSources();
         proxies = proxyProvider.getProxies();
 
-            // https://stackoverflow.com/questions/12835077/java-multithread-multiple-requests-approach
-            // Worker Threads
-            // https://engineering.zalando.com/posts/2019/04/how-to-set-an-ideal-thread-pool-size.html
-            // Set ideal thread pool size
-            int NumOfThreads = Runtime.getRuntime().availableProcessors() * (1 + 50/5);
-            ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(NumOfThreads);
-            for (String proxy : proxies) {
-                Runnable worker = new ProxyCheckerTask(proxy);
-                executor.execute(worker);
+        // https://stackoverflow.com/questions/12835077/java-multithread-multiple-requests-approach
+        // Worker Threads
+        // https://engineering.zalando.com/posts/2019/04/how-to-set-an-ideal-thread-pool-size.html
+        // Set ideal thread pool size
+        int NumOfThreads = Runtime.getRuntime().availableProcessors() * (1 + 50/5);
+        ExecutorService service = Executors.newFixedThreadPool(NumOfThreads);
+        for (String proxy : proxies) {
+            try {
+                Future<Boolean> proxyCheckerTask = service.submit(new ProxyCheckerTask(proxy));
+                Boolean isWorking = proxyCheckerTask.get();
+                System.out.println("Proxy: "+proxy + " isWorking: "+ isWorking);
+            } catch (InterruptedException | ExecutionException e){
+                e.printStackTrace();
             }
-            executor.shutdown();
-            while(!executor.isTerminated()){
-
-            }
-            System.out.println("\nFinished all threads");
+        }
 
     }
 

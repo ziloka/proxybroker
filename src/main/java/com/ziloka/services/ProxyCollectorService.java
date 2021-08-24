@@ -6,15 +6,15 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
 
 public class ProxyCollectorService {
 
@@ -45,7 +45,6 @@ public class ProxyCollectorService {
             Object object = jsonParser.parse(result);
             JSONObject ProxySources = (JSONObject) object;
             this.ProxySources = (JSONArray) ProxySources.get(this.type.toLowerCase());
-//            this.ProxySources = ProxySources.get(this.type.toLowerCase());
 
         } catch (IOException | ParseException e) {
             e.printStackTrace();
@@ -58,24 +57,37 @@ public class ProxyCollectorService {
         ArrayList<String> result = new ArrayList<String>();
         for (Object proxySource : this.ProxySources) {
             String uri = (String) proxySource;
+            int statusCode;
             try {
                 URL url = new URL(uri);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("GET");
                 con.setRequestProperty("User-Agent", "Mozilla/5.0");
+                con.setRequestProperty("Accept-Encoding", "gzip");
                 int responseCode = con.getResponseCode();
+                statusCode = responseCode;
                 if (responseCode == HttpURLConnection.HTTP_OK) { // success
-                    BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                    String inputLine;
-
-                    while ((inputLine = in.readLine()) != null) {
-                        result.add(inputLine);
+                    Reader reader = "gzip".equals(con.getContentEncoding()) ?
+                            new InputStreamReader(new GZIPInputStream(con.getInputStream())) :
+                            new InputStreamReader(con.getInputStream());
+                    String html = "";
+                    while (true) {
+                        int ch = reader.read();
+                        if (ch==-1) {
+                            break;
+                        }
+                        html = html + (char) ch;
                     }
 
-                    in.close();
-
+                    // https://stackoverflow.com/questions/11637555/regular-expressions-for-proxy-pattern
+                    Pattern optionNamePattern = Pattern.compile("\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b:\\d{2,5}\n");
+                    Matcher matcher = optionNamePattern.matcher(html);
+                    while(matcher.find()){
+                        result.add(matcher.group());
+                    }
                 } else {
                     System.out.println("GET request not worked");
+                    System.out.println("Status Code"+ statusCode);
                 }
             } catch (IOException e) {
                 e.printStackTrace();

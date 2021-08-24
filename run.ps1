@@ -1,1 +1,1 @@
-.\gradlew run --args="find --types HTTP"
+.\gradlew run --args="find --types http HTTPS --countries US --limit 10 --outfile ./proxies.txt"

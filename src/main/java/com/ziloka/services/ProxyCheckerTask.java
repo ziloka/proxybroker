@@ -1,8 +1,9 @@
 package com.ziloka.services;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
 
-public class ProxyCheckerTask implements Runnable {
+public class ProxyCheckerTask implements Callable<Boolean> {
 
     String proxy;
 
@@ -10,18 +11,18 @@ public class ProxyCheckerTask implements Runnable {
         this.proxy = proxy;
     }
 
-    public void run() {
+    public Boolean call() {
 
+        boolean isOnline = false;
         try {
             ProxyCheckerService proxyCheckerService = new ProxyCheckerService();
-            boolean isOnline = proxyCheckerService.check(proxy);
-            if(isOnline){
-
-            }
+            isOnline = proxyCheckerService.check(proxy);
         } catch (IOException e) {
             // Don't print anything
 //            e.printStackTrace();
         }
+
+        return isOnline;
 
     }
 

@@ -16,17 +16,10 @@ public class ProxyCheckerService {
         // https://www.baeldung.com/java-connect-via-proxy-server
         // https://crunchify.com/how-to-run-multiple-threads-concurrently-in-java-executorservice-approach/
 
-//        boolean isOnline = false;
-//
-//        String host = ipAddress.substring(0, ipAddress.indexOf(":"));
-//        int port = Integer.parseInt(ipAddress.substring(ipAddress.indexOf(":") + 1));
-//        URL url = new URL("http://httpbin.org/ip?json");
-//
-//        return isOnline;
-
         boolean isOnline = false;
         String host = ipAddress.substring(0, ipAddress.indexOf(":"));
-        int port = Integer.parseInt(ipAddress.substring(ipAddress.indexOf(":") + 1));
+        // Source of NumberFormatException
+        int port = Integer.parseInt(ipAddress.substring(ipAddress.indexOf(":") + 1).trim());
         URL url = new URL("http://httpbin.org/ip?json");
 
         try {
@@ -39,12 +32,9 @@ public class ProxyCheckerService {
             con.connect();
 
             int responseCode = con.getResponseCode();
-//            System.out.println("ProxyCheckerService, "+ host+ ":" + port + " " + responseCode);
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                System.out.println(host+ ":" + port);
+//                System.out.println(host+ ":" + port);
                 isOnline = true;
-            } else {
-
             }
         } catch (Exception e) {
 //            e.printStackTrace();

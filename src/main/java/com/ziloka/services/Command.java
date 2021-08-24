@@ -1,5 +1,8 @@
 package com.ziloka.services;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public abstract class Command {
 
     public Command() {
@@ -14,6 +17,6 @@ public abstract class Command {
     public abstract String getDescr();
     public abstract String getOptions();
 
-    public abstract void run(String[] args);
+    public abstract void run(HashMap<String, ArrayList<String>> options);
 
 }
