@@ -8,7 +8,6 @@ import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ import java.util.regex.Pattern;
 
 public class CommandManagerService {
 
-    private HashMap<String, Command> commands = new HashMap<String, Command>();
+    private final HashMap<String, Command> commands = new HashMap<String, Command>();
 
     public CommandManagerService() {
         collectCommands();

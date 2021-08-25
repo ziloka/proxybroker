@@ -1,6 +1,8 @@
 package com.ziloka.services;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -23,7 +25,7 @@ public class ProxyCollectorService {
     String lvl;
     int limit;
     JSONArray ProxySources;
-//    ArrayList<Object> ProxySources;
+    Logger logger = LogManager.getLogger(ProxyCollectorService.class);
 
     public ProxyCollectorService(String type, String countries, String lvl, int limit) {
         this.type = type;
@@ -63,7 +65,9 @@ public class ProxyCollectorService {
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("GET");
                 con.setRequestProperty("User-Agent", "Mozilla/5.0");
+                logger.debug(String.format("Collecting proxies from %s", proxySource));
                 con.setRequestProperty("Accept-Encoding", "gzip");
+                con.connect();
                 int responseCode = con.getResponseCode();
                 statusCode = responseCode;
                 if (responseCode == HttpURLConnection.HTTP_OK) { // success
@@ -79,22 +83,28 @@ public class ProxyCollectorService {
                         html = html + (char) ch;
                     }
 
-                    // https://stackoverflow.com/questions/11637555/regular-expressions-for-proxy-pattern
-                    Pattern optionNamePattern = Pattern.compile("\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b:\\d{2,5}\n");
+                    logger.debug(html);
+
+                    // https://stackoverflow.com/a/11637672
+                    Pattern optionNamePattern = Pattern.compile("\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b:\\d{2,5}\\n");
                     Matcher matcher = optionNamePattern.matcher(html);
+                    int count = 0;
                     while(matcher.find()){
-                        result.add(matcher.group());
+                        count++;
+                        result.add(matcher.group().trim());
                     }
+                    logger.debug(String.format("Found %d proxies using source: %s", count, proxySource));
                 } else {
                     System.out.println("GET request not worked");
                     System.out.println("Status Code"+ statusCode);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-
             }
+
         }
+
+        logger.debug(String.format("Found %d proxies using %d sources", result.size(), this.ProxySources.size()));
 
         return result;
 
