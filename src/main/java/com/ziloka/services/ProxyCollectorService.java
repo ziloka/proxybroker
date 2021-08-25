@@ -10,6 +10,7 @@ import org.json.simple.parser.ParseException;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -61,12 +62,15 @@ public class ProxyCollectorService {
             String uri = (String) proxySource;
             int statusCode;
             try {
+                logger.debug(String.format("Collecting proxies from %s", uri));
                 URL url = new URL(uri);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("GET");
                 con.setRequestProperty("User-Agent", "Mozilla/5.0");
-                logger.debug(String.format("Collecting proxies from %s", proxySource));
+//                logger.debug(String.format("Collecting proxies from %s", proxySource));
                 con.setRequestProperty("Accept-Encoding", "gzip");
+                con.setReadTimeout(3000);
+                con.setConnectTimeout(3000);
                 con.connect();
                 int responseCode = con.getResponseCode();
                 statusCode = responseCode;
@@ -83,23 +87,25 @@ public class ProxyCollectorService {
                         html = html + (char) ch;
                     }
 
-                    logger.debug(html);
-
                     // https://stackoverflow.com/a/11637672
-                    Pattern optionNamePattern = Pattern.compile("\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b:\\d{2,5}\\n");
+//                    Pattern optionNamePattern = Pattern.compile("\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b:\\d{2,5}\\n");
+                    Pattern optionNamePattern = Pattern.compile("\\d+\\.\\d+\\.\\d+\\.\\d+:\\d+");
                     Matcher matcher = optionNamePattern.matcher(html);
                     int count = 0;
                     while(matcher.find()){
                         count++;
                         result.add(matcher.group().trim());
                     }
+
                     logger.debug(String.format("Found %d proxies using source: %s", count, proxySource));
                 } else {
                     System.out.println("GET request not worked");
                     System.out.println("Status Code"+ statusCode);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                if(!(e instanceof SocketTimeoutException)){
+                    e.printStackTrace();
+                }
             }
 
         }

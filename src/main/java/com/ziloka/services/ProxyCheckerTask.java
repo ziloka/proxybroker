@@ -34,12 +34,11 @@ public class ProxyCheckerTask implements Runnable {
             long endTime = System.nanoTime();
             // There are 1,000,000 nano seconds in a millisecond
             long duration = (endTime - startTime)/10000000;
-//            logger.debug(String.format("It took %dms to run ProxyCheckerService#check", duration));
+            logger.debug(String.format("It took %dms to run ProxyCheckerService#check", duration));
             if(isOnline){
-//                synchronized (onlineProxies){
-                    onlineProxies.put(proxy, true);
-//                    onlineProxies.add(proxy);
-//                }
+                // Hashmaps automatically remove duplicates
+                // Unnecessary to synchronize object
+                onlineProxies.put(proxy, true);
 //                logger.debug(String.format("Online Proxies have %d proxies", onlineProxies.size()));
             }
 

@@ -34,6 +34,7 @@ public class ProxyCheckerService {
             HttpURLConnection con = (HttpURLConnection) url.openConnection(webProxy);
             con.setRequestMethod("GET");
             con.setRequestProperty("User-Agent", "Mozilla/5.0");
+            con.setReadTimeout(3000);
             con.setConnectTimeout(3000);
             con.connect();
             long startTime = System.nanoTime();
