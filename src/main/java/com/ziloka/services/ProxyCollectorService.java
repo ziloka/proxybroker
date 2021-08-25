@@ -9,6 +9,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -24,15 +25,13 @@ public class ProxyCollectorService {
     String type;
     String countries;
     String lvl;
-    int limit;
-    JSONArray ProxySources;
+    JSONObject ProxySources;
     Logger logger = LogManager.getLogger(ProxyCollectorService.class);
 
-    public ProxyCollectorService(String type, String countries, String lvl, int limit) {
+    public ProxyCollectorService(String type, String countries, String lvl) {
         this.type = type;
         this.countries = countries;
         this.lvl = lvl;
-        this.limit = limit;
     }
 
     public void setSources() {
@@ -46,8 +45,7 @@ public class ProxyCollectorService {
             String result = IOUtils.toString(Objects.requireNonNull(inputStream), StandardCharsets.UTF_8);
             JSONParser jsonParser = new JSONParser();
             Object object = jsonParser.parse(result);
-            JSONObject ProxySources = (JSONObject) object;
-            this.ProxySources = (JSONArray) ProxySources.get(this.type.toLowerCase());
+            this.ProxySources = (JSONObject) object;
 
         } catch (IOException | ParseException e) {
             e.printStackTrace();
@@ -55,10 +53,22 @@ public class ProxyCollectorService {
 
     }
 
-    public ArrayList<String> getProxies() {
+    public ArrayList<String> getProxies(String proxyType) {
 
         ArrayList<String> result = new ArrayList<String>();
-        for (Object proxySource : this.ProxySources) {
+        ArrayList<String> allProxySources = new ArrayList<String>();
+        for(Object proxySources: this.ProxySources.values()){
+            JSONArray specificProxySource = (JSONArray) proxySources;
+            for(Object uri: specificProxySource){
+                String ProxySourceuri = (String) uri;
+                allProxySources.add(ProxySourceuri);
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        ArrayList<String> proxySources = proxyType != null ? (ArrayList<String>) this.ProxySources.get(proxyType) : allProxySources;
+
+        for (Object proxySource : proxySources) {
             String uri = (String) proxySource;
             int statusCode;
             try {
@@ -67,7 +77,6 @@ public class ProxyCollectorService {
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("GET");
                 con.setRequestProperty("User-Agent", "Mozilla/5.0");
-//                logger.debug(String.format("Collecting proxies from %s", proxySource));
                 con.setRequestProperty("Accept-Encoding", "gzip");
                 con.setReadTimeout(3000);
                 con.setConnectTimeout(3000);

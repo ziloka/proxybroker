@@ -15,7 +15,6 @@ public abstract class Command {
 
     public abstract String getCommand();
     public abstract String getDescr();
-    public abstract String getOptions();
 
     public abstract void run(HashMap<String, ArrayList<String>> options);
 

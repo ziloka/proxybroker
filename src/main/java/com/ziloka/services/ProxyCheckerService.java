@@ -4,8 +4,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.net.*;
-import java.net.http.HttpClient;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.URL;
 
 public class ProxyCheckerService {
 
@@ -29,13 +31,14 @@ public class ProxyCheckerService {
 
         try {
             InetSocketAddress inetSocketAddress = new InetSocketAddress(host, port);
+//            Proxy.Type proxyType
             Proxy webProxy = new Proxy(Proxy.Type.HTTP, inetSocketAddress);
             HttpURLConnection.setFollowRedirects(false);
             HttpURLConnection con = (HttpURLConnection) url.openConnection(webProxy);
             con.setRequestMethod("GET");
             con.setRequestProperty("User-Agent", "Mozilla/5.0");
-            con.setReadTimeout(3000);
-            con.setConnectTimeout(3000);
+            con.setReadTimeout(8000);
+            con.setConnectTimeout(8000);
             con.connect();
             long startTime = System.nanoTime();
             int responseCode = con.getResponseCode();
@@ -43,9 +46,6 @@ public class ProxyCheckerService {
 //            logger.debug(String.format("Get Request took %dms", (endTime-startTime)/1000000));
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 isOnline = true;
-            }
-            else{
-//                System.out.println("***in ProxyCheckerService, isOnline=false, " +ipAddress);
             }
         } catch (Exception e) {
 //            e.printStackTrace();

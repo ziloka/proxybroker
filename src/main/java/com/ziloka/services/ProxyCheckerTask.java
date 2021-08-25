@@ -1,15 +1,12 @@
 package com.ziloka.services;
 
 import com.ziloka.cmds.FindCommand;
-import com.ziloka.utils.TimeUtils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.Callable;
 
 public class ProxyCheckerTask implements Runnable {
 
@@ -34,12 +31,15 @@ public class ProxyCheckerTask implements Runnable {
             long endTime = System.nanoTime();
             // There are 1,000,000 nano seconds in a millisecond
             long duration = (endTime - startTime)/10000000;
-            logger.debug(String.format("It took %dms to run ProxyCheckerService#check", duration));
+//            logger.debug(String.format("It took %dms to run ProxyCheckerService#check", duration));
             if(isOnline){
-                // Hashmaps automatically remove duplicates
-                // Unnecessary to synchronize object
-                onlineProxies.put(proxy, true);
-//                logger.debug(String.format("Online Proxies have %d proxies", onlineProxies.size()));
+//                // Hashmaps automatically remove duplicates
+//                // Unnecessary to synchronize object
+                synchronized (this.onlineProxies){
+                    onlineProxies.put(this.proxy, true);
+                }
+            } else {
+                System.out.println(this.proxy);
             }
 
         } catch (IOException e) {

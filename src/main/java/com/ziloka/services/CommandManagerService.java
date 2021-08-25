@@ -84,12 +84,6 @@ public class CommandManagerService {
             }
         }
 
-        // Parsed options
-//        options.entrySet().forEach(entry -> {
-//            System.out.println(entry.getKey() + " " + entry.getValue());
-//        });
-
-
         return options;
     }
 
