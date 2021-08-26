@@ -12,7 +12,7 @@ on:
 jobs:
   build:
     name: Build ProxyChecker on ${{ matrix.os }}
-    runs-on: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v2
