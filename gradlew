@@ -72,7 +72,11 @@ case "`uname`" in
   Darwin* )
     darwin=true
     ;;
+<<<<<<< HEAD
   MINGW* )
+=======
+  MSYS* | MINGW* )
+>>>>>>> a4b2863 (Simplified http requests, added picocli framework)
     msys=true
     ;;
   NONSTOP* )
