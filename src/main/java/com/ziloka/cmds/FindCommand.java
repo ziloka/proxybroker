@@ -48,6 +48,7 @@ public class FindCommand extends Command {
         String proxyType = options.get("types") != null ? options.get("types").get(0).toLowerCase() : "";
         String countries = options.get("countries") != null ? options.get("countries").get(0).toLowerCase() : "";
         String lvl = options.get("lvl") != null ? options.get("lvl").get(0).toLowerCase() : "high";
+        int limit = options.get("limit") != null ? Integer.parseInt(options.get("limit").get(0)) : 10;
 
         ProxyCollectorService proxyProvider = new ProxyCollectorService(proxyType, countries, lvl);
         proxyProvider.setSources();
@@ -58,17 +59,18 @@ public class FindCommand extends Command {
 
         // Simple iteration on average takes more than 30+ minutes to check 200 proxies
         // On average takes ~20 seconds to check 200 proxies
-        int NumOfThreads = Runtime.getRuntime().availableProcessors() * (1 + 300/50);
         ExecutorService executorService = Executors.newCachedThreadPool();
-        logger.debug(String.format("Multithreading ProxyCheckTask.class using %d threads", NumOfThreads));
+        ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executorService;
         for (String proxy : proxies) {
             try {
-                ProxyCheckerTask proxyCheckerTask = new ProxyCheckerTask(proxy, this.onlineProxies);
+                ProxyCheckerTask proxyCheckerTask = new ProxyCheckerTask(proxy, proxyType, this.onlineProxies);
                 executorService.submit(proxyCheckerTask);
             } catch (Exception e){
                 e.printStackTrace();
             }
         }
+
+        logger.debug(String.format("Multithreading ProxyCheckTask.class using %d threads", threadPoolExecutor.getActiveCount()));
 
         executorService.shutdown();
         // Wait for all threads states to be terminated

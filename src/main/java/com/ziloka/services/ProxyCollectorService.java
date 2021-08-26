@@ -5,14 +5,13 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.net.ssl.SSLException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.SocketTimeoutException;
-import java.net.URL;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.function.Function;
@@ -56,6 +55,47 @@ public class ProxyCollectorService {
 
     }
 
+    public String getProxyForMainThread() {
+        String proxy = "";
+        int statusCode;
+        try {
+            URL url = new URL("https://api.getproxylist.com/proxy?anonymity[]=high%20anonymity&allowsHttps=1?protocol[]=socks4");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            con.setRequestProperty("User-Agent", "Mozilla/5.0");
+            con.setRequestProperty("Accept-Encoding", "gzip");
+            con.setReadTimeout(8000);
+            con.setConnectTimeout(8000);
+            con.connect();
+            int responseCode = con.getResponseCode();
+            statusCode = responseCode;
+            if (responseCode == HttpURLConnection.HTTP_OK) { // success
+                Reader reader = "gzip".equals(con.getContentEncoding()) ?
+                        new InputStreamReader(new GZIPInputStream(con.getInputStream())) :
+                        new InputStreamReader(con.getInputStream());
+                String json = "";
+                while (true) {
+                    int ch = reader.read();
+                    if (ch==-1) {
+                        break;
+                    }
+                    json = json + (char) ch;
+                }
+
+                JSONObject apiRes = new JSONObject(json);
+                String proxyIp = (String) apiRes.get("ip");
+                int proxyPort = (int) apiRes.get("port");
+                proxy = String.format("%s:%d", proxyIp, proxyPort);
+            } else {
+                System.out.println("GET request not worked");
+                System.out.println("Status Code"+ statusCode);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return proxy;
+    }
+
     public ArrayList<String> getProxies(String proxyType) {
 
         ArrayList<String> result = new ArrayList<String>();
@@ -81,7 +121,6 @@ public class ProxyCollectorService {
             String uri = (String) proxySource;
             int statusCode;
             try {
-                logger.debug(String.format("Collecting proxies from %s", uri));
                 URL url = new URL(uri);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("GET");
@@ -104,7 +143,6 @@ public class ProxyCollectorService {
                         }
                         html = html + (char) ch;
                     }
-
                     // https://stackoverflow.com/a/11637672
 //                    Pattern optionNamePattern = Pattern.compile("\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b:\\d{2,5}\\n");
                     Pattern optionNamePattern = Pattern.compile("\\d+\\.\\d+\\.\\d+\\.\\d+:\\d+");
@@ -121,7 +159,7 @@ public class ProxyCollectorService {
                     System.out.println("Status Code"+ statusCode);
                 }
             } catch (IOException e) {
-                if(!(e instanceof SocketTimeoutException)){
+                if(!(e instanceof SocketTimeoutException) && !(e instanceof SSLException)){
                     e.printStackTrace();
                 }
             }

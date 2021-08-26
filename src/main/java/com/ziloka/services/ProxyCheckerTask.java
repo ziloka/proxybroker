@@ -11,12 +11,14 @@ import java.util.HashMap;
 public class ProxyCheckerTask implements Runnable {
 
     String proxy;
+    String proxyType;
     HashMap<String, Boolean> onlineProxies;
 
     public static final Logger logger = LogManager.getLogger(FindCommand.class);
 
-    public ProxyCheckerTask(String proxy, HashMap<String, Boolean> onlineProxies) {
+    public ProxyCheckerTask(String proxy, String proxyType, HashMap<String, Boolean> onlineProxies) {
         this.proxy = proxy;
+        this.proxyType = proxyType;
         this.onlineProxies = onlineProxies;
     }
 
@@ -24,10 +26,10 @@ public class ProxyCheckerTask implements Runnable {
 
         boolean isOnline = false;
         try {
-            ProxyCheckerService proxyCheckerService = new ProxyCheckerService();
+            ProxyCheckerService proxyCheckerService = new ProxyCheckerService(proxy, proxyType);
             String threadName = Thread.currentThread().getName();
             long startTime = System.nanoTime();
-            isOnline = proxyCheckerService.check(proxy);
+            isOnline = proxyCheckerService.check();
             long endTime = System.nanoTime();
             // There are 1,000,000 nano seconds in a millisecond
             long duration = (endTime - startTime)/10000000;

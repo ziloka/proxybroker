@@ -35,35 +35,35 @@ test {
 }
 
 
-import org.mikeneck.graalvm.BuildTypeSelector
+//import org.mikeneck.graalvm.BuildTypeSelector
 
-nativeImage {
-    graalVmHome = System.getProperty('java.home')
-    mainClass = 'com.ziloka.ProxyChecker'
-    buildType { BuildTypeSelector build ->
-        build.executable {
-            main = 'com.ziloka.ProxyChecker'
-        }
-    }
-    executableName = 'ProxyChecker'
-//    outputDirectory = file("$buildDir/bin")
-    arguments {
-        add '--no-fallback'
-        add '--enable-all-security-services'
-//        add options.traceClassInitialization('com.example.MyDataProvider,com.example.MyDataConsumer')
-        add '--initialize-at-run-time=com.ziloka.ProxyChecker'
-        add '--report-unsupported-elements-at-runtime'
-    }
-}
-
-
-generateNativeImageConfig {
-    enabled = true
-    byRunningApplication {
-
-    }
-    byRunningApplicationWithoutArguments()
-    byRunningApplication {
-        arguments('-h')
-    }
-}
+//nativeImage {
+//    graalVmHome = System.getProperty('java.home')
+//    mainClass = 'com.ziloka.ProxyChecker'
+//    buildType { BuildTypeSelector build ->
+//        build.executable {
+//            main = 'com.ziloka.ProxyChecker'
+//        }
+//    }
+//    executableName = 'ProxyChecker'
+////    outputDirectory = file("$buildDir/bin")
+//    arguments {
+//        add '--no-fallback'
+//        add '--enable-all-security-services'
+////        add options.traceClassInitialization('com.example.MyDataProvider,com.example.MyDataConsumer')
+//        add '--initialize-at-run-time=com.ziloka.ProxyChecker'
+//        add '--report-unsupported-elements-at-runtime'
+//    }
+//}
+//
+//
+//generateNativeImageConfig {
+//    enabled = true
+//    byRunningApplication {
+//
+//    }
+//    byRunningApplicationWithoutArguments()
+//    byRunningApplication {
+//        arguments('-h')
+//    }
+//}
