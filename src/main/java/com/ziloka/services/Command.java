@@ -5,10 +5,6 @@ import java.util.HashMap;
 
 public abstract class Command {
 
-    public Command() {
-
-    }
-
     String name;
     String descr;
     String options;

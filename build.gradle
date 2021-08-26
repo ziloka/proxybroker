@@ -3,6 +3,7 @@ plugins {
     id 'application'
     id 'org.springframework.boot' version '2.5.4'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'org.mikeneck.graalvm-native-image' version 'v1.4.1'
 }
 
 group = 'com.ziloka'
@@ -23,14 +24,46 @@ repositories {
 
 dependencies {
     implementation 'org.reflections:reflections:0.9.12'
-    implementation 'ch.qos.logback:logback-classic:1.2.3'
     implementation 'org.apache.logging.log4j:log4j-core:2.14.1'
-    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
-    implementation 'commons-io:commons-io:2.11.0'
+    implementation 'org.json:json:20210307'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 test {
     useJUnitPlatform()
+}
+
+
+import org.mikeneck.graalvm.BuildTypeSelector
+
+nativeImage {
+    graalVmHome = System.getProperty('java.home')
+    mainClass = 'com.ziloka.ProxyChecker'
+    buildType { BuildTypeSelector build ->
+        build.executable {
+            main = 'com.ziloka.ProxyChecker'
+        }
+    }
+    executableName = 'ProxyChecker'
+//    outputDirectory = file("$buildDir/bin")
+    arguments {
+        add '--no-fallback'
+        add '--enable-all-security-services'
+//        add options.traceClassInitialization('com.example.MyDataProvider,com.example.MyDataConsumer')
+        add '--initialize-at-run-time=com.ziloka.ProxyChecker'
+        add '--report-unsupported-elements-at-runtime'
+    }
+}
+
+
+generateNativeImageConfig {
+    enabled = true
+    byRunningApplication {
+
+    }
+    byRunningApplicationWithoutArguments()
+    byRunningApplication {
+        arguments('-h')
+    }
 }

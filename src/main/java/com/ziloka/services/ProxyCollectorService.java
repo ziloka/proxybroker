@@ -1,21 +1,21 @@
 package com.ziloka.services;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-import java.io.*;
-import java.lang.reflect.Array;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Objects;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
@@ -36,18 +36,21 @@ public class ProxyCollectorService {
 
     public void setSources() {
 
-        // https://howtodoinjava.com/java/io/read-file-from-resources-folder/
+        // https://mkyong.com/java/java-read-a-file-from-resources-folder/
 
-        ClassLoader classLoader = getClass().getClassLoader();
+        try {
+            ClassLoader classLoader = getClass().getClassLoader();
+            InputStream inputStream = classLoader.getResourceAsStream("ProxySources.json");
+            InputStreamReader streamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+            BufferedReader reader = new BufferedReader(streamReader);
+            String json = "";
+            String line;
+            while((line = reader.readLine()) != null){
+                json = json+line;
+            }
+            this.ProxySources = new JSONObject(json);
 
-        try (InputStream inputStream = classLoader.getResourceAsStream("ProxySources.json")) {
-
-            String result = IOUtils.toString(Objects.requireNonNull(inputStream), StandardCharsets.UTF_8);
-            JSONParser jsonParser = new JSONParser();
-            Object object = jsonParser.parse(result);
-            this.ProxySources = (JSONObject) object;
-
-        } catch (IOException | ParseException e) {
+        } catch(IOException e){
             e.printStackTrace();
         }
 
@@ -57,18 +60,24 @@ public class ProxyCollectorService {
 
         ArrayList<String> result = new ArrayList<String>();
         ArrayList<String> allProxySources = new ArrayList<String>();
-        for(Object proxySources: this.ProxySources.values()){
-            JSONArray specificProxySource = (JSONArray) proxySources;
-            for(Object uri: specificProxySource){
-                String ProxySourceuri = (String) uri;
-                allProxySources.add(ProxySourceuri);
+        for(Object entry: this.ProxySources.keySet()){
+            JSONArray values = (JSONArray) this.ProxySources.get((String) entry);
+            for(Object uri: values){
+                allProxySources.add((String) uri);
             }
         }
 
-        @SuppressWarnings("unchecked")
-        ArrayList<String> proxySources = proxyType != null ? (ArrayList<String>) this.ProxySources.get(proxyType) : allProxySources;
+        Function<String, ArrayList<String>> getSpecifiedProxySource = (String specificProxyType) -> {
+            ArrayList<String> specifiedProxySource = new ArrayList<String>();
+            JSONArray specificProxySource = (JSONArray) this.ProxySources.get(specificProxyType);
+            for (Object entry: specificProxySource) specifiedProxySource.add((String) entry);
+            return specifiedProxySource;
+        };
 
-        for (Object proxySource : proxySources) {
+        @SuppressWarnings("unchecked")
+        ArrayList<String> iterateProxiesList = proxyType == "" ? allProxySources : getSpecifiedProxySource.apply(proxyType);
+
+        for (Object proxySource : iterateProxiesList) {
             String uri = (String) proxySource;
             int statusCode;
             try {
@@ -78,8 +87,8 @@ public class ProxyCollectorService {
                 con.setRequestMethod("GET");
                 con.setRequestProperty("User-Agent", "Mozilla/5.0");
                 con.setRequestProperty("Accept-Encoding", "gzip");
-                con.setReadTimeout(3000);
-                con.setConnectTimeout(3000);
+                con.setReadTimeout(8000);
+                con.setConnectTimeout(8000);
                 con.connect();
                 int responseCode = con.getResponseCode();
                 statusCode = responseCode;
@@ -119,7 +128,7 @@ public class ProxyCollectorService {
 
         }
 
-        logger.debug(String.format("Found %d proxies using %d sources", result.size(), this.ProxySources.size()));
+        logger.debug(String.format("Found %d proxies using %d sources", result.size(), iterateProxiesList.size()));
 
         return result;
 
