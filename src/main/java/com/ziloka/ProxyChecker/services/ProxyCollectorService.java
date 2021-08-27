@@ -45,14 +45,15 @@ public class ProxyCollectorService {
         try {
             ClassLoader classLoader = getClass().getClassLoader();
             InputStream inputStream = classLoader.getResourceAsStream("ProxySources.json");
+            if(inputStream == null) throw new Error("resources/ProxySources.json is missing");
             InputStreamReader streamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
             BufferedReader reader = new BufferedReader(streamReader);
-            String json = "";
+            StringBuilder json = new StringBuilder();
             String line;
             while((line = reader.readLine()) != null){
-                json = json+line;
+                json.append(line);
             }
-            this.ProxySources = new JSONObject(json);
+            this.ProxySources = new JSONObject(json.toString());
 
         } catch(IOException e){
             e.printStackTrace();
@@ -86,24 +87,23 @@ public class ProxyCollectorService {
 
     public ArrayList<String> getProxies(String proxyType) {
 
-        ArrayList<String> result = new ArrayList<String>();
-        ArrayList<String> allProxySources = new ArrayList<String>();
-        for(Object entry: this.ProxySources.keySet()){
-            JSONArray values = (JSONArray) this.ProxySources.get((String) entry);
+        ArrayList<String> result = new ArrayList<>();
+        ArrayList<String> allProxySources = new ArrayList<>();
+        for(String entry: this.ProxySources.keySet()){
+            JSONArray values = (JSONArray) this.ProxySources.get(entry);
             for(Object uri: values){
                 allProxySources.add((String) uri);
             }
         }
 
         Function<String, ArrayList<String>> getSpecifiedProxySource = (String specificProxyType) -> {
-            ArrayList<String> specifiedProxySource = new ArrayList<String>();
+            ArrayList<String> specifiedProxySource = new ArrayList<>();
             JSONArray specificProxySource = (JSONArray) this.ProxySources.get(specificProxyType);
             for (Object entry: specificProxySource) specifiedProxySource.add((String) entry);
             return specifiedProxySource;
         };
 
-        @SuppressWarnings("unchecked")
-        ArrayList<String> iterateProxiesList = proxyType == "" ? allProxySources : getSpecifiedProxySource.apply(proxyType);
+        ArrayList<String> iterateProxiesList = proxyType.equals("") ? allProxySources : getSpecifiedProxySource.apply(proxyType);
 
         HttpClient client = HttpClient.newBuilder()
                 .version(Version.HTTP_2)
@@ -111,12 +111,11 @@ public class ProxyCollectorService {
                 .connectTimeout(Duration.ofSeconds(20))
                 .build();
 
-        for (Object proxySource : iterateProxiesList) {
-            String uri = (String) proxySource;
+        for (String proxySource : iterateProxiesList) {
             int statusCode;
             try {
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(uri))
+                        .uri(URI.create(proxySource))
                         .build();
                 HttpResponse<String> res = client.send(request, BodyHandlers.ofString());
                 statusCode = res.statusCode();

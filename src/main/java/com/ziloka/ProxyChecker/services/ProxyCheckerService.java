@@ -41,8 +41,8 @@ public class ProxyCheckerService {
             HttpURLConnection con = (HttpURLConnection) url.openConnection(webProxy);
             con.setRequestMethod("GET");
             con.setRequestProperty("User-Agent", "Mozilla/5.0");
-            con.setReadTimeout(8000);
-            con.setConnectTimeout(8000);
+            con.setReadTimeout(5000);
+            con.setConnectTimeout(5000);
             con.connect();
             int responseCode = con.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {

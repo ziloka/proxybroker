@@ -22,23 +22,24 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class FindCommand implements Callable<Integer> {
 
     // https://picocli.info/apidocs/picocli/CommandLine.Option.html
-    @Option(names = "--types")
+    @Option(names = "--types", defaultValue = "http")
     private String types;
 
-    @Option(names = "--countries")
+    @Option(names = "--countries", defaultValue = "")
     private String countries;
 
-    @Option(names = "--lvl")
+    @Option(names = "--lvl", defaultValue = "High")
     private String lvl;
 
-    @Option(names = {"--limit", "-l"})
+    @Option(names = {"--limit", "-l"}, defaultValue = "10", type = Integer.class)
     private int limit;
 
-    @Option(names = {"--outfile", "-o"})
+    @Option(names = {"--outfile", "-o"}, defaultValue = "")
     private String OutFile;
 
     public static void main(String[] args) {
         CommandLine cli = new CommandLine(new FindCommand());
+//        cli.registerConverter(Integer.class, s -> Integer.parseInt(s));
         cli.setOptionsCaseInsensitive(true);
         int exitCode = cli.execute(args);
         System.exit(exitCode);
@@ -80,6 +81,10 @@ public class FindCommand implements Callable<Integer> {
 
         }
         logger.debug(String.format("There are %d online proxies", onlineProxies.size()));
+
+        onlineProxies.entrySet().forEach((entry) -> {
+//           System.out.println((entry));
+        });
 
         System.out.println("\nFinished all threads");
 

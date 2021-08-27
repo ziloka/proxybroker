@@ -2,3 +2,5 @@
 build
 .gitignore
 run.ps1
+.settings
+.project

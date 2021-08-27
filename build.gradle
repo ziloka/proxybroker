@@ -9,21 +9,32 @@
 plugins {
     id 'java'
     id 'application'
+    // plugin to generate fat jar with all required java libraries
     id 'org.springframework.boot' version '2.5.4'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    // plugin to provide which dependencies have updates gradlew dependencyUpdates
     id 'com.github.ben-manes.versions' version '0.39.0'
 }
+
+sourceCompatibility = '11'
 
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
 }
 
+//compileJava {
+//    options.compilerArgs << "-Aproject=${project.group}/${project.name}"
+//}
+
 dependencies {
     implementation 'info.picocli:picocli-spring-boot-starter:4.6.1'
     implementation 'org.json:json:20210307'
     implementation 'org.apache.logging.log4j:log4j-core:2.14.1'
-    implementation 'com.google.guava:guava:30.1-jre'
+    implementation 'com.google.guava:guava:30.1.1-jre'
+    implementation 'info.picocli:picocli:4.6.1'
+    // GraalVM Configurations generated under BOOT-INF\classes\META-INF\native-image\picocli-generated
+    annotationProcessor  'info.picocli:picocli-codegen:4.6.1'
     testImplementation 'junit:junit:4.13.2'
 }
 
