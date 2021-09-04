@@ -38,6 +38,6 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass = 'com.ziloka.ProxyChecker.ProxyChecker'
+    mainClass = 'com.ziloka.ProxyBroker.ProxyBroker'
 }
 

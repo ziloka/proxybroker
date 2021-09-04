@@ -1,4 +1,4 @@
-package com.ziloka.ProxyChecker.utils;
+package com.ziloka.ProxyBroker.utils;
 
 import java.lang.reflect.Array;
 

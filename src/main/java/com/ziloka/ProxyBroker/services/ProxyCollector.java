@@ -1,4 +1,4 @@
-package com.ziloka.ProxyChecker.services;
+package com.ziloka.ProxyBroker.services;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -29,15 +29,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class ProxyCollectorService {
+public class ProxyCollector {
 
     String type;
     String countries;
     String lvl;
     List<ProxySource> proxySources;
-    private static final Logger logger = LogManager.getLogger(ProxyCollectorService.class);
+    private static final Logger logger = LogManager.getLogger(ProxyCollector.class);
 
-    public ProxyCollectorService(String type, String countries, String lvl) {
+    public ProxyCollector(String type, String countries, String lvl) {
         this.type = type;
         this.countries = countries;
         this.lvl = lvl;

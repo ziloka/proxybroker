@@ -1,9 +1,9 @@
 
-package com.ziloka.ProxyChecker.cmds;
+package com.ziloka.ProxyBroker.cmds;
 
-import com.ziloka.ProxyChecker.services.ProxyCheckerTask;
-import com.ziloka.ProxyChecker.services.ProxyCollectorService;
-import com.ziloka.ProxyChecker.services.ProxyType;
+import com.ziloka.ProxyBroker.services.ProxyCollector;
+import com.ziloka.ProxyBroker.services.ProxyChecker;
+import com.ziloka.ProxyBroker.services.ProxyType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import picocli.CommandLine;
@@ -53,7 +53,7 @@ public class FindCommand implements Callable<Integer> {
 
         logger.debug("Collecting proxies");
 
-        ProxyCollectorService proxyProvider = new ProxyCollectorService(types, countries, lvl);
+        ProxyCollector proxyProvider = new ProxyCollector(types, countries, lvl);
         proxyProvider.setSource();
         ArrayList<String> proxies = proxyProvider.getProxies(ProxyType.valueOf(types));
 
@@ -67,8 +67,8 @@ public class FindCommand implements Callable<Integer> {
         ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executorService;
         for (String proxy : proxies) {
             try {
-                ProxyCheckerTask proxyCheckerTask = new ProxyCheckerTask(proxy, types, onlineProxies);
-                executorService.submit(proxyCheckerTask);
+                ProxyChecker proxyChecker = new ProxyChecker(onlineProxies, proxy, types);
+                executorService.submit(proxyChecker);
             } catch (Exception e){
                 e.printStackTrace();
             }

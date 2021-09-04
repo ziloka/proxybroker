@@ -1,4 +1,4 @@
-package com.ziloka.ProxyChecker.services;
+package com.ziloka.ProxyBroker.services;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,19 +8,32 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
+import java.util.HashMap;
 
-public class ProxyCheckerService {
+public class ProxyChecker implements Runnable {
 
-    Logger logger = LogManager.getLogger(ProxyCollectorService.class);
+    Logger logger = LogManager.getLogger(ProxyChecker.class);
 
+    HashMap<String, Boolean> onlineProxies;
+    String proxyType;
     String host;
     Integer port;
-    String proxyType;
 
-    public ProxyCheckerService(String ipAddress, String proxyType) {
+
+    public ProxyChecker(HashMap<String, Boolean> onlineProxies, String ipAddress, String proxyType) {
+        this.onlineProxies = onlineProxies;
+        this.proxyType = proxyType;
         this.host = ipAddress.substring(0, ipAddress.indexOf(":"));
         this.port = Integer.parseInt(ipAddress.substring(ipAddress.indexOf(":")+1));
-        this.proxyType = proxyType;
+    }
+
+    public void run(){
+        try {
+            if(check()) this.onlineProxies.put(String.format("%s:%d", host, port), true);
+        } catch (IOException e) {
+            // Don't print anything
+            e.printStackTrace();
+        }
     }
 
     // str syntax host:port

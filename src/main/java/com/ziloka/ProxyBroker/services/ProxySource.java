@@ -1,4 +1,4 @@
-package com.ziloka.ProxyChecker.services;
+package com.ziloka.ProxyBroker.services;
 
 public class ProxySource {
     public String url;
