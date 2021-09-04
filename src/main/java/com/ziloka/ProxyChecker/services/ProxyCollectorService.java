@@ -1,35 +1,42 @@
 package com.ziloka.ProxyChecker.services;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.net.ssl.SSLException;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Version;
 import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ProxyCollectorService {
 
     String type;
     String countries;
     String lvl;
-    JSONObject ProxySources;
+    List<ProxySource> proxySources;
     private static final Logger logger = LogManager.getLogger(ProxyCollectorService.class);
 
     public ProxyCollectorService(String type, String countries, String lvl) {
@@ -38,24 +45,19 @@ public class ProxyCollectorService {
         this.lvl = lvl;
     }
 
-    public void setSources() {
+    public void setSource() {
 
         // https://mkyong.com/java/java-read-a-file-from-resources-folder/
+        // https://attacomsian.com/blog/gson-read-json-file
 
         try {
-            ClassLoader classLoader = getClass().getClassLoader();
-            InputStream inputStream = classLoader.getResourceAsStream("ProxySources.json");
-            if(inputStream == null) throw new Error("resources/ProxySources.json is missing");
-            InputStreamReader streamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-            BufferedReader reader = new BufferedReader(streamReader);
-            StringBuilder json = new StringBuilder();
-            String line;
-            while((line = reader.readLine()) != null){
-                json.append(line);
-            }
-            this.ProxySources = new JSONObject(json.toString());
+            Gson gson = new Gson();
+            Reader reader = Files.newBufferedReader(Paths.get(ClassLoader.getSystemResource("ProxySources.json").toURI()));
+            ProxySource[] proxySources = gson.fromJson(reader, ProxySource[].class);
+            reader.close();
+            this.proxySources = Arrays.stream(proxySources).toList();
 
-        } catch(IOException e){
+        } catch(IOException | URISyntaxException e){
             e.printStackTrace();
         }
 
@@ -85,30 +87,33 @@ public class ProxyCollectorService {
         return proxy;
     }
 
-    public ArrayList<String> getProxies(String proxyType) {
+    public ArrayList<String> getProxies(ProxyType proxyType) {
 
         ArrayList<String> result = new ArrayList<>();
-        ArrayList<String> allProxySources = new ArrayList<>();
-        for(String entry: this.ProxySources.keySet()){
-            JSONArray values = (JSONArray) this.ProxySources.get(entry);
-            for(Object uri: values){
-                allProxySources.add((String) uri);
-            }
-        }
 
-        Function<String, ArrayList<String>> getSpecifiedProxySource = (String specificProxyType) -> {
-            ArrayList<String> specifiedProxySource = new ArrayList<>();
-            JSONArray specificProxySource = (JSONArray) this.ProxySources.get(specificProxyType);
-            for (Object entry: specificProxySource) specifiedProxySource.add((String) entry);
-            return specifiedProxySource;
+        Function<ProxyType, ArrayList<String>> getSpecifiedProxySource = (ProxyType specificProxyType) -> {
+            return (ArrayList<String>) proxySources.stream()
+                    /*
+                     NullPointerException - x.type is null
+                     ProxySource type property is invalid in resources/ProxySources.json
+                    */
+                    .filter(x -> x.type.equals(proxyType))
+                    .map(x -> x.url)
+                    .collect(Collectors.toList());
         };
 
-        ArrayList<String> iterateProxiesList = proxyType.equals("") ? allProxySources : getSpecifiedProxySource.apply(proxyType);
+        Supplier<ArrayList<String>> getEntireProxyList = () -> {
+            return (ArrayList<String>) proxySources.stream().map(x -> x.url).collect(Collectors.toList());
+        };
+
+        ArrayList<String> iterateProxiesList = proxyType.equals("") ?
+                getEntireProxyList.get() :
+                getSpecifiedProxySource.apply(proxyType);
 
         HttpClient client = HttpClient.newBuilder()
                 .version(Version.HTTP_2)
                 .followRedirects(Redirect.NORMAL)
-                .connectTimeout(Duration.ofSeconds(20))
+                .connectTimeout(Duration.ofSeconds(8))
                 .build();
 
         for (String proxySource : iterateProxiesList) {

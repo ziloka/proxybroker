@@ -6,3 +6,9 @@ build
 
 # Ignore .idea project specific settings directory
 .idea
+
+# Ignore native-image build artifact report
+ProxyChecker.build_artifacts.txt
+
+# Ignore ProxyChecker executable
+ProxyChecker.exe

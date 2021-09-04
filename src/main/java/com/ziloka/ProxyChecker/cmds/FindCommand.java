@@ -1,9 +1,9 @@
 
 package com.ziloka.ProxyChecker.cmds;
 
-import com.ziloka.ProxyChecker.services.ProxyCheckerService;
 import com.ziloka.ProxyChecker.services.ProxyCheckerTask;
 import com.ziloka.ProxyChecker.services.ProxyCollectorService;
+import com.ziloka.ProxyChecker.services.ProxyType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import picocli.CommandLine;
@@ -39,7 +39,6 @@ public class FindCommand implements Callable<Integer> {
 
     public static void main(String[] args) {
         CommandLine cli = new CommandLine(new FindCommand());
-//        cli.registerConverter(Integer.class, s -> Integer.parseInt(s));
         cli.setOptionsCaseInsensitive(true);
         int exitCode = cli.execute(args);
         System.exit(exitCode);
@@ -54,8 +53,9 @@ public class FindCommand implements Callable<Integer> {
         logger.debug("Collecting proxies");
 
         ProxyCollectorService proxyProvider = new ProxyCollectorService(types, countries, lvl);
-        proxyProvider.setSources();
-        ArrayList<String> proxies = proxyProvider.getProxies(types);
+        proxyProvider.setSource();
+        ArrayList<String> proxies = proxyProvider.getProxies(ProxyType.valueOf(types));
+
         // String#format
         // https://www.javatpoint.com/java-string-format
         logger.debug(String.format("There are %d unchecked proxies", proxies.size()));

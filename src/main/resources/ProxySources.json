@@ -1,21 +1,46 @@
-{
-  "http": [
-    "https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=10000&country=all&ssl=all&anonymity=all",
-    "https://www.us-proxy.org/",
-    "https://www.sslproxies.org/",
-    "https://free-proxy-list.net/",
-    "https://github.com/clarketm/proxy-list/raw/master/proxy-list.txt"
-  ],
-  "https": [
-    "https://www.sslproxies.org/",
-    "https://www.proxy-list.download/HTTPS"
-  ],
-  "socks4": [
-    "https://api.proxyscrape.com/v2/?request=getproxies&protocol=socks4&timeout=10000&country=all",
-    "https://www.socks-proxy.net/"
-  ],
-  "socks5": [
-    "https://api.proxyscrape.com/v2/?request=getproxies&protocol=socks5&timeout=10000&country=all",
-    "https://www.proxy-list.download/SOCKS5"
-  ]
-}
+[
+  {
+    "url": "https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=10000&country=all&ssl=all&anonymity=all",
+    "type": "http"
+  },
+  {
+    "url": "https://www.us-proxy.org/",
+    "type": "http"
+  },
+  {
+    "url": "https://www.sslproxies.org/",
+    "type": "http"
+  },
+  {
+    "url": "https://free-proxy-list.net/",
+    "type": "http"
+  },
+  {
+    "url": "https://github.com/clarketm/proxy-list/raw/master/proxy-list.txt",
+    "type": "http"
+  },
+  {
+    "url": "https://www.sslproxies.org/",
+    "type": "https"
+  },
+  {
+    "url": "https://www.proxy-list.download/HTTPS",
+    "type": "https"
+  },
+  {
+    "url": "https://api.proxyscrape.com/v2/?request=getproxies&protocol=socks4&timeout=10000&country=all",
+    "type": "socks4"
+  },
+  {
+    "url": "https://www.socks-proxy.net/",
+    "type": "socks4"
+  },
+  {
+    "url": "https://api.proxyscrape.com/v2/?request=getproxies&protocol=socks5&timeout=10000&country=all",
+    "type": "socks5"
+  },
+  {
+    "url": "https://www.proxy-list.download/SOCKS5",
+    "type": "socks5"
+  }
+]
