@@ -10,6 +10,9 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
+import java.net.http.HttpClient;
+import java.net.http.HttpClient.Redirect;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
@@ -19,7 +22,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 // https://picocli.info/#_executing_subcommands
 @Command(name = "find")
-public class FindCommand implements Callable<Integer> {
+public class FindCommand implements Runnable {
 
     // https://picocli.info/apidocs/picocli/CommandLine.Option.html
     @Option(names = "--types", defaultValue = "http")
@@ -35,6 +38,9 @@ public class FindCommand implements Callable<Integer> {
     @Option(names = {"--limit", "-l"}, defaultValue = "10", type = Integer.class)
     private int limit;
 
+    @Option(names = {"--timeout", "-t"}, defaultValue = "8", type = Integer.class)
+    private int timeout;
+
     @Option(names = {"--outfile", "-o"}, defaultValue = "")
     private String OutFile;
 
@@ -45,8 +51,7 @@ public class FindCommand implements Callable<Integer> {
         System.exit(exitCode);
     }
 
-    @Override
-    public Integer call() throws Exception {
+    public void run() {
 
         Logger logger = LogManager.getLogger(FindCommand.class);
         HashMap<String, Boolean> onlineProxies = new HashMap<String, Boolean>();
@@ -77,15 +82,19 @@ public class FindCommand implements Callable<Integer> {
         logger.debug(String.format("Multithreading ProxyCheckTask.class using %d threads", threadPoolExecutor.getActiveCount()));
 
         executorService.shutdown();
-        // Wait for all threads states to be terminated
-        while (!executorService.isTerminated()){
+        // Wait for all threads states to be terminated or until x amount of proxies are receieved
+        while (!executorService.isTerminated() && !(onlineProxies.size() >= limit)){
 
         }
         logger.debug(String.format("There are %d online proxies", onlineProxies.size()));
 
+        onlineProxies.keySet().forEach((entry) -> {
+            Object value = onlineProxies.get(entry);
+//            System.out.println(l);
+        });
+
         System.out.println("\nFinished all threads");
 
-        return 0;
     }
 
 }

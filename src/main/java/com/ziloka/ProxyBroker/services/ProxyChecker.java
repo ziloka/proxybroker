@@ -4,10 +4,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.URL;
+import java.net.*;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.util.HashMap;
 
 public class ProxyChecker implements Runnable {
@@ -48,22 +49,17 @@ public class ProxyChecker implements Runnable {
         Proxy.Type javaNetProxy = this.proxyType.matches("http(s?)") ? Proxy.Type.HTTP : Proxy.Type.SOCKS;
 
         try {
-            InetSocketAddress inetSocketAddress = new InetSocketAddress(this.host, this.port);
-            Proxy webProxy = new Proxy(javaNetProxy, inetSocketAddress);
-            HttpURLConnection.setFollowRedirects(false);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection(webProxy);
-            con.setRequestMethod("GET");
-            con.setRequestProperty("User-Agent", "Mozilla/5.0");
-            con.setReadTimeout(5000);
-            con.setConnectTimeout(5000);
-            con.connect();
-            int responseCode = con.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                isOnline = true;
-            }
-        } catch (Exception e) {
-//            e.printStackTrace();
-        }
+
+            HttpClient client = HttpClient.newBuilder()
+                    .proxy(ProxySelector.of(new InetSocketAddress(this.host, this.port)))
+                    .build();
+            HttpRequest request = HttpRequest.newBuilder(
+                    URI.create("http://httpbin.org/ip?json")
+            ).build();
+            HttpResponse res = client.send(request, BodyHandlers.ofString());
+            if(res.statusCode() == 200) isOnline = true;
+
+        } catch (Exception e) {}
 
         return isOnline;
     }
