@@ -31,6 +31,7 @@ public class FindCommand implements Callable<Integer> {
     @Option(names = "--lvl", defaultValue = "High")
     private String lvl;
 
+    // https://picocli.info/#_handling_invalid_input
     @Option(names = {"--limit", "-l"}, defaultValue = "10", type = Integer.class)
     private int limit;
 
@@ -81,10 +82,6 @@ public class FindCommand implements Callable<Integer> {
 
         }
         logger.debug(String.format("There are %d online proxies", onlineProxies.size()));
-
-        onlineProxies.entrySet().forEach((entry) -> {
-//           System.out.println((entry));
-        });
 
         System.out.println("\nFinished all threads");
 

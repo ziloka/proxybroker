@@ -13,11 +13,13 @@ public class ProxyCheckerService {
 
     Logger logger = LogManager.getLogger(ProxyCollectorService.class);
 
-    String ipAddress;
+    String host;
+    Integer port;
     String proxyType;
 
     public ProxyCheckerService(String ipAddress, String proxyType) {
-        this.ipAddress = ipAddress;
+        this.host = ipAddress.substring(0, ipAddress.indexOf(":"));
+        this.port = Integer.parseInt(ipAddress.substring(ipAddress.indexOf(":")+1));
         this.proxyType = proxyType;
     }
 
@@ -28,14 +30,12 @@ public class ProxyCheckerService {
         // https://crunchify.com/how-to-run-multiple-threads-concurrently-in-java-executorservice-approach/
 
         boolean isOnline = false;
-        String host = this.ipAddress.substring(0, this.ipAddress.indexOf(":"));
-        int port = Integer.parseInt(this.ipAddress.substring(this.ipAddress.indexOf(":") + 1));
         URL url = new URL("http://httpbin.org/ip?json");
 
         Proxy.Type javaNetProxy = this.proxyType.matches("http(s?)") ? Proxy.Type.HTTP : Proxy.Type.SOCKS;
 
         try {
-            InetSocketAddress inetSocketAddress = new InetSocketAddress(host, port);
+            InetSocketAddress inetSocketAddress = new InetSocketAddress(this.host, this.port);
             Proxy webProxy = new Proxy(javaNetProxy, inetSocketAddress);
             HttpURLConnection.setFollowRedirects(false);
             HttpURLConnection con = (HttpURLConnection) url.openConnection(webProxy);
@@ -53,6 +53,11 @@ public class ProxyCheckerService {
         }
 
         return isOnline;
+    }
+
+    public Object getInfo(){
+        Object result = new Object();
+        return result;
     }
 
 }

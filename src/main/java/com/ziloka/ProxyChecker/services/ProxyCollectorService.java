@@ -1,14 +1,14 @@
 package com.ziloka.ProxyChecker.services;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import javax.net.ssl.SSLException;
-import java.io.*;
+import java.io.IOException;
+import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -23,13 +23,11 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ProxyCollectorService {
 
@@ -76,9 +74,9 @@ public class ProxyCollectorService {
                     .build();
             HttpResponse<String> res = client.send(request, BodyHandlers.ofString());
             if(res.statusCode() == 200){
-                JSONObject apiResponse = new JSONObject(res.body());
-                String proxyIp = (String) apiResponse.get("ip");
-                int proxyPort = (int) apiResponse.get("port");
+                JsonObject apiResponse = JsonParser.parseString(res.body()).getAsJsonObject();
+                String proxyIp = apiResponse.get("ip").getAsString();
+                int proxyPort = apiResponse.get("port").getAsInt();
                 proxy = String.format("%s:%d", proxyIp, proxyPort);
             }
         } catch (InterruptedException | IOException e) {

@@ -29,10 +29,8 @@ repositories {
 
 dependencies {
     implementation 'info.picocli:picocli-spring-boot-starter:4.6.1'
-    implementation 'org.json:json:20210307'
     implementation 'com.google.code.gson:gson:2.8.8'
     implementation 'org.apache.logging.log4j:log4j-core:2.14.1'
-    implementation 'info.picocli:picocli:4.6.1'
     // GraalVM Configurations generated under BOOT-INF\classes\META-INF\native-image\picocli-generated
     annotationProcessor  'info.picocli:picocli-codegen:4.6.1'
     testImplementation 'junit:junit:4.13.2'
