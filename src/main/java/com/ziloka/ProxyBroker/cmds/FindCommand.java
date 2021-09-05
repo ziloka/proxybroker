@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -94,12 +95,13 @@ public class FindCommand implements Runnable {
             }
             logger.debug(String.format("There are %d online proxies", onlineProxies.size()));
 
-            onlineProxies.keySet().forEach((entry) -> {
-                LookupResult value = onlineProxies.get(entry);
-                System.out.println(value.countryName);
-            });
+            synchronized (onlineProxies){
+                onlineProxies.keySet().stream().limit(limit).forEach((entry) -> {
+                    LookupResult value = onlineProxies.get(entry);
+                    System.out.println(String.format("Country: %s, proxy: %s", value.countryName, entry));
+                });
+            }
 
-            System.out.println("Finished all threads");
         } catch (URISyntaxException | IOException e){
             e.printStackTrace();
         }

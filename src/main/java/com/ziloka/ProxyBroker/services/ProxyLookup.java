@@ -24,9 +24,7 @@ public class ProxyLookup {
     public LookupResult getInfo(){
         LookupResult result = new LookupResult();
         try {
-            logger.debug("Get InetAddress");
             InetAddress ipAddress = InetAddress.getByName(this.host);
-            logger.debug("Getting City Response");
             CityResponse response = this.dbReader.city(ipAddress);
             result.setCityResponse(response);
             result.setCountryName(response.getCountry().getName());

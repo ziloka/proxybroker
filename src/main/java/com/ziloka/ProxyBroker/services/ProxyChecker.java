@@ -5,9 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.ProxySelector;
-import java.net.URI;
+import java.net.*;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -52,6 +50,26 @@ public class ProxyChecker {
         } catch (Exception ignored) {}
 
         return isOnline;
+    }
+
+    public String checkProtocol(){
+        String proxyType = null;
+        for(Proxy.Type protocol: Proxy.Type.values()){
+            try {
+                Proxy proxy = new Proxy(protocol, new InetSocketAddress(this.host, this.port));
+                HttpURLConnection con = (HttpURLConnection) (new URL("http://httpbin.org/ip?json")).openConnection(proxy);
+                con.setReadTimeout(8000);
+                con.setConnectTimeout(8000);
+                con.connect();
+                int resCode = con.getResponseCode();
+                if(resCode == 200) proxyType = String.valueOf(protocol);
+                else continue;
+            } catch(IOException e){
+                e.printStackTrace();
+            }
+        }
+
+        return proxyType;
     }
 
 }
