@@ -12,6 +12,10 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.HashMap;
 
+/**
+ * ProxyChecker class
+ * Collection information if proxy is online or not
+ */
 public class ProxyChecker {
 
     private static final Logger logger = LogManager.getLogger(ProxyChecker.class);
@@ -22,7 +26,22 @@ public class ProxyChecker {
     String address;
     String host;
     Integer port;
+    /*
+     * Elite Proxies (Level 1) - The server you connect to receive no information about your IP address
+     * Anonymous Proxies (Level 2) - server will recognize that a proxy is making the connection
+     * Good use case for rotating open proxies
+     * Transpartant Proxies (Level 3) Does not provide anonymity at all
+     * Source: https://docs.proxymesh.com/article/78-proxy-anonymity-levels
+     */
+    String lvl;
 
+    /**
+     * ProxyChecker Constructor
+     * @param dbReader - Database Reader for MaxMindDatabase
+     * @param onlineProxies - Collection of online proxies
+     * @param ipAddress - Ip Address
+     * @param proxyType - Proxy Protocol (http, https, socks4, socks5)
+     */
     public ProxyChecker(DatabaseReader dbReader, HashMap<String, LookupResult> onlineProxies, String ipAddress, String proxyType) {
         this.dbReader = dbReader;
         this.onlineProxies = onlineProxies;
@@ -32,6 +51,11 @@ public class ProxyChecker {
         this.port = Integer.parseInt(ipAddress.split(":")[1]);
     }
 
+    /**
+     * Checks if proxy is online or not
+     * @return Boolean indicating if Proxy is online or not
+     * @throws IOException
+     */
     public boolean check() throws IOException {
 
         // https://www.baeldung.com/java-connect-via-proxy-server
@@ -52,6 +76,10 @@ public class ProxyChecker {
         return isOnline;
     }
 
+    /**
+     * Checks proxy protocol is not specified
+     * @return String
+     */
     public String checkProtocol(){
         String proxyType = null;
         for(Proxy.Type protocol: Proxy.Type.values()){

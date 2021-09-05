@@ -14,6 +14,9 @@ public class ProxySource {
         this.type = type;
     }
 
+    /**
+     * @return String - Override Object#toString method
+     */
     @Override
     public String toString(){
         return String.format("%s[url=%s,type=%s]", getClass().getSimpleName(), this.url, this.type);

@@ -3,11 +3,9 @@
  */
 package com.ziloka.ProxyBroker;
 
-import com.ziloka.ProxyBroker.cmds.FindCommand;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
-import junit.framework.TestCase;
 import org.junit.runners.MethodSorters;
 import picocli.CommandLine;
 

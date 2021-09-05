@@ -35,16 +35,22 @@ public class ProxyCollector {
 
     String type;
     String countries;
-    String lvl;
     List<ProxySource> proxySources;
 
-    public ProxyCollector(String type, String countries, String lvl) {
+    /**
+     * @param type - Proxy Type
+     * @param countries - Proxy must be from specified countries
+     */
+    public ProxyCollector(String type, String countries) {
         this.type = type;
         this.countries = countries;
-        this.lvl = lvl;
+        this.setSources();
     }
 
-    public void setSource() {
+    /**
+     * Load proxy sources from resources/ProxySources.json file
+     */
+    public void setSources() {
 
         // https://mkyong.com/java/java-read-a-file-from-resources-folder/
         // https://attacomsian.com/blog/gson-read-json-file
@@ -55,13 +61,16 @@ public class ProxyCollector {
             ProxySource[] proxySources = gson.fromJson(reader, ProxySource[].class);
             reader.close();
             this.proxySources = Arrays.stream(proxySources).toList();
-
         } catch(IOException | URISyntaxException e){
             e.printStackTrace();
         }
 
     }
 
+    /**
+     * Proxy used to collect proxies from proxy sources
+     * @return Proxy Syntax host:port
+     */
     public String getProxyForMainThread() {
         String proxy = "";
         try {

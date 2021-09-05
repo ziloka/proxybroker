@@ -16,25 +16,30 @@ public class ProxyLookup {
     String host;
     DatabaseReader dbReader;
 
+    /**
+     * @param dbReader - Max Mind geoip2 database reader
+     * @param host - Proxy host
+     */
     public ProxyLookup(DatabaseReader dbReader, String host) {
         this.dbReader = dbReader;
         this.host = host;
     }
 
-    public LookupResult getInfo(){
-        LookupResult result = new LookupResult();
-        try {
-            InetAddress ipAddress = InetAddress.getByName(this.host);
-            CityResponse response = this.dbReader.city(ipAddress);
-            result.setCityResponse(response);
-            result.setCountryName(response.getCountry().getName());
-            result.setCityName(response.getCity().getName());
-            result.setPostal(response.getPostal().getCode());
-            result.setState(response.getLeastSpecificSubdivision().getName());
-        } catch (IOException | GeoIp2Exception e){
-            e.printStackTrace();
-        }
-        return result;
+    /**
+     * @return LookupResult - Proxy look up result
+     * @throws IOException
+     * @throws GeoIp2Exception
+     */
+    public LookupResult getInfo() throws IOException, GeoIp2Exception {
+        InetAddress ipAddress = InetAddress.getByName(this.host);
+        CityResponse response = this.dbReader.city(ipAddress);
+        return new LookupResult(
+                response,
+                response.getCountry().getName(),
+                response.getCity().getName(),
+                response.getPostal().getCode(),
+                response.getLeastSpecificSubdivision().getName()
+        );
     }
 
 }

@@ -8,31 +8,25 @@ public class LookupResult {
 
     private static final Logger logger = LogManager.getLogger(LookupResult.class);
 
-    public String countryName;
     public CityResponse cityResponse;
+    public String countryName;
     public String cityName;
     public String postal;
     public String state;
 
-    public LookupResult() { }
-
-    public void setCountryName(String countryName) {
+    /**
+     * @param cityResponse - Maxmind GeoIp2 Model City Response Object
+     * @param countryName - Country Name
+     * @param cityName - City Name
+     * @param postal - Postal Code
+     * @param state - State Name
+     */
+    public LookupResult(CityResponse cityResponse, String countryName, String cityName, String postal, String state) {
         this.countryName = countryName;
-    }
-
-    public void setCityResponse(CityResponse cityResponse) {
         this.cityResponse = cityResponse;
-    }
-
-    public void setCityName(String cityName) {
         this.cityName = cityName;
-    }
-
-    public void setPostal(String postal) {
         this.postal = postal;
-    }
-
-    public void setState(String state) {
         this.state = state;
     }
+
 }

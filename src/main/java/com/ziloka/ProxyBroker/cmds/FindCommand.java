@@ -52,6 +52,10 @@ public class FindCommand implements Runnable {
         System.exit(exitCode);
     }
 
+    /**
+     * Executes this function when user runs "proxybroker find"
+     */
+    @Override
     public void run() {
 
         try {
@@ -60,8 +64,7 @@ public class FindCommand implements Runnable {
 
             logger.debug("Collecting proxies");
 
-            ProxyCollector proxyProvider = new ProxyCollector(types, countries, lvl);
-            proxyProvider.setSource();
+            ProxyCollector proxyProvider = new ProxyCollector(types, countries);
             ArrayList<String> proxies = proxyProvider.getProxies(ProxyType.valueOf(types));
 
             // String#format
@@ -79,7 +82,7 @@ public class FindCommand implements Runnable {
                     .build();
             for (String proxy : proxies) {
                 try {
-                    ProxyThread proxyThread = new ProxyThread(dbReader, onlineProxies, proxy, types);
+                    ProxyThread proxyThread = new ProxyThread(dbReader, onlineProxies, proxy, types, lvl);
                     executorService.submit(proxyThread);
                 } catch (Exception e){
                     e.printStackTrace();
