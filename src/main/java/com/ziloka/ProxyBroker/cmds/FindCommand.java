@@ -1,26 +1,26 @@
 
 package com.ziloka.ProxyBroker.cmds;
 
-import com.ziloka.ProxyBroker.services.ProxyCollector;
-import com.ziloka.ProxyBroker.services.ProxyChecker;
-import com.ziloka.ProxyBroker.services.ProxyType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.maxmind.db.Reader;
+import com.maxmind.geoip2.DatabaseReader;
+import com.ziloka.ProxyBroker.services.*;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.net.http.HttpClient;
-import java.net.http.HttpClient.Redirect;
-import java.time.Duration;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 // https://picocli.info/#_executing_subcommands
+@SuppressWarnings("ALL")
 @Command(name = "find")
 public class FindCommand implements Runnable {
 
@@ -53,47 +53,56 @@ public class FindCommand implements Runnable {
 
     public void run() {
 
-        Logger logger = LogManager.getLogger(FindCommand.class);
-        HashMap<String, Boolean> onlineProxies = new HashMap<String, Boolean>();
+        try {
+            Logger logger = LogManager.getLogger(FindCommand.class);
+            HashMap<String, LookupResult> onlineProxies = new HashMap<>();
 
-        logger.debug("Collecting proxies");
+            logger.debug("Collecting proxies");
 
-        ProxyCollector proxyProvider = new ProxyCollector(types, countries, lvl);
-        proxyProvider.setSource();
-        ArrayList<String> proxies = proxyProvider.getProxies(ProxyType.valueOf(types));
+            ProxyCollector proxyProvider = new ProxyCollector(types, countries, lvl);
+            proxyProvider.setSource();
+            ArrayList<String> proxies = proxyProvider.getProxies(ProxyType.valueOf(types));
 
-        // String#format
-        // https://www.javatpoint.com/java-string-format
-        logger.debug(String.format("There are %d unchecked proxies", proxies.size()));
+            // String#format
+            // https://www.javatpoint.com/java-string-format
+            logger.debug(String.format("There are %d unchecked proxies", proxies.size()));
 
-        // Simple iteration on average takes more than 30+ minutes to check 200 proxies
-        // On average takes ~20 seconds to check 200 proxies
-        ExecutorService executorService = Executors.newCachedThreadPool();
-        ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executorService;
-        for (String proxy : proxies) {
-            try {
-                ProxyChecker proxyChecker = new ProxyChecker(onlineProxies, proxy, types);
-                executorService.submit(proxyChecker);
-            } catch (Exception e){
-                e.printStackTrace();
+            // Simple iteration on average takes more than 30+ minutes to check 200 proxies
+            // On average takes ~20 seconds to check 200 proxies
+            ExecutorService executorService = Executors.newCachedThreadPool();
+            ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executorService;
+
+            File database = new File(ClassLoader.getSystemResource("GeoLite2-City.mmdb").toURI());
+            DatabaseReader dbReader = new DatabaseReader.Builder(database)
+                    .fileMode(Reader.FileMode.MEMORY_MAPPED)
+                    .build();
+            for (String proxy : proxies) {
+                try {
+                    ProxyThread proxyThread = new ProxyThread(dbReader, onlineProxies, proxy, types);
+                    executorService.submit(proxyThread);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
             }
+
+            logger.debug(String.format("Multithreading ProxyCheckTask.class using %d threads", threadPoolExecutor.getActiveCount()));
+
+            executorService.shutdown();
+            // Wait for all threads states to be terminated or until x amount of proxies are received
+            while (!executorService.isTerminated() && !(onlineProxies.size() >= limit)){
+
+            }
+            logger.debug(String.format("There are %d online proxies", onlineProxies.size()));
+
+            onlineProxies.keySet().forEach((entry) -> {
+                LookupResult value = onlineProxies.get(entry);
+                System.out.println(value.countryName);
+            });
+
+            System.out.println("Finished all threads");
+        } catch (URISyntaxException | IOException e){
+            e.printStackTrace();
         }
-
-        logger.debug(String.format("Multithreading ProxyCheckTask.class using %d threads", threadPoolExecutor.getActiveCount()));
-
-        executorService.shutdown();
-        // Wait for all threads states to be terminated or until x amount of proxies are receieved
-        while (!executorService.isTerminated() && !(onlineProxies.size() >= limit)){
-
-        }
-        logger.debug(String.format("There are %d online proxies", onlineProxies.size()));
-
-        onlineProxies.keySet().forEach((entry) -> {
-            Object value = onlineProxies.get(entry);
-//            System.out.println(l);
-        });
-
-        System.out.println("\nFinished all threads");
 
     }
 

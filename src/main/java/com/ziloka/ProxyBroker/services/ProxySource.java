@@ -1,11 +1,17 @@
 package com.ziloka.ProxyBroker.services;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class ProxySource {
+
+    private static final Logger logger = LogManager.getLogger(ProxyCollector.class);
+
     public String url;
     public ProxyType type;
 
     public ProxySource (ProxyType type) {
-      this.type = type;
+        this.type = type;
     }
 
     @Override

@@ -31,11 +31,12 @@ import java.util.stream.Collectors;
 
 public class ProxyCollector {
 
+    private static final Logger logger = LogManager.getLogger(ProxyCollector.class);
+
     String type;
     String countries;
     String lvl;
     List<ProxySource> proxySources;
-    private static final Logger logger = LogManager.getLogger(ProxyCollector.class);
 
     public ProxyCollector(String type, String countries, String lvl) {
         this.type = type;
