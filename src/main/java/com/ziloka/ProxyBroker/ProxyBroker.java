@@ -1,4 +1,3 @@
-
 package com.ziloka.ProxyBroker;
 
 import com.ziloka.ProxyBroker.cmds.FindCommand;
@@ -8,6 +7,9 @@ import picocli.CommandLine.Option;
 
 import java.util.concurrent.Callable;
 
+/**
+ * ProxyBroker class
+ */
 // https://picocli.info/apidocs/picocli/CommandLine.Parameters.html
 // https://github.com/remkop/picocli/blob/master/picocli-spring-boot-starter/README.md
 // https://picocli.info/#_registering_subcommands_declaratively
@@ -20,6 +22,9 @@ public class ProxyBroker implements Callable<Integer> {
     @Option(names = {"--help", "-help"}, usageHelp = true, description = "An open source tool to find public proxies or serve a local proxy server that distributes requests to a pool of found HTTP proxies")
     private boolean help;
 
+    /**
+     * @param args System arguments
+     */
     public static void main(String[] args) {
         CommandLine cli = new CommandLine(new ProxyBroker());
         cli.setOptionsCaseInsensitive(false);

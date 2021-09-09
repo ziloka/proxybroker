@@ -2,6 +2,7 @@ package com.ziloka.ProxyBroker.services;
 
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
+import com.ziloka.ProxyBroker.services.models.LookupResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,7 +24,7 @@ public class ProxyThread implements Runnable {
 
     /**
      * @param dbReader - MaxMind GeoIp2 Database reader
-     * @param onlineProxies - Online Proxy Hashmp
+     * @param onlineProxies - Online Proxy Hashmap
      * @param proxy - Proxy syntax host:port
      * @param types - Proxy types
      * @param lvl - Proxy anonymity level

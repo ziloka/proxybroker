@@ -4,6 +4,8 @@ package com.ziloka.ProxyBroker.cmds;
 import com.maxmind.db.Reader;
 import com.maxmind.geoip2.DatabaseReader;
 import com.ziloka.ProxyBroker.services.*;
+import com.ziloka.ProxyBroker.services.models.LookupResult;
+import com.ziloka.ProxyBroker.services.models.ProxyType;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -14,16 +16,20 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
+/**
+ * Command under proxybroker command
+ */
 // https://picocli.info/#_executing_subcommands
 @SuppressWarnings("ALL")
 @Command(name = "find")
 public class FindCommand implements Runnable {
+
+    private static final Logger logger = LogManager.getLogger(FindCommand.class);
 
     // https://picocli.info/apidocs/picocli/CommandLine.Option.html
     @Option(names = "--types", defaultValue = "http")
@@ -45,6 +51,13 @@ public class FindCommand implements Runnable {
     @Option(names = {"--outfile", "-o"}, defaultValue = "")
     private String OutFile;
 
+    @Option(names = {"--verbose", "-v"}, defaultValue = "false", type = Boolean.class)
+    private boolean isVerbose;
+
+    /**
+     * Set commandline options
+     * @param args System arguments
+     */
     public static void main(String[] args) {
         CommandLine cli = new CommandLine(new FindCommand());
         cli.setOptionsCaseInsensitive(true);
@@ -53,13 +66,12 @@ public class FindCommand implements Runnable {
     }
 
     /**
-     * Executes this function when user runs "proxybroker find"
+     * Executes when user runs "proxybroker find"
      */
     @Override
     public void run() {
 
         try {
-            Logger logger = LogManager.getLogger(FindCommand.class);
             HashMap<String, LookupResult> onlineProxies = new HashMap<>();
 
             logger.debug("Collecting proxies");
@@ -76,7 +88,7 @@ public class FindCommand implements Runnable {
             ExecutorService executorService = Executors.newCachedThreadPool();
             ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executorService;
 
-            File database = new File(ClassLoader.getSystemResource("GeoLite2-City.mmdb").toURI());
+            File database = new File(ClassLoader.getSystemResource("GeoLite2-Country.mmdb").toURI());
             DatabaseReader dbReader = new DatabaseReader.Builder(database)
                     .fileMode(Reader.FileMode.MEMORY_MAPPED)
                     .build();
@@ -101,7 +113,7 @@ public class FindCommand implements Runnable {
             synchronized (onlineProxies){
                 onlineProxies.keySet().stream().limit(limit).forEach((entry) -> {
                     LookupResult value = onlineProxies.get(entry);
-                    System.out.println(String.format("Country: %s, proxy: %s", value.countryName, entry));
+                    System.out.println(String.format("<Proxy %s %s>", value.getCountryName(), entry));
                 });
             }
 

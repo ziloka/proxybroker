@@ -1,5 +1,6 @@
-package com.ziloka.ProxyBroker.services;
+package com.ziloka.ProxyBroker.services.models;
 
+import com.ziloka.ProxyBroker.services.ProxyCollector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

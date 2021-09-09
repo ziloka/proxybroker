@@ -3,6 +3,8 @@ package com.ziloka.ProxyBroker.services;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.ziloka.ProxyBroker.services.models.ProxySource;
+import com.ziloka.ProxyBroker.services.models.ProxyType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -99,24 +100,16 @@ public class ProxyCollector {
 
         ArrayList<String> result = new ArrayList<>();
 
-        Function<ProxyType, ArrayList<String>> getSpecifiedProxySource = (ProxyType specificProxyType) -> {
-            return (ArrayList<String>) proxySources.stream()
-                    /*
-                     NullPointerException - x.type is null
-                     ProxySource type property is invalid in resources/ProxySources.json
-                    */
-                    .filter(x -> x.type.equals(proxyType))
-                    .map(x -> x.url)
-                    .collect(Collectors.toList());
-        };
+        /*
+         * NullPointerException - x.type is null
+         * ProxySource type property is invalid in resources/ProxySources.json
+         */
+        Function<ProxyType, ArrayList<String>> getSpecifiedProxySource = (ProxyType specificProxyType) -> (ArrayList<String>) proxySources.stream()
+                .filter(x -> x.type.equals(proxyType))
+                .map(x -> x.url)
+                .collect(Collectors.toList());
 
-        Supplier<ArrayList<String>> getEntireProxyList = () -> {
-            return (ArrayList<String>) proxySources.stream().map(x -> x.url).collect(Collectors.toList());
-        };
-
-        ArrayList<String> iterateProxiesList = proxyType.equals("") ?
-                getEntireProxyList.get() :
-                getSpecifiedProxySource.apply(proxyType);
+        ArrayList<String> iterateProxiesList = getSpecifiedProxySource.apply(proxyType);
 
         HttpClient client = HttpClient.newBuilder()
                 .version(Version.HTTP_2)

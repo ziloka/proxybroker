@@ -1,4 +1,4 @@
-package com.ziloka.ProxyBroker.services;
+package com.ziloka.ProxyBroker.services.models;
 
 /**
  * Valid Proxy Types
