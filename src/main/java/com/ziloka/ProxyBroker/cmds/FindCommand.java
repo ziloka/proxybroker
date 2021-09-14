@@ -113,7 +113,7 @@ public class FindCommand implements Runnable {
             synchronized (onlineProxies){
                 onlineProxies.keySet().stream().limit(limit).forEach((entry) -> {
                     LookupResult value = onlineProxies.get(entry);
-                    System.out.println(String.format("<Proxy %s %s>", value.getCountryName(), entry));
+                    System.out.printf("<Proxy %s %s>\n", value.getCountryName(), entry);
                 });
             }
 
