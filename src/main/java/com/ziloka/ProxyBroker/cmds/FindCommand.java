@@ -4,6 +4,11 @@ import com.maxmind.geoip2.DatabaseReader;
 import com.ziloka.ProxyBroker.services.*;
 import com.ziloka.ProxyBroker.services.models.LookupResult;
 import com.ziloka.ProxyBroker.services.models.ProxyType;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -68,6 +73,18 @@ public class FindCommand implements Runnable {
     public void run() {
 
         try {
+
+            Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.OFF);
+
+//            LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+//            Configuration config = ctx.getConfiguration();
+//            LoggerConfig loggerConfig = config.getLoggerConfig(LogManager.ROOT_LOGGER_NAME);
+//
+//            if(isVerbose) loggerConfig.setLevel(Level.DEBUG);
+//            else loggerConfig.setLevel(Level.OFF);
+//
+//            ctx.updateLoggers();
+
             HashMap<String, LookupResult> onlineProxies = new HashMap<>();
 
             logger.debug("Collecting proxies");
