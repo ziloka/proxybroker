@@ -1,7 +1,5 @@
-
 package com.ziloka.ProxyBroker.cmds;
 
-import com.maxmind.db.Reader;
 import com.maxmind.geoip2.DatabaseReader;
 import com.ziloka.ProxyBroker.services.*;
 import com.ziloka.ProxyBroker.services.models.LookupResult;
@@ -12,9 +10,7 @@ import picocli.CommandLine.Option;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
@@ -88,9 +84,8 @@ public class FindCommand implements Runnable {
             ExecutorService executorService = Executors.newCachedThreadPool();
             ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executorService;
 
-            File database = new File(ClassLoader.getSystemResource("GeoLite2-Country.mmdb").toURI());
+            InputStream database = getClass().getClassLoader().getSystemResourceAsStream("GeoLite2-Country.mmdb");
             DatabaseReader dbReader = new DatabaseReader.Builder(database)
-                    .fileMode(Reader.FileMode.MEMORY_MAPPED)
                     .build();
             for (String proxy : proxies) {
                 try {
@@ -117,7 +112,7 @@ public class FindCommand implements Runnable {
                 });
             }
 
-        } catch (URISyntaxException | IOException e){
+        } catch (IOException e){
             e.printStackTrace();
         }
 

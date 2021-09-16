@@ -9,8 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.SSLException;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -19,7 +18,9 @@ import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class ProxyCollector {
      * @param type - Proxy Type
      * @param countries - Proxy must be from specified countries
      */
-    public ProxyCollector(String type, String countries) {
+    public ProxyCollector(String type, String countries) throws IOException {
         this.type = type;
         this.countries = countries;
         this.setSources();
@@ -51,18 +52,24 @@ public class ProxyCollector {
     /**
      * Load proxy sources from resources/ProxySources.json file
      */
-    public void setSources() {
+    public void setSources() throws IOException {
 
         // https://mkyong.com/java/java-read-a-file-from-resources-folder/
         // https://attacomsian.com/blog/gson-read-json-file
 
         try {
             Gson gson = new Gson();
-            Reader reader = Files.newBufferedReader(Paths.get(ClassLoader.getSystemResource("ProxySources.json").toURI()));
-            ProxySource[] proxySources = gson.fromJson(reader, ProxySource[].class);
-            reader.close();
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("ProxySources.json");
+            InputStreamReader streamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+            BufferedReader reader = new BufferedReader(streamReader);
+            String json = "";
+            String line;
+            while ((line = reader.readLine()) != null) {
+                json = json + line;
+            }
+            ProxySource[] proxySources = gson.fromJson(json.replaceAll("\\s+", ""), ProxySource[].class);
             this.proxySources = Arrays.stream(proxySources).toList();
-        } catch(IOException | URISyntaxException e){
+        } catch(IOException e) {
             e.printStackTrace();
         }
 
