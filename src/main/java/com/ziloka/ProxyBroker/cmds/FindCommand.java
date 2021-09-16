@@ -74,16 +74,8 @@ public class FindCommand implements Runnable {
 
         try {
 
-            Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.OFF);
-
-//            LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-//            Configuration config = ctx.getConfiguration();
-//            LoggerConfig loggerConfig = config.getLoggerConfig(LogManager.ROOT_LOGGER_NAME);
-//
-//            if(isVerbose) loggerConfig.setLevel(Level.DEBUG);
-//            else loggerConfig.setLevel(Level.OFF);
-//
-//            ctx.updateLoggers();
+            if(isVerbose) Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.DEBUG);
+            else Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.OFF);
 
             HashMap<String, LookupResult> onlineProxies = new HashMap<>();
 
