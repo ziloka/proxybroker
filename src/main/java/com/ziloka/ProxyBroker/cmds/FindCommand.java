@@ -93,7 +93,7 @@ public class FindCommand implements Runnable {
             ExecutorService executorService = Executors.newCachedThreadPool();
             ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executorService;
 
-            InputStream database = getClass().getClassLoader().getSystemResourceAsStream("GeoLite2-Country.mmdb");
+            InputStream database = getClass().getClassLoader().getResourceAsStream("GeoLite2-Country.mmdb");
             DatabaseReader dbReader = new DatabaseReader.Builder(database)
                     .build();
             for (String proxy : proxies) {
@@ -121,7 +121,7 @@ public class FindCommand implements Runnable {
                 });
             }
 
-        } catch (IOException e){
+        } catch (Exception e){
             e.printStackTrace();
         }
 

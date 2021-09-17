@@ -42,4 +42,3 @@ application {
     // Define the main class for the application.
     mainClass = 'com.ziloka.ProxyBroker.ProxyBroker'
 }
-
