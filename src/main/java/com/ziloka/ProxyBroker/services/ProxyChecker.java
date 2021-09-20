@@ -1,9 +1,10 @@
 package com.ziloka.ProxyBroker.services;
 
+import com.ziloka.ProxyBroker.services.models.LookupResult;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.maxmind.geoip2.DatabaseReader;
-import com.ziloka.ProxyBroker.services.models.LookupResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,7 +19,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,7 +31,7 @@ public class ProxyChecker {
     private static final Logger logger = LogManager.getLogger(ProxyChecker.class);
 
     DatabaseReader dbReader;
-    HashMap<String, LookupResult> onlineProxies;
+    ConcurrentHashMap<String, LookupResult> onlineProxies;
     String proxyType;
     String host;
     Integer port;
@@ -51,7 +52,7 @@ public class ProxyChecker {
      * @param ipAddress  Ip Address
      * @param proxyType  Proxy Protocol (http, https, socks4, socks5)
      */
-    public ProxyChecker(DatabaseReader dbReader, HashMap<String, LookupResult> onlineProxies, String ipAddress, String proxyType) {
+    public ProxyChecker(DatabaseReader dbReader, ConcurrentHashMap<String, LookupResult> onlineProxies, String ipAddress, String proxyType) {
         this.dbReader = dbReader;
         this.onlineProxies = onlineProxies;
         this.proxyType = proxyType;

@@ -1,23 +1,23 @@
 package com.ziloka.ProxyBroker.cmds;
 
-import com.maxmind.geoip2.DatabaseReader;
-import com.ziloka.ProxyBroker.services.*;
+import com.ziloka.ProxyBroker.services.ProxyCollector;
+import com.ziloka.ProxyBroker.services.ProxyThread;
 import com.ziloka.ProxyBroker.services.models.LookupResult;
 import com.ziloka.ProxyBroker.services.models.ProxyType;
+
+import com.maxmind.geoip2.DatabaseReader;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.core.config.LoggerConfig;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.*;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -77,7 +77,7 @@ public class FindCommand implements Runnable {
             if(isVerbose) Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.DEBUG);
             else Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.OFF);
 
-            HashMap<String, LookupResult> onlineProxies = new HashMap<>();
+            ConcurrentHashMap<String, LookupResult> onlineProxies = new ConcurrentHashMap<>();
 
             logger.debug("Collecting proxies");
 
@@ -112,14 +112,24 @@ public class FindCommand implements Runnable {
             while (!executorService.isTerminated() && !(onlineProxies.size() >= limit)){
 
             }
+
+            // Filter good proxies & bad proxies
+            // https://www.baeldung.com/java-concurrentmodificationexception
+            // https://stackoverflow.com/a/4078601
+            for(Iterator<String> iterator = onlineProxies.keySet().iterator(); iterator.hasNext();){
+                String key = iterator.next();
+                LookupResult value = onlineProxies.get(key);
+                if(value.getCountryName().equals("China")){
+                    onlineProxies.remove(key);
+                }
+            }
+
             logger.debug(String.format("There are %d online proxies", onlineProxies.size()));
 
-            synchronized (onlineProxies){
-                onlineProxies.keySet().stream().limit(limit).forEach((entry) -> {
-                    LookupResult value = onlineProxies.get(entry);
-                    System.out.printf("<Proxy %s %s>\n", value.getCountryName(), entry);
-                });
-            }
+            onlineProxies.keySet().stream().limit(limit).forEach((entry) -> {
+                LookupResult value = onlineProxies.get(entry);
+                System.out.printf("<Proxy %s %s>\n", value.getCountryName(), entry);
+            });
 
         } catch (Exception e){
             e.printStackTrace();
