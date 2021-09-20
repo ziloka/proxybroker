@@ -1,7 +1,6 @@
 # http://blog.gilliard.lol/2018/01/10/Java-in-containers-jdk10.html
 # https://jaxenter.com/nobody-puts-java-container-139373.html
 
-FROM gradle:7.2.0-jdk11 as build
 FROM frolvlad/alpine-gcc as build
 
 WORKDIR /usr/app
@@ -13,10 +12,11 @@ RUN apk add gradle \
    && export PATH=/usr/java/graalvm-ce-java11-21.2.0/bin:$PATH \
    && export JAVA_HOME=/usr/java/graalvm-ce-java11-21.2.0/bin
 
-RUN ./gradlew build
+# Build Executable
+RUN ./gradlew nativeBuild
 
 FROM springci/graalvm-ce:stable-java11-0.11.x
 
 WORKDIR /usr/app/
-COPY --from=build /usr/app/build/libs/ProxyChecker.jar .
+COPY --from=build /usr/app/ProxyChecker.exe .
 CMD ["java", "-jar", "/usr/app/ProxyChecker.jar"]
