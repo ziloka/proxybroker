@@ -1,22 +1,37 @@
-# http://blog.gilliard.lol/2018/01/10/Java-in-containers-jdk10.html
-# https://jaxenter.com/nobody-puts-java-container-139373.html
+FROM alpine:3.14.2 as build
 
-FROM frolvlad/alpine-gcc as build
+RUN apk add --no-cache gradle gcc zlib-dev gcompat
 
-WORKDIR /usr/app
+ADD https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-21.2.0/graalvm-ce-java11-linux-amd64-21.2.0.tar.gz graalvm.tar.gz
+
+# create user gradle
+RUN adduser -D -s /bin/sh gradle \
+    && mkdir -p /usr/app/proxybroker/.gradle \
+    && chmod -R 777 /usr/app/proxybroker/.gradle
+
+# Install Java
+RUN mkdir -p /usr/java \
+ && tar -xzf graalvm.tar.gz -C /usr/java \
+ && rm graalvm.tar.gz
+
+# Add java to environment variables
+ENV PATH /usr/java/graalvm-ce-java11-21.2.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# LD_LIBRARY_PATH is default library path used for available dynamic and shared libraries
+# Add shared library to environment variables to prevent libjvm.so error
+ENV LD_LIBRARY_PATH /usr/java/graalvm-ce-java11-21.2.0/lib/server
+
+WORKDIR /usr/app/proxybroker
 COPY . .
 
-ADD "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-21.2.0/graalvm-ce-java11-linux-amd64-21.2.0.tar.gz" /usr/java/graalvm-ce-java11-linux-amd64-21.2.0.tar.gz
-RUN apk add gradle \
-   && tar xvf /usr/java/graalvm-ce-java11-linux-amd64-21.2.0.tar.gz \
-   && export PATH=/usr/java/graalvm-ce-java11-21.2.0/bin:$PATH \
-   && export JAVA_HOME=/usr/java/graalvm-ce-java11-21.2.0/bin
+USER gradle
 
-# Build Executable
-RUN ./gradlew nativeBuild
+ENV GRADLE_USER_HOME /home/gradle/.gradle
 
-FROM springci/graalvm-ce:stable-java11-0.11.x
+RUN export GRADLE_USER_HOME=/home/gradle/.gradle \
+    && gradle wrapper --stacktrace \
+    && ./gradlew nativeImage
 
-WORKDIR /usr/app/
-COPY --from=build /usr/app/ProxyChecker.exe .
-CMD ["java", "-jar", "/usr/app/ProxyChecker.jar"]
+FROM alpine:3.14.2
+WORKDIR /graalvm-demo
+COPY --from=build /usr/app/proxybroker .
+CMD ./app

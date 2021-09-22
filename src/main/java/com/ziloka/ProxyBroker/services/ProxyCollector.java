@@ -67,7 +67,7 @@ public class ProxyCollector {
                 json = json + line;
             }
             ProxySource[] proxySources = gson.fromJson(json.replaceAll("\\s+", ""), ProxySource[].class);
-            this.proxySources = Arrays.stream(proxySources).toList();
+            this.proxySources = Arrays.stream(proxySources).collect(Collectors.toList());
         } catch(IOException e) {
             e.printStackTrace();
         }
