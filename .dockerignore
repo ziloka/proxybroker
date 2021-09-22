@@ -2,3 +2,5 @@
 build
 .gitignore
 run.ps1
+ProxyBroker.exe
+ProxyBroker.build_artifacts.txt
