@@ -9,7 +9,9 @@ plugins {
     id 'com.github.ben-manes.versions' version '0.39.0'
     // plugin provides building executable and running application natively without compilation
     // add nativeBuild and nativeRun tasks
-    id'org.graalvm.buildtools.native' version '0.9.5'
+    id 'org.graalvm.buildtools.native' version '0.9.5'
+    // build docker image ./gradlew jibDockerBuild --image=ziloka/proxybroker
+    id 'com.google.cloud.tools.jib' version '3.1.4'
 }
 
 sourceCompatibility = '11'
@@ -50,4 +52,9 @@ graalvmNative.binaries.main {
     mainClass = "com.ziloka.ProxyBroker.ProxyBroker"
     fallback = false;
     verbose = false;
+}
+
+jib {
+    from.image = 'gcr.io/distroless/java:11'
+    container.mainClass = 'com.ziloka.ProxyBroker.ProxyBroker'
 }

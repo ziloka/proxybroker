@@ -146,7 +146,7 @@ public class ProxyCollector {
                     System.out.println("Status Code"+ statusCode);
                 }
             } catch (InterruptedException | IOException e) {
-                if(!(e instanceof SSLException)){
+                if(!(e instanceof SSLException) && !e.getMessage().equals("Unrecognized SSL message, plaintext connection?")){
                     e.printStackTrace();
                 }
             }
