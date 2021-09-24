@@ -1,10 +1,11 @@
 package com.ziloka.ProxyBroker.services;
 
+import com.ziloka.ProxyBroker.services.models.ProxySource;
+import com.ziloka.ProxyBroker.services.models.ProxyType;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.ziloka.ProxyBroker.services.models.ProxySource;
-import com.ziloka.ProxyBroker.services.models.ProxyType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,6 +26,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,7 +44,7 @@ public class ProxyCollector {
      * @param type - Proxy Type
      * @param countries - Proxy must be from specified countries
      */
-    public ProxyCollector(String type, String countries) throws IOException {
+    public ProxyCollector(String type, String countries) {
         this.type = type;
         this.countries = countries;
         this.setSources();
@@ -51,7 +53,7 @@ public class ProxyCollector {
     /**
      * Load proxy sources from resources/ProxySources.json file
      */
-    public void setSources() throws IOException {
+    public void setSources() {
 
         // https://mkyong.com/java/java-read-a-file-from-resources-folder/
         // https://attacomsian.com/blog/gson-read-json-file
@@ -59,7 +61,7 @@ public class ProxyCollector {
         try {
             Gson gson = new Gson();
             InputStream inputStream = getClass().getClassLoader().getResourceAsStream("ProxySources.json");
-            InputStreamReader streamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+            InputStreamReader streamReader = new InputStreamReader(Objects.requireNonNull(inputStream), StandardCharsets.UTF_8);
             BufferedReader reader = new BufferedReader(streamReader);
             String json = "";
             String line;

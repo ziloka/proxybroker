@@ -1,42 +1,130 @@
 package com.ziloka.ProxyBroker.services.models;
 
-import com.maxmind.geoip2.model.CityResponse;
-import com.maxmind.geoip2.record.Country;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-/**
- * Proxy Lookup Result
- */
 public class LookupResult {
 
-    private static final Logger logger = LogManager.getLogger(LookupResult.class);
+    private String status;
+    private String message;
+    private String continent;
+    private String continentCode;
+    private String country;
+    private String countryCode;
+    private String region;
+    private String regionName;
+    private String city;
+    private String district;
+    private String zip;
+    private double lat;
+    private double lon;
+    private String timezone;
+    private int offset;
+    private String currency;
+    private String isp;
+    private String org;
+    private String as;
+    private String asName;
+    private String reverse;
+    private boolean mobile;
+    private boolean proxy;
+    private boolean hosting;
+    private String query;
 
-    private Country cityResponse;
-    private String isoCode;
-    private String countryName;
-
-    /**
-     * @param cityResponse - Maxmind GeoIp2 Model City Response Object
-     * @param countryName - Country Name
-     * @param isoCode - City Name
-     */
-    public LookupResult(Country cityResponse, String isoCode, String countryName) {
-        this.cityResponse = cityResponse;
-        this.isoCode = isoCode;
-        this.countryName = countryName;
+    public String getStatus() {
+        return status;
     }
 
-    public Country getCityResponse() {
-        return cityResponse;
+    public String getMessage() {
+        return message;
     }
 
-    public String getIsoCode() {
-        return isoCode;
+    public String getContinent() {
+        return continent;
     }
 
-    public String getCountryName() {
-        return countryName;
+    public String getContinentCode() {
+        return continentCode;
     }
 
+    public String getCountry() {
+        return country;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public String getRegionName() {
+        return regionName;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public String getZip() {
+        return zip;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public double getLon() {
+        return lon;
+    }
+
+    public String getTimezone() {
+        return timezone;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public String getIsp() {
+        return isp;
+    }
+
+    public String getOrg() {
+        return org;
+    }
+
+    public String getAs() {
+        return as;
+    }
+
+    public String getAsName() {
+        return asName;
+    }
+
+    public String getReverse() {
+        return reverse;
+    }
+
+    public boolean isMobile() {
+        return mobile;
+    }
+
+    public boolean isProxy() {
+        return proxy;
+    }
+
+    public boolean isHosting() {
+        return hosting;
+    }
+
+    public String getQuery() {
+        return query;
+    }
 }

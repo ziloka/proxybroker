@@ -28,8 +28,8 @@ dependencies {
         exclude group: 'org.apache.logging.log4j', module: 'log4j-to-slf4j'
     }
     implementation 'com.google.code.gson:gson:2.8.8'
-    implementation 'com.maxmind.geoip2:geoip2:2.15.0'
-    implementation 'com.graphql-java:graphql-java:230521-nf-execution'
+//    implementation 'org.apache.httpcomponents.client5:httpclient5:5.1'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
     implementation 'org.apache.logging.log4j:log4j-core:2.14.1'
     testImplementation 'junit:junit:4.13.2'
 }

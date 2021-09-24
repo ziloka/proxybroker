@@ -1,11 +1,12 @@
 package com.ziloka.ProxyBroker.cmds;
 
+import com.google.gson.Gson;
 import com.ziloka.ProxyBroker.services.ProxyCollector;
 import com.ziloka.ProxyBroker.services.ProxyThread;
 import com.ziloka.ProxyBroker.services.models.LookupResult;
 import com.ziloka.ProxyBroker.services.models.ProxyType;
 
-import com.maxmind.geoip2.DatabaseReader;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine;
@@ -93,12 +94,13 @@ public class FindCommand implements Runnable {
             ExecutorService executorService = Executors.newCachedThreadPool();
             ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executorService;
 
-            InputStream database = getClass().getClassLoader().getResourceAsStream("GeoLite2-Country.mmdb");
-            DatabaseReader dbReader = new DatabaseReader.Builder(database)
-                    .build();
+            // https://www.baeldung.com/httpclient-connection-management
+            PoolingHttpClientConnectionManager poolingConnManager = new PoolingHttpClientConnectionManager();
+            Gson gson = new Gson();
+
             for (String proxy : proxies) {
                 try {
-                    ProxyThread proxyThread = new ProxyThread(dbReader, onlineProxies, proxy, types, lvl);
+                    ProxyThread proxyThread = new ProxyThread(poolingConnManager, gson, onlineProxies, proxy, types, lvl);
                     executorService.submit(proxyThread);
                 } catch (Exception e){
                     e.printStackTrace();
@@ -119,7 +121,7 @@ public class FindCommand implements Runnable {
             for(Iterator<String> iterator = onlineProxies.keySet().iterator(); iterator.hasNext();){
                 String key = iterator.next();
                 LookupResult value = onlineProxies.get(key);
-                if(value.getCountryName().equals("China")){
+                if(value.getCountry().equals("China")){
                     onlineProxies.remove(key);
                 }
             }
@@ -128,7 +130,7 @@ public class FindCommand implements Runnable {
 
             onlineProxies.keySet().stream().limit(limit).forEach((entry) -> {
                 LookupResult value = onlineProxies.get(entry);
-                System.out.printf("<Proxy %s %s>\n", value.getCountryName(), entry);
+                System.out.printf("<Proxy %s %s>\n", value.getCountry(), entry);
             });
 
         } catch (Exception e){
