@@ -4,6 +4,7 @@ import com.ziloka.ProxyBroker.services.models.LookupResult;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.maxmind.geoip2.DatabaseReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,6 +30,7 @@ public class ProxyChecker {
 
     private static final Logger logger = LogManager.getLogger(ProxyChecker.class);
 
+    DatabaseReader dbReader;
     ConcurrentHashMap<String, LookupResult> onlineProxies;
     String proxyType;
     String host;
@@ -45,11 +47,13 @@ public class ProxyChecker {
 
     /**
      * ProxyChecker Constructor
+     * @param dbReader  Database Reader for MaxMindDatabase
      * @param onlineProxies  Collection of online proxies
      * @param ipAddress  Ip Address
      * @param proxyType  Proxy Protocol (http, https, socks4, socks5)
      */
-    public ProxyChecker(ConcurrentHashMap<String, LookupResult> onlineProxies, String ipAddress, String proxyType) {
+    public ProxyChecker(DatabaseReader dbReader, ConcurrentHashMap<String, LookupResult> onlineProxies, String ipAddress, String proxyType) {
+        this.dbReader = dbReader;
         this.onlineProxies = onlineProxies;
         this.proxyType = proxyType;
         this.host = ipAddress.split(":")[0];
