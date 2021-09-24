@@ -1,9 +1,5 @@
-.github
 .idea
 build
-gradle
-.gitattributes
-gradlew.bat
 .gitignore
 run.ps1
 ProxyBroker.exe

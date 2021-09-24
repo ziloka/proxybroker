@@ -1,4 +1,6 @@
-FROM gradle:7.2.0-jdk11 AS build
+FROM alpine:3.14.2 as build
+
+RUN apk add --no-cache openjdk11 gradle
 
 WORKDIR /usr/app/proxybroker
 COPY . .
@@ -8,8 +10,7 @@ RUN gradle wrapper \
 
 # https://github.com/GoogleContainerTools/distroless
 # May switch to a distroless image
-FROM adoptopenjdk/openjdk11:alpine-jre
-
-WORKDIR /usr/app/
+FROM alpine:3.14.2
 COPY --from=build /usr/app/proxybroker/build/libs/ProxyBroker.jar .
-CMD ["java", "-jar", "ProxyBroker.jar"]
+RUN apk add --no-cache openjdk11
+ENTRYPOINT ["ProxyBroker.jar"]
