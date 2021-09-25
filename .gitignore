@@ -2,13 +2,10 @@
 .gradle
 
 # Ignore Gradle build output directory
-build
+app/build
 
 # Ignore .idea project specific settings directory
 .idea
 
-# Ignore native-image build artifact report
-ProxyChecker.build_artifacts.txt
-
-# Ignore ProxyChecker executable
-ProxyChecker.exe
+ProxyBroker.exe
+ProxyBroker.build_artifacts.txt

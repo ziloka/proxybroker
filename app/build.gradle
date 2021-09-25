@@ -7,9 +7,6 @@ plugins {
     // plugin to provide which dependencies have updates
     // adds dependencyUpdates task
     id 'com.github.ben-manes.versions' version '0.39.0'
-//    // plugin provides building executable and running application natively without compilation
-//    // add nativeBuild and nativeRun tasks
-//    id 'org.graalvm.buildtools.native' version '0.9.5'
 }
 
 sourceCompatibility = '11'
@@ -43,10 +40,3 @@ bootJar {
 jar {
     archiveBaseName = 'ProxyBroker'
 }
-
-//graalvmNative.binaries.main {
-//    imageName = "ProxyBroker"
-//    mainClass = "com.ziloka.ProxyBroker.ProxyBroker"
-//    fallback = false;
-//    verbose = false;
-//}
