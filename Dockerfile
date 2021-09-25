@@ -5,7 +5,7 @@ COPY app/build.gradle .
 
 RUN apk add --no-cache openjdk11 gradle \
     && gradle wrapper \
-    && ./gradlew build
+    && ./gradlew build -Papp=ProxyBroker.jar
 RUN rm -rf /var/cache/apk/*
 
 COPY . .
