@@ -90,6 +90,7 @@ public class FindCommand implements Runnable {
 
             // Simple iteration on average takes more than 30+ minutes to check 200 proxies
             // On average takes ~20 seconds to check 200 proxies
+            // https://www.baeldung.com/java-future#more-multithreading-with-thread-pools
             ExecutorService executorService = Executors.newCachedThreadPool();
             ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executorService;
 
