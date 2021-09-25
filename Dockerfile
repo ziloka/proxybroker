@@ -13,4 +13,4 @@ RUN gradle wrapper \
 FROM alpine:3.14.2
 COPY --from=build /usr/app/proxybroker/build/libs/ProxyBroker.jar .
 RUN apk add --no-cache openjdk11
-ENTRYPOINT ["ProxyBroker.jar"]
+ENTRYPOINT ["java", "-jar", "ProxyBroker.jar"]
