@@ -48,6 +48,7 @@ public class ProxyThread implements Runnable {
             if(this.proxyChecker.check()){
                 this.onlineProxies.put(this.proxy, this.proxyLookup.getInfo());
             }
+
         } catch (IOException | GeoIp2Exception e) {
             // Don't print anything
             e.printStackTrace();
