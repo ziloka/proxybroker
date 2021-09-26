@@ -1,12 +1,11 @@
 package com.ziloka.ProxyBroker;
 
-import com.ziloka.ProxyBroker.cmds.FindCommand;
-import com.ziloka.ProxyBroker.cmds.ServeCommand;
+import com.ziloka.ProxyBroker.subcmds.FindCommand;
+import com.ziloka.ProxyBroker.subcmds.ServeCommand;
 import picocli.CommandLine;
+import picocli.CommandLine.ParseResult;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-
-import java.util.concurrent.Callable;
 
 /**
  * ProxyBroker class
@@ -18,7 +17,7 @@ import java.util.concurrent.Callable;
         FindCommand.class,
         ServeCommand.class
 })
-public class ProxyBroker implements Callable<Integer> {
+public class ProxyBroker implements Runnable {
 
     // https://picocli.info/apidocs/picocli/CommandLine.Option.html
     @Option(names = {"--help", "-help"}, usageHelp = true, description = "An open source tool to find public proxies or serve a local proxy server that distributes requests to a pool of found HTTP proxies")
@@ -31,13 +30,16 @@ public class ProxyBroker implements Callable<Integer> {
         CommandLine cli = new CommandLine(new ProxyBroker());
         cli.setOptionsCaseInsensitive(false);
         if(args.length == 0) System.out.println(cli.getUsageMessage());
+        ParseResult parseResult = cli.parseArgs(args);
         int exitCode = cli.execute(args);
-//        System.exit(exitCode);
+        if(parseResult.subcommand() != null){
+            // Don't exit cli if we are hosting web server
+            if(!parseResult.subcommand().commandSpec().name().equals("serve")) System.exit(exitCode);
+        }
     }
 
     @Override
-    public Integer call() {
-        return 0;
-    }
+    public void run() {
 
+    }
 }

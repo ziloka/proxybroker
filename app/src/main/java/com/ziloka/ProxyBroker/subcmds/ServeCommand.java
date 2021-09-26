@@ -1,30 +1,23 @@
-package com.ziloka.ProxyBroker.cmds;
+package com.ziloka.ProxyBroker.subcmds;
 
 import com.ziloka.ProxyBroker.services.web.SpringBootConsoleApplication;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.swing.*;
-
 /**
  * Command under proxybroker command
  */
-// https://picocli.info/#_executing_subcommands
 
-@RestController
-@EnableAutoConfiguration
+// https://www.baeldung.com/java-picocli-create-command-line-program
+// https://github.com/eugenp/tutorials/blob/master/libraries-2/src/main/java/com/baeldung/picocli/git/Application.java
+
 @Command(name = "serve")
-//@SpringBootApplication
+@Component
 public class ServeCommand implements Runnable {
 
     private static final Logger LOG = LogManager.getLogger(SpringBootConsoleApplication.class);
@@ -37,6 +30,8 @@ public class ServeCommand implements Runnable {
 
     @Option(names = {"--verbose", "-v"}, defaultValue = "false", type = Boolean.class)
     private boolean isVerbose;
+
+    private int exitCode;
 
     /**
      * Here for debugging purposes

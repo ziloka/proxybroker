@@ -1,4 +1,4 @@
-package com.ziloka.ProxyBroker.cmds;
+package com.ziloka.ProxyBroker.subcmds;
 
 import com.ziloka.ProxyBroker.services.ProxyCollector;
 import com.ziloka.ProxyBroker.services.ProxyThread;
@@ -8,7 +8,6 @@ import com.ziloka.ProxyBroker.services.models.ProxyType;
 import com.maxmind.geoip2.DatabaseReader;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import org.apache.logging.log4j.LogManager;
@@ -17,10 +16,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.*;
 
 /**
  * Command under proxybroker command
