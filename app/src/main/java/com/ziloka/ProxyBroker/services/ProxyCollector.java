@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 public class ProxyCollector {
 
-    private static final Logger logger = LogManager.getLogger(ProxyCollector.class);
+    private static final Logger LOG = LogManager.getLogger(ProxyCollector.class);
 
     String type;
     String countries;
@@ -140,7 +140,7 @@ public class ProxyCollector {
                         count++;
                         result.add(matcher.group().trim());
                     }
-                    logger.debug(String.format("Found %d proxies using source: %s", count, proxySource));
+                    LOG.debug(String.format("Found %d proxies using source: %s", count, proxySource));
                 } else {
                     System.out.println("GET request not worked");
                     System.out.println("Status Code"+ statusCode);
@@ -153,7 +153,7 @@ public class ProxyCollector {
 
         }
 
-        logger.debug(String.format("Found %d proxies using %d sources", result.size(), iterateProxiesList.size()));
+        LOG.debug(String.format("Found %d proxies using %d sources", result.size(), iterateProxiesList.size()));
 
         return result;
 

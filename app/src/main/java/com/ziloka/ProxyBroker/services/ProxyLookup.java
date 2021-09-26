@@ -14,7 +14,7 @@ import java.net.InetAddress;
 
 public class ProxyLookup {
 
-    private static final Logger logger = LogManager.getLogger(ProxyCollector.class);
+    private static final Logger LOG = LogManager.getLogger(ProxyCollector.class);
 
     String host;
     DatabaseReader dbReader;

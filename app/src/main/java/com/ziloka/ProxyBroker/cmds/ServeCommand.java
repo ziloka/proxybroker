@@ -1,23 +1,33 @@
 package com.ziloka.ProxyBroker.cmds;
 
-import com.ziloka.ProxyBroker.services.web.Application;
+import com.ziloka.ProxyBroker.services.web.SpringBootConsoleApplication;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
-import picocli.CommandLine;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.RestController;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.swing.*;
+
 /**
  * Command under proxybroker command
  */
 // https://picocli.info/#_executing_subcommands
-@SuppressWarnings("ALL")
+
+@RestController
+@EnableAutoConfiguration
 @Command(name = "serve")
+//@SpringBootApplication
 public class ServeCommand implements Runnable {
 
-    private static final Logger logger = LogManager.getLogger(ServeCommand.class);
+    private static final Logger LOG = LogManager.getLogger(SpringBootConsoleApplication.class);
 
     @Option(names = { "--host", "-h" }, defaultValue = "127.0.0.1", type = String.class)
     private String host;
@@ -29,24 +39,20 @@ public class ServeCommand implements Runnable {
     private boolean isVerbose;
 
     /**
-     * Set commandline options
-     * @param args System arguments
+     * Here for debugging purposes
+     * @param args - System Arguments
      */
     public static void main(String[] args) {
-        CommandLine cli = new CommandLine(new FindCommand());
-        cli.setOptionsCaseInsensitive(true);
-        int exitCode = cli.execute(args);
-        System.exit(exitCode);
+        SpringApplication.run(SpringBootConsoleApplication.class);
     }
 
     /**
-     * Executes when user runs "proxybroker serve"
+     * Method that gets executed by picocli
+     * Required by java.lang.Runnable interface
      */
     @Override
     public void run() {
-        // https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot-cli/src/main/java/org/springframework/boot/cli/SpringCli.java
-
-        SpringApplication.run(Application.class);
+        SpringApplication.run(SpringBootConsoleApplication.class);
     }
 
 }

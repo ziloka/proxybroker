@@ -30,7 +30,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Command(name = "find")
 public class FindCommand implements Runnable {
 
-    private static final Logger logger = LogManager.getLogger(FindCommand.class);
+    private static final Logger LOG = LogManager.getLogger(FindCommand.class);
 
     // https://picocli.info/apidocs/picocli/CommandLine.Option.html
     @Option(names = "--types", defaultValue = "http")
@@ -56,17 +56,6 @@ public class FindCommand implements Runnable {
     private boolean isVerbose;
 
     /**
-     * Set commandline options
-     * @param args System arguments
-     */
-    public static void main(String[] args) {
-        CommandLine cli = new CommandLine(new FindCommand());
-        cli.setOptionsCaseInsensitive(true);
-        int exitCode = cli.execute(args);
-        System.exit(exitCode);
-    }
-
-    /**
      * Executes when user runs "proxybroker find"
      */
     @Override
@@ -79,14 +68,14 @@ public class FindCommand implements Runnable {
 
             ConcurrentHashMap<String, LookupResult> onlineProxies = new ConcurrentHashMap<>();
 
-            logger.debug("Collecting proxies");
+            LOG.debug("Collecting proxies");
 
             ProxyCollector proxyProvider = new ProxyCollector(types, countries);
             ArrayList<String> proxies = proxyProvider.getProxies(ProxyType.valueOf(types));
 
             // String#format
             // https://www.javatpoint.com/java-string-format
-            logger.debug(String.format("There are %d unchecked proxies", proxies.size()));
+            LOG.debug(String.format("There are %d unchecked proxies", proxies.size()));
 
             // Simple iteration on average takes more than 30+ minutes to check 200 proxies
             // On average takes ~20 seconds to check 200 proxies
@@ -106,7 +95,7 @@ public class FindCommand implements Runnable {
                 }
             }
 
-            logger.debug(String.format("Multithreading ProxyCheckTask.class using %d threads", threadPoolExecutor.getActiveCount()));
+            LOG.debug(String.format("Multithreading ProxyCheckTask.class using %d threads", threadPoolExecutor.getActiveCount()));
 
             executorService.shutdown();
             // Wait for all threads states to be terminated or until x amount of proxies are received
@@ -125,7 +114,7 @@ public class FindCommand implements Runnable {
                 }
             }
 
-            logger.debug(String.format("There are %d online proxies", onlineProxies.size()));
+            LOG.debug(String.format("There are %d online proxies", onlineProxies.size()));
 
             onlineProxies.keySet().stream().limit(limit).forEach((entry) -> {
                 LookupResult value = onlineProxies.get(entry);

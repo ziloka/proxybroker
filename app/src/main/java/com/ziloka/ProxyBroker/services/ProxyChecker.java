@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  */
 public class ProxyChecker {
 
-    private static final Logger logger = LogManager.getLogger(ProxyChecker.class);
+    private static final Logger LOG = LogManager.getLogger(ProxyChecker.class);
 
     DatabaseReader dbReader;
     ConcurrentHashMap<String, LookupResult> onlineProxies;

@@ -20,18 +20,21 @@ dependencies {
     implementation 'info.picocli:picocli:4.6.1'
     implementation 'com.google.code.gson:gson:2.8.8'
     implementation 'com.maxmind.geoip2:geoip2:2.15.0'
-    // Add springboot annotations
+    implementation 'org.springframework.boot:spring-boot-starter-parent:2.5.5'
+    // No specific versioning and let Spring Boot Starter do it
     // https://stackoverflow.com/a/65731572
-    implementation ('org.springframework.boot:spring-boot-starter-web:2.5.4'){
+    implementation ('org.springframework.boot:spring-boot-starter-web:2.5.5'){
         exclude group: 'ch.qos.logback', module: 'logback-classic'
         exclude group: 'org.apache.logging.log4j', module: 'log4j-to-slf4j'
     }
-    implementation 'org.springframework.boot:spring-boot-configuration-processor:2.5.4'
+    // Add springboot annotations
+    implementation 'org.springframework.boot:spring-boot-configuration-processor:2.5.5'
     implementation 'org.apache.logging.log4j:log4j-core:2.14.1'
     // slf4j-simple and slf4j-api used to remove "Failed to load class "org.slf4j.impl.StaticLoggerBinder"" warning
     implementation 'org.slf4j:slf4j-simple:2.0.0-alpha5'
     implementation 'org.slf4j:slf4j-api:2.0.0-alpha5'
     testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 }
 
 application {

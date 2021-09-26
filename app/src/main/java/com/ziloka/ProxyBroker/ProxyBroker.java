@@ -32,7 +32,7 @@ public class ProxyBroker implements Callable<Integer> {
         cli.setOptionsCaseInsensitive(false);
         if(args.length == 0) System.out.println(cli.getUsageMessage());
         int exitCode = cli.execute(args);
-        System.exit(exitCode);
+//        System.exit(exitCode);
     }
 
     @Override
