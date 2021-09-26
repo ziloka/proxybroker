@@ -24,7 +24,7 @@ import java.util.concurrent.*;
 // https://picocli.info/#_executing_subcommands
 @SuppressWarnings("ALL")
 @Command(name = "find")
-public class FindCommand implements Runnable {
+public class FindCommand implements Callable<Integer> {
 
     private static final Logger LOG = LogManager.getLogger(FindCommand.class);
 
@@ -55,7 +55,7 @@ public class FindCommand implements Runnable {
      * Executes when user runs "proxybroker find"
      */
     @Override
-    public void run() {
+    public Integer call() {
 
         try {
 
@@ -120,6 +120,8 @@ public class FindCommand implements Runnable {
         } catch (Exception e){
             e.printStackTrace();
         }
+
+        return 0;
 
     }
 

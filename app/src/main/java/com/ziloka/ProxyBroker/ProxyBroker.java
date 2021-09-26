@@ -7,6 +7,9 @@ import picocli.CommandLine.ParseResult;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
+import javax.security.auth.callback.Callback;
+import java.util.concurrent.Callable;
+
 /**
  * ProxyBroker class
  */
@@ -17,7 +20,7 @@ import picocli.CommandLine.Option;
         FindCommand.class,
         ServeCommand.class
 })
-public class ProxyBroker implements Runnable {
+public class ProxyBroker implements Callable<Integer> {
 
     // https://picocli.info/apidocs/picocli/CommandLine.Option.html
     @Option(names = {"--help", "-help"}, usageHelp = true, description = "An open source tool to find public proxies or serve a local proxy server that distributes requests to a pool of found HTTP proxies")
@@ -32,14 +35,16 @@ public class ProxyBroker implements Runnable {
         if(args.length == 0) System.out.println(cli.getUsageMessage());
         ParseResult parseResult = cli.parseArgs(args);
         int exitCode = cli.execute(args);
-        if(parseResult.subcommand() != null){
-            // Don't exit cli if we are hosting web server
-            if(!parseResult.subcommand().commandSpec().name().equals("serve")) System.exit(exitCode);
+        /*
+         * implement Callable if command exits, implement Runnable if command does not exit
+         */
+        if(parseResult.subcommand().commandSpec().userObject() instanceof Callable){
+            System.exit(exitCode);
         }
     }
 
     @Override
-    public void run() {
-
+    public Integer call() {
+        return 0;
     }
 }
