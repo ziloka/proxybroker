@@ -1,5 +1,6 @@
 package com.ziloka.ProxyBroker.subcmds;
 
+import com.google.gson.Gson;
 import com.ziloka.ProxyBroker.services.ProxyCollector;
 import com.ziloka.ProxyBroker.services.ProxyThread;
 import com.ziloka.ProxyBroker.services.models.LookupResult;

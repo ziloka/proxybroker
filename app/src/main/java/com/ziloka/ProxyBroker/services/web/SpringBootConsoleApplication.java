@@ -79,13 +79,21 @@ public class SpringBootConsoleApplication {
                         @RequestParam(name = "countries", required = false, defaultValue = "") String countries,
                         @RequestParam(name = "lvl", required = false, defaultValue = "High") String lvl,
                         @RequestParam(name = "limit", required = false, defaultValue = "20") String limit) {
-        Gson gson = new Gson();
-        ArrayList<LookupResult> proxies = new ArrayList<>();
-        cache.keySet().stream().forEach((String entry) -> {
-            LookupResult value = cache.get(entry);
-            proxies.add(value);
-        });
-        return gson.toJson(Objects.requireNonNull(proxies));
+        String result = null;
+        try {
+            Gson gson = new Gson();
+            List<LookupResult> proxies = new ArrayList<>();
+            cache.values().stream().forEach((LookupResult value) -> {
+                proxies.add(value);
+            });
+            String value = gson.toJson(proxies);
+            result = value;
+        } catch(Exception e){
+            // InaccessibleObjectException Unable to make {member} accessible : module {A does not 'opens {package}' to {B}
+            // https://stackoverflow.com/a/41265267
+            e.printStackTrace();
+        }
+        return result;
     }
 
     @RequestMapping("/api")

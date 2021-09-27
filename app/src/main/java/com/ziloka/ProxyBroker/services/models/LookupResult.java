@@ -1,16 +1,11 @@
 package com.ziloka.ProxyBroker.services.models;
 
-import com.maxmind.geoip2.model.CityResponse;
 import com.maxmind.geoip2.record.Country;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * Proxy Lookup Result
  */
 public class LookupResult {
-
-    private final Logger logger = LogManager.getLogger(LookupResult.class);
 
     public ProxyType proxyType;
     private Country cityResponse;
