@@ -26,7 +26,7 @@ import java.util.concurrent.*;
 @Command(name = "find")
 public class FindCommand implements Callable<Integer> {
 
-    private static final Logger LOG = LogManager.getLogger(FindCommand.class);
+    private final Logger LOG = LogManager.getLogger(FindCommand.class);
 
     // https://picocli.info/apidocs/picocli/CommandLine.Option.html
     @Option(names = "--types", defaultValue = "http")

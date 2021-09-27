@@ -7,7 +7,6 @@ import picocli.CommandLine.ParseResult;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-import javax.security.auth.callback.Callback;
 import java.util.concurrent.Callable;
 
 /**
@@ -35,11 +34,11 @@ public class ProxyBroker implements Callable<Integer> {
         if(args.length == 0) System.out.println(cli.getUsageMessage());
         ParseResult parseResult = cli.parseArgs(args);
         int exitCode = cli.execute(args);
-        /*
-         * implement Callable if command exits, implement Runnable if command does not exit
-         */
-        if(parseResult.subcommand().commandSpec().userObject() instanceof Callable){
-            System.exit(exitCode);
+        // implement Callable if command exits, implement Runnable if command does not exit
+        if(parseResult.subcommand() != null){
+            if(parseResult.subcommand().commandSpec().userObject() instanceof Callable){
+                System.exit(exitCode);
+            }
         }
     }
 

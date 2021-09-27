@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 public class ProxySource {
 
-    private static final Logger logger = LogManager.getLogger(ProxyCollector.class);
+    private final Logger logger = LogManager.getLogger(ProxyCollector.class);
 
     public String url;
     public ProxyType type;

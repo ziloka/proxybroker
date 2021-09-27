@@ -25,6 +25,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 
 public class ProxyCollector {
 
-    private static final Logger LOG = LogManager.getLogger(ProxyCollector.class);
+    private final Logger LOG = LogManager.getLogger(ProxyCollector.class);
 
     String type;
     String countries;
@@ -42,7 +43,7 @@ public class ProxyCollector {
      * @param type - Proxy Type
      * @param countries - Proxy must be from specified countries
      */
-    public ProxyCollector(String type, String countries) throws IOException {
+    public ProxyCollector(String type, String countries) {
         this.type = type;
         this.countries = countries;
         this.setSources();
@@ -51,7 +52,7 @@ public class ProxyCollector {
     /**
      * Load proxy sources from resources/ProxySources.json file
      */
-    public void setSources() throws IOException {
+    public void setSources() {
 
         // https://mkyong.com/java/java-read-a-file-from-resources-folder/
         // https://attacomsian.com/blog/gson-read-json-file
@@ -59,14 +60,14 @@ public class ProxyCollector {
         try {
             Gson gson = new Gson();
             InputStream inputStream = getClass().getClassLoader().getResourceAsStream("ProxySources.json");
-            InputStreamReader streamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+            InputStreamReader streamReader = new InputStreamReader(Objects.requireNonNull(inputStream), StandardCharsets.UTF_8);
             BufferedReader reader = new BufferedReader(streamReader);
-            String json = "";
+            StringBuilder json = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
-                json = json + line;
+                json.append(line);
             }
-            ProxySource[] proxySources = gson.fromJson(json.replaceAll("\\s+", ""), ProxySource[].class);
+            ProxySource[] proxySources = gson.fromJson(json.toString().replaceAll("\\s+", ""), ProxySource[].class);
             this.proxySources = Arrays.stream(proxySources).collect(Collectors.toList());
         } catch(IOException e) {
             e.printStackTrace();
@@ -110,12 +111,12 @@ public class ProxyCollector {
          * NullPointerException - x.type is null
          * ProxySource type property is invalid in resources/ProxySources.json
          */
-        Function<ProxyType, ArrayList<String>> getSpecifiedProxySource = (ProxyType specificProxyType) -> (ArrayList<String>) proxySources.stream()
+        Function<ProxyType, List<String>> getSpecifiedProxySource = (ProxyType specificProxyType) -> proxySources.stream()
                 .filter(x -> x.type.equals(proxyType))
                 .map(x -> x.url)
                 .collect(Collectors.toList());
 
-        ArrayList<String> iterateProxiesList = getSpecifiedProxySource.apply(proxyType);
+        List<String> iterateProxiesList = proxyType.toString() == "ALL" ? proxySources.stream().map(x -> x.url).collect(Collectors.toList()) : getSpecifiedProxySource.apply(proxyType);
 
         HttpClient client = HttpClient.newBuilder()
                 .version(Version.HTTP_2)

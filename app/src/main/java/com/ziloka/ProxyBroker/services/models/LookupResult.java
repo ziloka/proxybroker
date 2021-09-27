@@ -10,8 +10,9 @@ import org.apache.logging.log4j.Logger;
  */
 public class LookupResult {
 
-    private static final Logger logger = LogManager.getLogger(LookupResult.class);
+    private final Logger logger = LogManager.getLogger(LookupResult.class);
 
+    public ProxyType proxyType;
     private Country cityResponse;
     private String isoCode;
     private String countryName;

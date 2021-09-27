@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ProxyThread implements Runnable {
 
-    private static final Logger LOG = LogManager.getLogger(ProxyCollector.class);
+    private final Logger LOG = LogManager.getLogger(ProxyCollector.class);
 
     final ConcurrentHashMap<String, LookupResult> onlineProxies;
     String proxy;

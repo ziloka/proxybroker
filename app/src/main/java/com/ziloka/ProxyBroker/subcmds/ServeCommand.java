@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 @Component
 public class ServeCommand implements Runnable {
 
-    private static final Logger LOG = LogManager.getLogger(SpringBootConsoleApplication.class);
+    private final Logger LOG = LogManager.getLogger(SpringBootConsoleApplication.class);
 
     @Option(names = { "--host", "-h" }, defaultValue = "127.0.0.1", type = String.class)
     private String host;
