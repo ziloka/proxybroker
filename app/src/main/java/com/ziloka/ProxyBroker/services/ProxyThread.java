@@ -37,7 +37,7 @@ public class ProxyThread implements Runnable {
         this.types = types;
         this.lvl = lvl;
         this.proxyChecker = new ProxyChecker(dbReader, this.onlineProxies, this.proxy, types);
-        this.proxyLookup = new ProxyLookup(dbReader, this.host);
+        this.proxyLookup = new ProxyLookup(dbReader, this.host, this.port);
     }
 
     /**

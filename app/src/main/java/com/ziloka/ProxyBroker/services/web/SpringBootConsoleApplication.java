@@ -20,7 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -79,21 +82,12 @@ public class SpringBootConsoleApplication {
                         @RequestParam(name = "countries", required = false, defaultValue = "") String countries,
                         @RequestParam(name = "lvl", required = false, defaultValue = "High") String lvl,
                         @RequestParam(name = "limit", required = false, defaultValue = "20") String limit) {
-        String result = null;
-        try {
-            Gson gson = new Gson();
-            List<LookupResult> proxies = new ArrayList<>();
-            cache.values().stream().forEach((LookupResult value) -> {
-                proxies.add(value);
-            });
-            String value = gson.toJson(proxies);
-            result = value;
-        } catch(Exception e){
-            // InaccessibleObjectException Unable to make {member} accessible : module {A does not 'opens {package}' to {B}
-            // https://stackoverflow.com/a/41265267
-            e.printStackTrace();
-        }
-        return result;
+        Gson gson = new Gson();
+        List<LookupResult> proxies = new ArrayList<>();
+        cache.values().forEach((LookupResult value) -> {
+            proxies.add(value);
+        });
+        return gson.toJson(proxies);
     }
 
     @RequestMapping("/api")

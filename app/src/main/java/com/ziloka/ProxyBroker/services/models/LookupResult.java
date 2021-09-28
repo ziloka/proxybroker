@@ -7,24 +7,22 @@ import com.maxmind.geoip2.record.Country;
  */
 public class LookupResult {
 
-    public ProxyType proxyType;
-    private Country cityResponse;
-    private String isoCode;
-    private String countryName;
+    final private String proxyHost;
+    final private Integer proxyPort;
+    final private ProxyType proxyType;
+    final private String isoCode;
+    final private String countryName;
 
     /**
-     * @param cityResponse - Maxmind GeoIp2 Model City Response Object
      * @param countryName - Country Name
      * @param isoCode - City Name
      */
-    public LookupResult(Country cityResponse, String isoCode, String countryName) {
-        this.cityResponse = cityResponse;
+    public LookupResult(String proxyHost, Integer proxyPort, ProxyType proxyType, String isoCode, String countryName) {
+        this.proxyHost = proxyHost;
+        this.proxyPort = proxyPort;
+        this.proxyType = proxyType;
         this.isoCode = isoCode;
         this.countryName = countryName;
-    }
-
-    public Country getCityResponse() {
-        return cityResponse;
     }
 
     public String getIsoCode() {

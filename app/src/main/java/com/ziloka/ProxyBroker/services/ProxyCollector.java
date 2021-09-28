@@ -116,7 +116,7 @@ public class ProxyCollector {
                 .map(x -> x.url)
                 .collect(Collectors.toList());
 
-        List<String> iterateProxiesList = proxyType.toString() == "ALL" ? proxySources.stream().map(x -> x.url).collect(Collectors.toList()) : getSpecifiedProxySource.apply(proxyType);
+        List<String> iterateProxiesList = proxyType.toString().equals("ALL") ? proxySources.stream().map(x -> x.url).collect(Collectors.toList()) : getSpecifiedProxySource.apply(proxyType);
 
         HttpClient client = HttpClient.newBuilder()
                 .version(Version.HTTP_2)
