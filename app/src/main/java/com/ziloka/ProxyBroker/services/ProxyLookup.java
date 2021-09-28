@@ -5,7 +5,6 @@ import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CountryResponse;
 import com.maxmind.geoip2.record.Country;
 import com.ziloka.ProxyBroker.services.models.LookupResult;
-import com.ziloka.ProxyBroker.services.models.ProxyType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -42,7 +41,6 @@ public class ProxyLookup {
         return new LookupResult(
                 ipAddress.getHostAddress(),
                 this.port,
-                ProxyType.https,
                 country.getIsoCode(),
                 country.getName()
         );

@@ -4,6 +4,7 @@ import com.ziloka.ProxyBroker.services.ProxyCollector;
 import com.ziloka.ProxyBroker.services.ProxyThread;
 import com.ziloka.ProxyBroker.services.models.LookupResult;
 import com.ziloka.ProxyBroker.services.models.ProxyType;
+import com.ziloka.ProxyBroker.subcmds.converters.IProxyTypeConverter;
 
 import com.maxmind.geoip2.DatabaseReader;
 import org.apache.logging.log4j.Level;
@@ -16,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.*;
 
 /**
@@ -29,8 +31,8 @@ public class FindCommand implements Callable<Integer> {
     private final Logger LOG = LogManager.getLogger(FindCommand.class);
 
     // https://picocli.info/apidocs/picocli/CommandLine.Option.html
-    @Option(names = "--types", defaultValue = "http")
-    private String types;
+    @Option(names = "--types", defaultValue = "http", type = IProxyTypeConverter.class, converter = IProxyTypeConverter.class)
+    private List<ProxyType> types;
 
     @Option(names = "--countries", defaultValue = "")
     private String countries;
@@ -67,7 +69,7 @@ public class FindCommand implements Callable<Integer> {
             LOG.debug("Collecting proxies");
 
             ProxyCollector proxyProvider = new ProxyCollector(types, countries);
-            ArrayList<String> proxies = proxyProvider.getProxies(ProxyType.valueOf(types));
+            ArrayList<String> proxies = proxyProvider.getProxies(types);
 
             // String#format
             // https://www.javatpoint.com/java-string-format

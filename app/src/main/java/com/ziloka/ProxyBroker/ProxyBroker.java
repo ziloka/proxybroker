@@ -1,5 +1,6 @@
 package com.ziloka.ProxyBroker;
 
+import com.ziloka.ProxyBroker.handlers.ShortErrorMessageHandler;
 import com.ziloka.ProxyBroker.subcmds.FindCommand;
 import com.ziloka.ProxyBroker.subcmds.ServeCommand;
 import picocli.CommandLine;
@@ -29,10 +30,12 @@ public class ProxyBroker implements Callable<Integer> {
      * @param args System arguments
      */
     public static void main(String[] args) {
-        CommandLine cli = new CommandLine(new ProxyBroker());
+        CommandLine cli = new CommandLine(new ProxyBroker())
+                .setParameterExceptionHandler(new ShortErrorMessageHandler());
         cli.setOptionsCaseInsensitive(false);
         if(args.length == 0) System.out.println(cli.getUsageMessage());
         ParseResult parseResult = cli.parseArgs(args);
+        // https://picocli.info/#_handling_errors
         int exitCode = cli.execute(args);
         // implement Callable if command exits, implement Runnable if command does not exit
         if(parseResult.subcommand() != null){

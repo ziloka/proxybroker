@@ -20,14 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 @Component
 @RequestMapping("/")
@@ -38,7 +34,7 @@ public class SpringBootConsoleApplication {
     private final Logger LOG = LoggerFactory.getLogger(ServeCommand.class);
 
     private final ConcurrentHashMap<String, LookupResult> cache = new ConcurrentHashMap<>();
-    private final ProxyCollector proxyProvider = new ProxyCollector("", "");
+    private final ProxyCollector proxyProvider = new ProxyCollector(List.of(ProxyType.ALL), "");
 
     // https://stackoverflow.com/a/38668148
     @EventListener(ApplicationReadyEvent.class)
@@ -48,32 +44,32 @@ public class SpringBootConsoleApplication {
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                ArrayList<String> proxies = proxyProvider.getProxies(ProxyType.ALL);
 
-                ExecutorService executorService = Executors.newCachedThreadPool();
-                ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executorService;
-
-                InputStream database = getClass().getClassLoader().getResourceAsStream("GeoLite2-Country.mmdb");
-                DatabaseReader dbReader = null;
                 try {
-                    dbReader = new DatabaseReader.Builder(database)
-                            .build();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                for (String proxy : proxies) {
-                    try {
-                        ProxyThread proxyThread = new ProxyThread(dbReader, cache, proxy, "", "");
+                    ArrayList<String> proxies = proxyProvider.getProxies(Arrays.asList(ProxyType.ALL));
+                    ExecutorService executorService = Executors.newCachedThreadPool();
+
+                    InputStream database = getClass().getClassLoader().getResourceAsStream("GeoLite2-Country.mmdb");
+                    DatabaseReader dbReader = new DatabaseReader.Builder(database)
+                                .build();
+                    // Add more proxies
+                    for (String proxy : proxies) {
+                        ProxyThread proxyThread = new ProxyThread(dbReader, cache, proxy, Arrays.asList(ProxyType.ALL), "");
                         executorService.submit(proxyThread);
-                    } catch (Exception e){
-                        e.printStackTrace();
                     }
+                    // Check current proxies & see if they are still alive
+                    for (String proxy : cache.keySet()){
+                        ProxyThread proxyThread = new ProxyThread(dbReader, cache, proxy, Arrays.asList(ProxyType.ALL), "");
+                        executorService.submit(proxyThread);
+                    }
+
+                    executorService.shutdown();
+                } catch(IOException e) {
+
                 }
 
-                LOG.debug(String.format("Multithreading ProxyCheckTask.class using %d threads", threadPoolExecutor.getActiveCount()));
-
-                executorService.shutdown();
             }
+            // 300000ms is 5 minutes
         },0,300000);
     }
 

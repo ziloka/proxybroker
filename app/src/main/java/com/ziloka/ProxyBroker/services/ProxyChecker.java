@@ -5,20 +5,22 @@ import com.ziloka.ProxyBroker.services.models.LookupResult;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.maxmind.geoip2.DatabaseReader;
+import com.ziloka.ProxyBroker.services.models.ProxyType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
-import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.ProxySelector;
+import java.net.URI;
+import java.net.URL;
+import java.net.HttpURLConnection;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,15 +34,15 @@ public class ProxyChecker {
 
     DatabaseReader dbReader;
     ConcurrentHashMap<String, LookupResult> onlineProxies;
-    String proxyType;
+    List<ProxyType> proxyType;
     String host;
     Integer port;
     String address;
     /*
-     * Elite Proxies (Level 1) - The server you connect to receive no information about your IP address
-     * Anonymous Proxies (Level 2) - server will recognize that a proxy is making the connection
+     * Elite Proxies (Level 1, High) - The server you connect to receive no information about your IP address
+     * Anonymous Proxies (Level 2, Transparent) - server will recognize that a proxy is making the connection
      * Good use case for rotating open proxies
-     * Transparent Proxies (Level 3) Does not provide anonymity at all
+     * Transparent Proxies (Level 3, Transparent) Does not provide anonymity at all
      * Source: https://docs.proxymesh.com/article/78-proxy-anonymity-levels
      */
     String lvl;
@@ -52,7 +54,7 @@ public class ProxyChecker {
      * @param ipAddress  Ip Address
      * @param proxyType  Proxy Protocol (http, https, socks4, socks5)
      */
-    public ProxyChecker(DatabaseReader dbReader, ConcurrentHashMap<String, LookupResult> onlineProxies, String ipAddress, String proxyType) {
+    public ProxyChecker(DatabaseReader dbReader, ConcurrentHashMap<String, LookupResult> onlineProxies, String ipAddress, List<ProxyType> proxyType) {
         this.dbReader = dbReader;
         this.onlineProxies = onlineProxies;
         this.proxyType = proxyType;
@@ -85,16 +87,15 @@ public class ProxyChecker {
                 // Check for anonymity level
                 JsonObject json = JsonParser.parseString(res.body()).getAsJsonObject();
                 String origin = json.get("origin").getAsString();
-                Pattern pattern = Pattern.compile("(\\d+\\.)+\\d+");
+                Pattern pattern = Pattern.compile("(\\d+\\.)+\\d+,\\s(\\d+\\.)+\\d+", Pattern.CASE_INSENSITIVE);
                 Matcher matcher = pattern.matcher(origin);
-                if(matcher.groupCount() == 1){
+                if(!matcher.find()){
                     // Level 1, Elite Anonymity
-                    this.lvl = "ELITE";
+                    this.lvl = "High";
                 } else {
                     // There are two ip addresses, most likely transparent or anonymous proxy
-                    this.lvl = "TRANSPARENT";
+                    this.lvl = "Low";
                 }
-                res.body();
             }
         } catch (Exception ignored) {}
 
@@ -102,11 +103,11 @@ public class ProxyChecker {
     }
 
     /**
-     * Checks proxy protocol is not specified
+     * get proxy protocol
      * @return String
      */
-    public String checkProtocol(){
-        String proxyType = null;
+    public ProxyType getProtocol(){
+        ProxyType proxyType = null;
         for(Proxy.Type protocol: Proxy.Type.values()){
             try {
                 Proxy proxy = new Proxy(protocol, new InetSocketAddress(this.host, this.port));
@@ -115,12 +116,11 @@ public class ProxyChecker {
                 con.setConnectTimeout(8000);
                 con.connect();
                 int resCode = con.getResponseCode();
-                if(resCode == 200) proxyType = String.valueOf(protocol);
+                if(resCode == 200) proxyType = ProxyType.valueOf(protocol.name());
             } catch(IOException e){
                 e.printStackTrace();
             }
         }
-
         return proxyType;
     }
 

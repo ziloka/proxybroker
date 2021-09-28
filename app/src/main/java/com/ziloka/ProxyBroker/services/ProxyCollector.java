@@ -9,7 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.SSLException;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -35,7 +34,7 @@ public class ProxyCollector {
 
     private final Logger LOG = LogManager.getLogger(ProxyCollector.class);
 
-    String type;
+    List<ProxyType> type;
     String countries;
     List<ProxySource> proxySources;
 
@@ -43,7 +42,7 @@ public class ProxyCollector {
      * @param type - Proxy Type
      * @param countries - Proxy must be from specified countries
      */
-    public ProxyCollector(String type, String countries) {
+    public ProxyCollector(List<ProxyType> type, String countries) {
         this.type = type;
         this.countries = countries;
         this.setSources();
@@ -61,15 +60,9 @@ public class ProxyCollector {
             Gson gson = new Gson();
             InputStream inputStream = getClass().getClassLoader().getResourceAsStream("ProxySources.json");
             InputStreamReader streamReader = new InputStreamReader(Objects.requireNonNull(inputStream), StandardCharsets.UTF_8);
-            BufferedReader reader = new BufferedReader(streamReader);
-            StringBuilder json = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                json.append(line);
-            }
-            ProxySource[] proxySources = gson.fromJson(json.toString().replaceAll("\\s+", ""), ProxySource[].class);
+            ProxySource[] proxySources = gson.fromJson(streamReader, ProxySource[].class);
             this.proxySources = Arrays.stream(proxySources).collect(Collectors.toList());
-        } catch(IOException e) {
+        } catch(Exception e) {
             e.printStackTrace();
         }
 
@@ -103,7 +96,7 @@ public class ProxyCollector {
         return proxy;
     }
 
-    public ArrayList<String> getProxies(ProxyType proxyType) {
+    public ArrayList<String> getProxies(List<ProxyType> proxyType) {
 
         ArrayList<String> result = new ArrayList<>();
 
@@ -111,12 +104,15 @@ public class ProxyCollector {
          * NullPointerException - x.type is null
          * ProxySource type property is invalid in resources/ProxySources.json
          */
-        Function<ProxyType, List<String>> getSpecifiedProxySource = (ProxyType specificProxyType) -> proxySources.stream()
-                .filter(x -> x.type.equals(proxyType))
-                .map(x -> x.url)
-                .collect(Collectors.toList());
 
-        List<String> iterateProxiesList = proxyType.toString().equals("ALL") ? proxySources.stream().map(x -> x.url).collect(Collectors.toList()) : getSpecifiedProxySource.apply(proxyType);
+        Supplier<List<String>> getSpecifiedProxySource = () -> proxySources.stream()
+            .filter(x -> proxyType.stream().filter(e -> e.equals(x.type)).count() == 1)
+            .map(x -> x.url)
+            .collect(Collectors.toList());
+
+        List<String> iterateProxiesList = proxyType.stream().filter(x -> x.toString().equals("ALL")).count() == 1
+            ? proxySources.stream().map(x -> x.url).collect(Collectors.toList())
+            : getSpecifiedProxySource.get();
 
         HttpClient client = HttpClient.newBuilder()
                 .version(Version.HTTP_2)

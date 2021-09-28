@@ -3,10 +3,12 @@ package com.ziloka.ProxyBroker.services;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.ziloka.ProxyBroker.services.models.LookupResult;
+import com.ziloka.ProxyBroker.services.models.ProxyType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ProxyThread implements Runnable {
@@ -17,7 +19,7 @@ public class ProxyThread implements Runnable {
     String proxy;
     String host;
     int port;
-    String types;
+    List<ProxyType> types;
     String lvl;
     ProxyChecker proxyChecker;
     ProxyLookup proxyLookup;
@@ -29,7 +31,7 @@ public class ProxyThread implements Runnable {
      * @param types - Proxy types
      * @param lvl - Proxy anonymity level
      */
-    public ProxyThread(DatabaseReader dbReader, ConcurrentHashMap<String, LookupResult> onlineProxies, String proxy, String types, String lvl) {
+    public ProxyThread(DatabaseReader dbReader, ConcurrentHashMap<String, LookupResult> onlineProxies, String proxy, List<ProxyType> types, String lvl) {
         this.onlineProxies = onlineProxies;
         this.proxy = proxy;
         this.host = proxy.split(":")[0];
@@ -45,10 +47,16 @@ public class ProxyThread implements Runnable {
      */
     public void run(){
         try {
-            if(this.proxyChecker.check()){
-                this.onlineProxies.put(this.proxy, this.proxyLookup.getInfo());
+            boolean result = this.proxyChecker.check();
+            boolean isLvl = this.lvl.length() == 0 || proxyChecker.lvl.equals(this.lvl);
+            if(result && isLvl){
+                LookupResult proxyInfo = this.proxyLookup.getInfo();
+//                proxyInfo.setProxyType(this.proxyChecker.getProtocol());
+//                System.out.println(proxyInfo.getProxyType());
+                this.onlineProxies.put(this.proxy, proxyInfo);
+            } else if(this.onlineProxies.get(this.proxy) != null) {
+                this.onlineProxies.remove(this.proxy);
             }
-
         } catch (IOException | GeoIp2Exception e) {
             // Don't print anything
             e.printStackTrace();
