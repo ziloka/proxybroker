@@ -16,6 +16,7 @@ public class ProxyThread implements Runnable {
     private final Logger LOG = LogManager.getLogger(ProxyCollector.class);
 
     final ConcurrentHashMap<String, LookupResult> onlineProxies;
+    String externalIpAddr;
     String proxy;
     String host;
     int port;
@@ -31,15 +32,16 @@ public class ProxyThread implements Runnable {
      * @param types - Proxy types
      * @param lvl - Proxy anonymity level
      */
-    public ProxyThread(DatabaseReader dbReader, ConcurrentHashMap<String, LookupResult> onlineProxies, String proxy, List<ProxyType> types, String lvl) {
+    public ProxyThread(DatabaseReader dbReader, ConcurrentHashMap<String, LookupResult> onlineProxies, String externalIpAddr, String proxy, List<ProxyType> types, String lvl) {
         this.onlineProxies = onlineProxies;
+        this.externalIpAddr = externalIpAddr;
         this.proxy = proxy;
         this.host = proxy.split(":")[0];
         this.port = Integer.parseInt(proxy.split(":")[1]);
         this.types = types;
         this.lvl = lvl;
-        this.proxyChecker = new ProxyChecker(dbReader, this.onlineProxies, this.proxy, types);
-        this.proxyLookup = new ProxyLookup(dbReader, this.host, this.port);
+        this.proxyChecker = new ProxyChecker(dbReader, onlineProxies, externalIpAddr, proxy, types);
+        this.proxyLookup = new ProxyLookup(dbReader, host, port);
     }
 
     /**
@@ -52,7 +54,6 @@ public class ProxyThread implements Runnable {
             if(result && isLvl){
                 LookupResult proxyInfo = this.proxyLookup.getInfo();
 //                proxyInfo.setProxyType(this.proxyChecker.getProtocol());
-//                System.out.println(proxyInfo.getProxyType());
                 this.onlineProxies.put(this.proxy, proxyInfo);
             } else if(this.onlineProxies.get(this.proxy) != null) {
                 this.onlineProxies.remove(this.proxy);

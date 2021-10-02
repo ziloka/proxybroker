@@ -6,4 +6,4 @@
 # https://www.graalvm.org/docs/getting-started/windows/#prerequisites-for-using-native-image-on-windows
 cmd /c "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsx86_amd64.bat"
 # With --no-fallback throws error
-native-image -jar app/build/libs/ProxyChecker.jar
+native-image -jar app/build/libs/ProxyBroker.jar

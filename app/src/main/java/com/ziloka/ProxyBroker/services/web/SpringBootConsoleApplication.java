@@ -1,6 +1,7 @@
 package com.ziloka.ProxyBroker.services.web;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import com.maxmind.geoip2.DatabaseReader;
 import com.ziloka.ProxyBroker.services.ProxyCollector;
 import com.ziloka.ProxyBroker.services.ProxyThread;
@@ -20,6 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -49,22 +54,26 @@ public class SpringBootConsoleApplication {
                     ArrayList<String> proxies = proxyProvider.getProxies(Arrays.asList(ProxyType.ALL));
                     ExecutorService executorService = Executors.newCachedThreadPool();
 
+                    HttpClient client = HttpClient.newHttpClient();
+                    HttpRequest request = HttpRequest.newBuilder(
+                            URI.create("http://httpbin.org/ip?json")
+                    ).build();
+                    HttpResponse<String> res = client.send(request, HttpResponse.BodyHandlers.ofString());
+                    String externalIpAddr = JsonParser.parseString(res.body()).getAsJsonObject().get("origin").getAsString();
+
                     InputStream database = getClass().getClassLoader().getResourceAsStream("GeoLite2-Country.mmdb");
                     DatabaseReader dbReader = new DatabaseReader.Builder(database)
                                 .build();
-                    // Add more proxies
+
+                    proxies.addAll(cache.keySet());
+                    // Add more proxies & Check current proxies & see if they are still alive
                     for (String proxy : proxies) {
-                        ProxyThread proxyThread = new ProxyThread(dbReader, cache, proxy, Arrays.asList(ProxyType.ALL), "");
-                        executorService.submit(proxyThread);
-                    }
-                    // Check current proxies & see if they are still alive
-                    for (String proxy : cache.keySet()){
-                        ProxyThread proxyThread = new ProxyThread(dbReader, cache, proxy, Arrays.asList(ProxyType.ALL), "");
+                        ProxyThread proxyThread = new ProxyThread(dbReader, cache, externalIpAddr, proxy, Arrays.asList(ProxyType.ALL), "");
                         executorService.submit(proxyThread);
                     }
 
                     executorService.shutdown();
-                } catch(IOException e) {
+                } catch(IOException | InterruptedException e) {
 
                 }
 

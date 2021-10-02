@@ -1,5 +1,6 @@
 package com.ziloka.ProxyBroker.subcmds;
 
+import com.google.gson.JsonParser;
 import com.ziloka.ProxyBroker.services.ProxyCollector;
 import com.ziloka.ProxyBroker.services.ProxyThread;
 import com.ziloka.ProxyBroker.services.models.LookupResult;
@@ -15,6 +16,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.ProxySelector;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -71,6 +78,13 @@ public class FindCommand implements Callable<Integer> {
             ProxyCollector proxyProvider = new ProxyCollector(types, countries);
             ArrayList<String> proxies = proxyProvider.getProxies(types);
 
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder(
+                    URI.create("http://httpbin.org/ip?json")
+            ).build();
+            HttpResponse<String> res = client.send(request, HttpResponse.BodyHandlers.ofString());
+            String externalIpAddr = JsonParser.parseString(res.body()).getAsJsonObject().get("origin").getAsString();
+
             // String#format
             // https://www.javatpoint.com/java-string-format
             LOG.debug(String.format("There are %d unchecked proxies", proxies.size()));
@@ -86,7 +100,7 @@ public class FindCommand implements Callable<Integer> {
                     .build();
             for (String proxy : proxies) {
                 try {
-                    ProxyThread proxyThread = new ProxyThread(dbReader, onlineProxies, proxy, types, lvl);
+                    ProxyThread proxyThread = new ProxyThread(dbReader, onlineProxies, externalIpAddr, proxy, types, lvl);
                     executorService.submit(proxyThread);
                 } catch (Exception e){
                     e.printStackTrace();

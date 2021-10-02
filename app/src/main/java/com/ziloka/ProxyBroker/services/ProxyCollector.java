@@ -1,14 +1,14 @@
 package com.ziloka.ProxyBroker.services;
 
+import com.ziloka.ProxyBroker.services.models.ProxySource;
+import com.ziloka.ProxyBroker.services.models.ProxyType;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.ziloka.ProxyBroker.services.models.ProxySource;
-import com.ziloka.ProxyBroker.services.models.ProxyType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -143,9 +143,9 @@ public class ProxyCollector {
                     System.out.println("Status Code"+ statusCode);
                 }
             } catch (InterruptedException | IOException e) {
-                if(!(e instanceof SSLException) && !e.getMessage().equals("Unrecognized SSL message, plaintext connection?")){
-                    e.printStackTrace();
-                }
+//                if(!(e instanceof SSLException) && !e.getMessage().equals("Unrecognized SSL message, plaintext connection?")){
+//                    e.printStackTrace();
+//                }
             }
 
         }

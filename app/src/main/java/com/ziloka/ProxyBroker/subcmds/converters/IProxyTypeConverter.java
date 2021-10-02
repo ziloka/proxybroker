@@ -1,7 +1,6 @@
 package com.ziloka.ProxyBroker.subcmds.converters;
 
 import com.ziloka.ProxyBroker.services.models.ProxyType;
-import picocli.CommandLine;
 import picocli.CommandLine.ITypeConverter;
 
 import java.util.ArrayList;

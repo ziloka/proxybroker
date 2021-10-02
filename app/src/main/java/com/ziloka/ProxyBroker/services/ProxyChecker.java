@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.maxmind.geoip2.DatabaseReader;
 import com.ziloka.ProxyBroker.services.models.ProxyType;
+import com.ziloka.ProxyBroker.utils.JSON;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,10 +21,10 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Collect information if proxy is online or not
@@ -33,7 +34,8 @@ public class ProxyChecker {
     private final Logger LOG = LogManager.getLogger(ProxyChecker.class);
 
     DatabaseReader dbReader;
-    ConcurrentHashMap<String, LookupResult> onlineProxies;
+    final ConcurrentHashMap<String, LookupResult> onlineProxies;
+    String externalIpAddr;
     List<ProxyType> proxyType;
     String host;
     Integer port;
@@ -54,9 +56,10 @@ public class ProxyChecker {
      * @param ipAddress  Ip Address
      * @param proxyType  Proxy Protocol (http, https, socks4, socks5)
      */
-    public ProxyChecker(DatabaseReader dbReader, ConcurrentHashMap<String, LookupResult> onlineProxies, String ipAddress, List<ProxyType> proxyType) {
+    public ProxyChecker(DatabaseReader dbReader, ConcurrentHashMap<String, LookupResult> onlineProxies, String externalIpAddr, String ipAddress, List<ProxyType> proxyType) {
         this.dbReader = dbReader;
         this.onlineProxies = onlineProxies;
+        this.externalIpAddr = externalIpAddr;
         this.proxyType = proxyType;
         this.host = ipAddress.split(":")[0];
         this.port = Integer.parseInt(ipAddress.split(":")[1]);
@@ -82,19 +85,17 @@ public class ProxyChecker {
                     URI.create("http://httpbin.org/ip?json")
             ).build();
             HttpResponse<String> res = client.send(request, BodyHandlers.ofString());
-            if(res.statusCode() == 200){
-                isOnline = true;
+            if(res.statusCode() == HttpURLConnection.HTTP_OK){
                 // Check for anonymity level
                 JsonObject json = JsonParser.parseString(res.body()).getAsJsonObject();
                 String origin = json.get("origin").getAsString();
-                Pattern pattern = Pattern.compile("(\\d+\\.)+\\d+,\\s(\\d+\\.)+\\d+", Pattern.CASE_INSENSITIVE);
-                Matcher matcher = pattern.matcher(origin);
-                if(!matcher.find()){
-                    // Level 1, Elite Anonymity
-                    this.lvl = "High";
-                } else {
-                    // There are two ip addresses, most likely transparent or anonymous proxy
-                    this.lvl = "Low";
+                if(JSON.isJsonValid(res.body())){
+                    isOnline = true;
+                    if(!origin.contains(externalIpAddr)){
+                        this.lvl = "High";
+                    } else {
+                        this.lvl = "Low";
+                    }
                 }
             }
         } catch (Exception ignored) {}
@@ -108,15 +109,22 @@ public class ProxyChecker {
      */
     public ProxyType getProtocol(){
         ProxyType proxyType = null;
-        for(Proxy.Type protocol: Proxy.Type.values()){
+        List<Proxy.Type> protocols = Arrays.stream(Proxy.Type.values()).filter(x -> !x.name().equals("ALL")).collect(Collectors.toList());
+        for(Proxy.Type protocol: protocols){
             try {
-                Proxy proxy = new Proxy(protocol, new InetSocketAddress(this.host, this.port));
-                HttpURLConnection con = (HttpURLConnection) (new URL("http://httpbin.org/ip?json")).openConnection(proxy);
-                con.setReadTimeout(8000);
-                con.setConnectTimeout(8000);
-                con.connect();
+                System.out.println(protocol);
+                URL url = new URL("http://httpbin.org/ip?json");
+                InetSocketAddress proxyAddr = new InetSocketAddress(this.host, this.port);
+                Proxy webProxy = new Proxy(protocol, proxyAddr);
+                HttpURLConnection con = (HttpURLConnection) url.openConnection(webProxy);
+                con.setRequestMethod("GET");
+                con.setRequestProperty("User-Agent", "Mozilla/5.0");
                 int resCode = con.getResponseCode();
-                if(resCode == 200) proxyType = ProxyType.valueOf(protocol.name());
+                System.out.printf("Status Code: %d\n", resCode);
+                if(resCode == HttpURLConnection.HTTP_OK){
+                    proxyType = ProxyType.valueOf(protocol.name());
+                    break;
+                }
             } catch(IOException e){
                 e.printStackTrace();
             }
