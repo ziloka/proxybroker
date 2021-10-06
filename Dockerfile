@@ -5,7 +5,8 @@ COPY app/build.gradle .
 
 RUN apk add --no-cache openjdk11 gradle \
     && gradle wrapper \
-    && ./gradlew build -Papp=ProxyBroker.jar
+    && ./gradlew -Pagent run \
+    && ./gradlew -Pagent nativeBuild
 RUN rm -rf /var/cache/apk/*
 
 COPY . .

@@ -15,9 +15,9 @@ public class ProxyLookup {
 
     private final Logger LOG = LogManager.getLogger(ProxyCollector.class);
 
-    String host;
-    Integer port;
-    DatabaseReader dbReader;
+    private String host;
+    private Integer port;
+    private DatabaseReader dbReader;
 
     /**
      * @param dbReader - Max Mind Geo Ip2 database reader

@@ -15,15 +15,14 @@ public class ProxyThread implements Runnable {
 
     private final Logger LOG = LogManager.getLogger(ProxyCollector.class);
 
-    final ConcurrentHashMap<String, LookupResult> onlineProxies;
-    String externalIpAddr;
-    String proxy;
-    String host;
-    int port;
-    List<ProxyType> types;
-    String lvl;
-    ProxyChecker proxyChecker;
-    ProxyLookup proxyLookup;
+    private final ConcurrentHashMap<String, LookupResult> onlineProxies;
+    private String proxy;
+    private String host;
+    private int port;
+    private List<ProxyType> types;
+    private String lvl;
+    private ProxyChecker proxyChecker;
+    private ProxyLookup proxyLookup;
 
     /**
      * @param dbReader - MaxMind GeoIp2 Database reader
@@ -34,7 +33,6 @@ public class ProxyThread implements Runnable {
      */
     public ProxyThread(DatabaseReader dbReader, ConcurrentHashMap<String, LookupResult> onlineProxies, String externalIpAddr, String proxy, List<ProxyType> types, String lvl) {
         this.onlineProxies = onlineProxies;
-        this.externalIpAddr = externalIpAddr;
         this.proxy = proxy;
         this.host = proxy.split(":")[0];
         this.port = Integer.parseInt(proxy.split(":")[1]);

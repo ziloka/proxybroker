@@ -8,7 +8,6 @@ import com.ziloka.ProxyBroker.services.ProxyThread;
 import com.ziloka.ProxyBroker.services.models.LookupResult;
 
 import com.ziloka.ProxyBroker.services.models.ProxyType;
-import com.ziloka.ProxyBroker.subcmds.ServeCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -21,14 +20,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.ProxySelector;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.net.http.*;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 
 @Component
 @RequestMapping("/")
@@ -36,7 +37,7 @@ import java.util.concurrent.Executors;
 @EnableAutoConfiguration
 public class SpringBootConsoleApplication {
 
-    private final Logger LOG = LoggerFactory.getLogger(ServeCommand.class);
+    private final Logger LOG = LoggerFactory.getLogger(SpringBootConsoleApplication.class);
 
     private final ConcurrentHashMap<String, LookupResult> cache = new ConcurrentHashMap<>();
     private final ProxyCollector proxyProvider = new ProxyCollector(List.of(ProxyType.ALL), "");
@@ -51,7 +52,7 @@ public class SpringBootConsoleApplication {
             public void run() {
 
                 try {
-                    ArrayList<String> proxies = proxyProvider.getProxies(Arrays.asList(ProxyType.ALL));
+                    ArrayList<String> proxies = proxyProvider.getProxies(List.of(ProxyType.ALL));
                     ExecutorService executorService = Executors.newCachedThreadPool();
 
                     HttpClient client = HttpClient.newHttpClient();
@@ -68,7 +69,7 @@ public class SpringBootConsoleApplication {
                     proxies.addAll(cache.keySet());
                     // Add more proxies & Check current proxies & see if they are still alive
                     for (String proxy : proxies) {
-                        ProxyThread proxyThread = new ProxyThread(dbReader, cache, externalIpAddr, proxy, Arrays.asList(ProxyType.ALL), "");
+                        ProxyThread proxyThread = new ProxyThread(dbReader, cache, externalIpAddr, proxy, List.of(ProxyType.ALL), "High");
                         executorService.submit(proxyThread);
                     }
 
@@ -88,16 +89,68 @@ public class SpringBootConsoleApplication {
                         @RequestParam(name = "lvl", required = false, defaultValue = "High") String lvl,
                         @RequestParam(name = "limit", required = false, defaultValue = "20") String limit) {
         Gson gson = new Gson();
-        List<LookupResult> proxies = new ArrayList<>();
-        cache.values().forEach((LookupResult value) -> {
-            proxies.add(value);
-        });
+        List<LookupResult> proxies = new ArrayList<>(cache.values());
         return gson.toJson(proxies);
     }
 
-    @RequestMapping("/api")
-    public String home(){
-        return "Hello, this is my home.";
+    // http://localhost:8080/request?url=https%3A%2F%2Fwww.google.com%2Fsearch%3Fq%3Durl%2Bonline%2Bbuilder
+    // http://localhost:8080/request?url=http%3A%2F%2Fhttpbin.org%2Fip
+    @RequestMapping("/request")
+    public String home(@RequestParam(name = "url", required = true) String url){
+        long requestStart = System.currentTimeMillis();
+        String result = null;
+        Supplier<HttpResponse<String>> requestFunc = () -> {
+            // https://stackoverflow.com/a/37180410
+            List<String> list = new ArrayList<>(cache.keySet());
+
+            int randNextInt = 1;
+            if(list.size() > 0){
+                while(randNextInt <= 1){
+                    // https://www.baeldung.com/java-random-list-element
+                    Random rand = new Random();
+                    randNextInt = rand.nextInt(list.size());
+                }
+            }
+
+            String randomKey = list.get(randNextInt);
+
+            String host = randomKey.split(":")[0];
+            LOG.info(randomKey);
+            int port = Integer.parseInt(randomKey.split(":")[1]);
+            HttpClient client = HttpClient.newBuilder()
+                    .proxy(ProxySelector.of(new InetSocketAddress(host, port)))
+                    .connectTimeout(Duration.ofSeconds(1))
+                    .build();
+            HttpRequest request = HttpRequest.newBuilder(
+                    URI.create(url)
+            ).build();
+            HttpResponse<String> res = null;
+            try {
+                res = client.send(request, HttpResponse.BodyHandlers.ofString());
+            } catch (IOException | InterruptedException e) {
+                if(e instanceof IOException){
+                    LOG.error(e.getMessage());
+                    return null;
+                } else {
+                    e.printStackTrace();
+                }
+            }
+
+            return res;
+        };
+
+        while(result == null){
+            int responseCount = 1;
+            HttpResponse<String> response = requestFunc.get();
+            while(response == null){
+                responseCount+=1;
+                response = requestFunc.get();
+            }
+            System.out.printf("Made %d requests, There are %d active proxies, time taken: %dms\n", responseCount, cache.size(), System.currentTimeMillis()-requestStart);
+            result = response.body();
+        }
+
+        return result;
     }
 
 }

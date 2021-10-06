@@ -34,9 +34,9 @@ public class ProxyCollector {
 
     private final Logger LOG = LogManager.getLogger(ProxyCollector.class);
 
-    List<ProxyType> type;
-    String countries;
-    List<ProxySource> proxySources;
+    private List<ProxyType> type;
+    private String countries;
+    private List<ProxySource> proxySources;
 
     /**
      * @param type - Proxy Type

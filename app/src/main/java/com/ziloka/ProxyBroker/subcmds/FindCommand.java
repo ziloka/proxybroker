@@ -15,9 +15,9 @@ import picocli.CommandLine.Option;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.InputStream;
-import java.net.InetSocketAddress;
-import java.net.ProxySelector;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -51,7 +51,7 @@ public class FindCommand implements Callable<Integer> {
     @Option(names = {"--limit", "-l"}, defaultValue = "10", type = Integer.class)
     private int limit;
 
-    @Option(names = {"--timeout", "-t"}, defaultValue = "8", type = Integer.class)
+    @Option(names = {"--timeout", "-t"}, defaultValue = "1", type = Integer.class)
     private int timeout;
 
     @Option(names = {"--outfile", "-o"}, defaultValue = "")
@@ -128,10 +128,18 @@ public class FindCommand implements Callable<Integer> {
 
             LOG.debug(String.format("There are %d online proxies", onlineProxies.size()));
 
-            onlineProxies.keySet().stream().limit(limit).forEach((entry) -> {
-                LookupResult value = onlineProxies.get(entry);
-                System.out.printf("<Proxy %s %s>\n", value.getCountryName(), entry);
-            });
+            // ProxyBroker --outfile=proxies.txt
+            if(OutFile.length() != 0){
+                BufferedWriter writer = new BufferedWriter(new FileWriter(OutFile));
+                writer.write(String.join("\n", proxies));
+                writer.close();
+                System.out.printf("Wrote %s checked proxies to %s\n", proxies.size(), OutFile);
+            } else {
+                onlineProxies.keySet().stream().limit(limit).forEach((entry) -> {
+                    LookupResult value = onlineProxies.get(entry);
+                    System.out.printf("<Proxy %s %s>\n", value.getCountryName(), entry);
+                });
+            }
 
         } catch (Exception e){
             e.printStackTrace();

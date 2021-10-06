@@ -2,6 +2,7 @@ package com.ziloka.ProxyBroker;
 
 import com.ziloka.ProxyBroker.handlers.ShortErrorMessageHandler;
 import com.ziloka.ProxyBroker.subcmds.FindCommand;
+import com.ziloka.ProxyBroker.subcmds.GrabCommand;
 import com.ziloka.ProxyBroker.subcmds.ServeCommand;
 import picocli.CommandLine;
 import picocli.CommandLine.ParseResult;
@@ -18,6 +19,7 @@ import java.util.concurrent.Callable;
 // https://picocli.info/#_registering_subcommands_declaratively
 @Command(name = "proxychecker", description = "Find or serve proxy server", subcommands = {
         FindCommand.class,
+        GrabCommand.class,
         ServeCommand.class
 })
 public class ProxyBroker implements Callable<Integer> {
