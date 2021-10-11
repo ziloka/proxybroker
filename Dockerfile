@@ -1,3 +1,4 @@
+# https://stackoverflow.com/questions/53669151/java-11-application-as-lightweight-docker-image
 FROM alpine:3.14.2 as build
 
 WORKDIR /usr/app/proxybroker
