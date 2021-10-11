@@ -2,15 +2,12 @@
 FROM alpine:3.14.2 as build
 
 WORKDIR /usr/app/proxybroker
-COPY app/build.gradle .
+
+COPY . .
 
 RUN apk add --no-cache openjdk11 gradle \
     && gradle wrapper \
-    && ./gradlew -Pagent run \
-    && ./gradlew -Pagent nativeBuild
-RUN rm -rf /var/cache/apk/*
-
-COPY . .
+    && ./gradlew run
 
 # https://github.com/GoogleContainerTools/distroless
 # May switch to a distroless image
