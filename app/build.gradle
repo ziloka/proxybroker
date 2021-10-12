@@ -60,3 +60,9 @@ bootJar {
 jar {
     archiveBaseName = 'ProxyBroker'
 }
+
+// copies all the jar dependencies your app needs to the lib folder
+task copyDependencies(type: Copy) {
+    from configurations.runtimeClasspath
+    into "$buildDir/lib"
+}
