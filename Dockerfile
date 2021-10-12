@@ -1,4 +1,5 @@
 # https://stackoverflow.com/questions/53669151/java-11-application-as-lightweight-docker-image
+# https://levelup.gitconnected.com/java-developing-smaller-docker-images-with-jdeps-and-jlink-d4278718c550
 FROM alpine:3.14.2 as build
 
 WORKDIR /usr/app/proxybroker
