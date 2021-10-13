@@ -8,6 +8,7 @@ plugins {
     // plugin to provide which dependencies have updates
     // adds dependencyUpdates task
     id 'com.github.ben-manes.versions' version '0.39.0'
+    id 'com.google.cloud.tools.jib' version '3.1.4'
 }
 
 sourceCompatibility = '11'
@@ -17,14 +18,7 @@ repositories {
     mavenCentral()
 }
 
-def versions = [
-        ScalaBinary: "2.13"
-]
-
 dependencies {
-    // Akka Actors
-    implementation platform("com.typesafe.akka:akka-bom_${versions.ScalaBinary}:2.6.16")
-    implementation "com.typesafe.akka:akka-actor-typed_${versions.ScalaBinary}"
     implementation 'info.picocli:picocli:4.6.1'
     implementation 'com.google.code.gson:gson:2.8.8'
     implementation 'com.maxmind.geoip2:geoip2:2.15.0'
@@ -42,8 +36,6 @@ dependencies {
     implementation 'org.slf4j:slf4j-simple:2.0.0-alpha5'
     implementation 'org.slf4j:slf4j-api:2.0.0-alpha5'
     testImplementation 'junit:junit:4.13.2'
-    // Akka Actor
-    testImplementation "com.typesafe.akka:akka-actor-testkit-typed_${versions.ScalaBinary}"
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 }
 
