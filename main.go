@@ -5,7 +5,9 @@ import (
 	"log"
 	"net"
 	"os"
+	"runtime"
 	"strings"
+	"time"
 	"github.com/Ziloka/ProxyBroker/services"
 	"github.com/oschwald/geoip2-golang"
 	"github.com/urfave/cli/v2"
@@ -13,16 +15,19 @@ import (
 
 func main() {
 	app := &cli.App{
-		Name: "ProxyBroker",
+		Name:  "ProxyBroker",
 		Usage: "proxybroker find",
-		Flags: []cli.Flag {
+		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name: "find",
+				Name:  "find",
 				Value: "http",
 				Usage: "proxy protocol",
 			},
 		},
 		Action: func(c *cli.Context) error {
+
+			runtime.GOMAXPROCS(4)
+
 			proxies := services.Collect()
 			publicIpAddr, err := services.GetpublicIpAddr()
 			if err != nil {
@@ -31,22 +36,30 @@ func main() {
 			checkedProxies := []string{}
 			for _, proxy := range proxies {
 				// https://reshefsharvit.medium.com/common-pitfalls-and-cases-when-using-goroutines-15107237d4f5
-				isOnline := make(chan bool, 1)
-				go services.Check(publicIpAddr, proxy, isOnline)
-				result := <- isOnline
-				if result {
-					checkedProxies = append(checkedProxies, proxy)
-					if(len(checkedProxies) >= 10){
-						break;
-					}
+				go services.Check(&checkedProxies, publicIpAddr, proxy)
+				// fmt.Printf("Amount of proxies: %v\n", len(checkedProxies))
+				// fmt.Printf("Proxies: %v\n", checkedProxies)
+				if len(checkedProxies) >= 10 {
+					break
 				}
 			}
+
+				time.Sleep(1*time.Second)
 
 			db, dbErr := geoip2.Open("GeoLite2-Country.mmdb")
 			if err != nil {
 				return dbErr
 			}
 			defer db.Close()
+
+			// max :=100
+			// count :=0
+			// for (len(checkedProxies) <= 9 || count<max ){
+			// 	fmt.Printf("Amount of proxies: %v\n", len(checkedProxies))
+			// 	count = count +1
+			// }
+			
+
 			for _, proxy := range checkedProxies {
 				host := strings.Split(proxy, ":")[0]
 				ip := net.ParseIP(host)
