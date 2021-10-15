@@ -26,9 +26,8 @@ jobs:
           go-version: '^1.17.2'
       - name: Build with Golang
         run: bash build.bash github.com/Ziloka/ProxyBroker
-        # run: go build -ldflags="-s -w" -o ProxyBroker main.go
       - name: Archive code
         uses: actions/upload-artifact@v2
         with:
           name: build-artifacts
-          path: 'ProxyBroker*'
+          path: './ProxyBroker*'
