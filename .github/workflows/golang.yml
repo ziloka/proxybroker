@@ -16,16 +16,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
-
+        os: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Golang 17
         uses: actions/setup-go@v2
         with:
           go-version: '^1.17.2'
+      - name: Install UPX and strip
+        run: sudo apt-get install binutils upx
       - name: Build with Golang
         run: bash build.bash github.com/Ziloka/ProxyBroker
+      - name: Minimize Linux Executable Size (Strip debug data)
+        run: strip --strip-all ProxyBroker-linux-amd64
       - name: Archive code
         uses: actions/upload-artifact@v2
         with:
