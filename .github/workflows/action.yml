@@ -6,7 +6,21 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-    
-runs:
-  using: 'docker'
-  image: 'Dockerfile'
+
+jobs:
+  build:
+    name: Build ProxyChecker on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs:
+    using: 'docker'
+    image: 'Dockerfile'
+    steps:
+     - name: Archive code
+       uses: actions/upload-artifact@v2
+       with:
+        name: build-artifacts
+        path: './ProxyBroker*'
