@@ -1,10 +1,17 @@
-FROM golang:1.13.4 as build
+FROM golang:1.17.2-alpine3.14 as build
 
+WORKDIR /usr/app/proxybroker
 COPY . .
 
-RUN go build -o main main.go
+ENV GOOS=linux
+
+# https://blog.filippo.io/shrink-your-go-binaries-with-this-one-weird-trick/
+RUN go build -ldflags="-s -w" -o ProxyBroker main.go \
+	&& apk add binutils upx \
+	&& strip --strip-all ProxyBroker \
+	&& upx -9 ProxyBroker
 
 FROM scratch
 
-COPY --from=build main main
-CMD ["./main"]
+COPY --from=build /usr/app/proxybroker/ProxyBroker main
+CMD ["./ProxyBroker"]
