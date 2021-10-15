@@ -1,0 +1,5 @@
+name: 'Build ProxyBroker'
+description: 'Build Golang ProxyBroker project'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
