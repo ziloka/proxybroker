@@ -7,7 +7,6 @@ import (
 	"os"
 	"runtime"
 	"strings"
-	"time"
 	"github.com/Ziloka/ProxyBroker/services"
 	"github.com/oschwald/geoip2-golang"
 	"github.com/urfave/cli/v2"
@@ -37,14 +36,17 @@ func main() {
 			for _, proxy := range proxies {
 				// https://reshefsharvit.medium.com/common-pitfalls-and-cases-when-using-goroutines-15107237d4f5
 				go services.Check(&checkedProxies, publicIpAddr, proxy)
-				// fmt.Printf("Amount of proxies: %v\n", len(checkedProxies))
-				// fmt.Printf("Proxies: %v\n", checkedProxies)
 				if len(checkedProxies) >= 10 {
 					break
 				}
 			}
 
-				time.Sleep(1*time.Second)
+			// Golang while loop implementation
+			for 1 < 2 {
+				if len(checkedProxies) >= 10 {
+					break
+				}
+			}
 
 			db, dbErr := geoip2.Open("GeoLite2-Country.mmdb")
 			if err != nil {
@@ -52,15 +54,7 @@ func main() {
 			}
 			defer db.Close()
 
-			// max :=100
-			// count :=0
-			// for (len(checkedProxies) <= 9 || count<max ){
-			// 	fmt.Printf("Amount of proxies: %v\n", len(checkedProxies))
-			// 	count = count +1
-			// }
-			
-
-			for _, proxy := range checkedProxies {
+			for _, proxy := range checkedProxies[:10] {
 				host := strings.Split(proxy, ":")[0]
 				ip := net.ParseIP(host)
 				record, recordErr := db.Country(ip)
