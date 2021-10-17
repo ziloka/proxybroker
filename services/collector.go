@@ -3,11 +3,12 @@ package services
 import (
 	"encoding/json"
 	"fmt"
-	"time"
-	"io/ioutil"
 	"io"
-	"strings"
+	"io/ioutil"
+	"log"
 	"net/http"
+	"regexp"
+	"time"
 )
 
 
@@ -18,7 +19,7 @@ type sourceStruct struct {
 
 func getProxies() []string {
 	// https://www.golangprograms.com/golang-read-json-file-into-struct.html
-	file, _ := ioutil.ReadFile("sources.json")
+	file, _ := ioutil.ReadFile("assets/sources.json")
 	data := []sourceStruct{}
 	json.Unmarshal([]byte(file), &data)
 	var sources []string
@@ -45,10 +46,12 @@ func Collect() []string {
 		defer res.Body.Close()
 		b, _ := io.ReadAll(res.Body)
 		content := string(b)
-		proxiesFromSource := strings.Split(content, "\r\n")
-		fmt.Printf("Debug there are %d proxies\n", len(proxiesFromSource))
+		re, _ := regexp.Compile(`\d+\.\d+\.\d+\.\d+:\d+`)
+		proxiesFromSource := re.FindAllString(content, -1)
 		proxies = append(proxies, proxiesFromSource...)
+		log.Printf("Found %v proxies from source %v\n", len(proxiesFromSource), url)
 	}
+	log.Printf("Debug there are %d proxies\n", len(proxies))
 	return proxies
 }
 

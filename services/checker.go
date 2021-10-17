@@ -17,25 +17,34 @@ type HttpResponse struct {
 
 // https://golangbyexample.com/return-value-goroutine-go/
 func Check(proxies *[]string, myRemoteAddr string, proxy string) {
+	// fmt.Println("Checking proxy:", proxy)
 	// https://stackoverflow.com/questions/14661511/setting-up-proxy-for-http-client
 	// https://stackoverflow.com/a/14663620
 	proxyUrl, _ := url.Parse("http://"+proxy)
 	// https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779
 	httpClient := &http.Client{
-		Timeout: 1 * time.Second, 
+		Timeout: 30 * time.Second, 
 		Transport: &http.Transport{
-			Proxy: http.ProxyURL(proxyUrl), 
+			MaxIdleConns: 100,
+			IdleConnTimeout: 30 * time.Second,
+			DisableCompression: true,
+			Proxy: http.ProxyURL(proxyUrl),
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			Dial:(&net.Dialer{
-				Timeout: 1 * time.Second,
+				Timeout: 10 * time.Second,
 			}).Dial,
-			TLSHandshakeTimeout: 1 * time.Second,
+			DialContext: (&net.Dialer{
+				Timeout: 10 * time.Second,
+				KeepAlive: 30 * time.Second,
+			}).DialContext,
+			ForceAttemptHTTP2: true,
+			TLSHandshakeTimeout: 10 * time.Second,
 		},
 	}
+
 	// https://stackoverflow.com/questions/17156371/how-to-get-json-response-from-http-get
-	// https://stackoverflow.com/a/31129967
-	res, httpgetErr := httpClient.Get("http://httpbin.org/ip?json")
-	if httpgetErr != nil {
+	res, httpGetErr := httpClient.Get("https://httpbin.org/ip?json")
+	if httpGetErr != nil {
 		return
 	}
 	defer res.Body.Close()

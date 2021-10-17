@@ -36,9 +36,6 @@ func main() {
 			for _, proxy := range proxies {
 				// https://reshefsharvit.medium.com/common-pitfalls-and-cases-when-using-goroutines-15107237d4f5
 				go services.Check(&checkedProxies, publicIpAddr, proxy)
-				if len(checkedProxies) >= 10 {
-					break
-				}
 			}
 
 			// Golang while loop implementation
@@ -48,7 +45,7 @@ func main() {
 				}
 			}
 
-			db, dbErr := geoip2.Open("GeoLite2-Country.mmdb")
+			db, dbErr := geoip2.Open("assets/GeoLite2-Country.mmdb")
 			if err != nil {
 				return dbErr
 			}
@@ -61,7 +58,11 @@ func main() {
 				if recordErr != nil {
 					return recordErr
 				}
-				fmt.Printf("<Proxy %v %v>\n", record.Country.IsoCode, proxy)
+				country := record.Country.IsoCode
+				if country == "" {
+					country = "Unknown"
+				}
+				fmt.Printf("<Proxy %v %v>\n", country, proxy)
 			}
 			return nil
 		},
