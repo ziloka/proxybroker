@@ -20,6 +20,10 @@
     "type": "http"
   },
   {
+    "url": "https://www.freeproxylists.net/",
+    "type": "http"
+  },
+  {
     "url": "https://www.proxyscan.io/download?type=http",
     "type": "http"
   },

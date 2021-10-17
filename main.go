@@ -3,16 +3,16 @@ package main
 import (
 	"fmt"
 	"log"
-	"net"
 	"os"
 	"runtime"
-	"strings"
-	"github.com/Ziloka/ProxyBroker/services"
-	"github.com/oschwald/geoip2-golang"
+	"github.com/Ziloka/ProxyBroker/cmds"
 	"github.com/urfave/cli/v2"
 )
 
 func main() {
+
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	app := &cli.App{
 		Name:  "ProxyBroker",
 		Usage: "proxybroker find",
@@ -23,50 +23,36 @@ func main() {
 				Usage: "proxy protocol",
 			},
 		},
+		Commands: []*cli.Command{
+			{
+				Name: "find",
+				Aliases: []string{"f"},
+				Usage: "Find and check proxies",
+				Action: func(c *cli.Context) error {
+					// Run cmd using go run main.go find"
+					err := cmds.Find(c)
+					return err
+				},
+			},
+			{
+				Name: "grab",
+				Aliases: []string{"g"},
+				Usage: "Grab proxies from sites",
+				Action: func (c *cli.Context) error {
+					// Run cmd using go run main.go grab"
+					err := cmds.Grab(c)
+					return err
+				},
+			},
+		},
+		
 		Action: func(c *cli.Context) error {
-
-			runtime.GOMAXPROCS(4)
-
-			proxies := services.Collect()
-			publicIpAddr, err := services.GetpublicIpAddr()
-			if err != nil {
-				return err
-			}
-			checkedProxies := []string{}
-			for _, proxy := range proxies {
-				// https://reshefsharvit.medium.com/common-pitfalls-and-cases-when-using-goroutines-15107237d4f5
-				go services.Check(&checkedProxies, publicIpAddr, proxy)
-			}
-
-			// Golang while loop implementation
-			for 1 < 2 {
-				if len(checkedProxies) >= 10 {
-					break
-				}
-			}
-
-			db, dbErr := geoip2.Open("assets/GeoLite2-Country.mmdb")
-			if err != nil {
-				return dbErr
-			}
-			defer db.Close()
-
-			for _, proxy := range checkedProxies[:10] {
-				host := strings.Split(proxy, ":")[0]
-				ip := net.ParseIP(host)
-				record, recordErr := db.Country(ip)
-				if recordErr != nil {
-					return recordErr
-				}
-				country := record.Country.IsoCode
-				if country == "" {
-					country = "Unknown"
-				}
-				fmt.Printf("<Proxy %v %v>\n", country, proxy)
-			}
+			
+			fmt.Println("ProxyBroker find")
 			return nil
 		},
 	}
+
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)
