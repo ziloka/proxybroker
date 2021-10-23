@@ -12,8 +12,8 @@ import (
 func Find(c *cli.Context) (err error) {
 
 	// Collect proxies
-	proxies := make(chan []string,10000000)
-	services.Collect(proxies)
+	proxies := make(chan []string)
+	go services.Collect(proxies)
 	publicIpAddr, err := services.GetpublicIpAddr()
 	if err != nil {
 		return err

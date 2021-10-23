@@ -51,7 +51,7 @@ func Collect(ch chan []string) {
 		log.Printf("Found %v proxies from source %v\n", len(proxiesFromSource), url)
 	}
 	log.Printf("Debug there are %d proxies\n", len(ch))
-	close(ch)
+	defer close(ch)
 }
 
 func GetpublicIpAddr() (string, error) {

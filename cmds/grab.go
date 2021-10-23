@@ -1,32 +1,35 @@
 package cmds
 
 import (
-	// "fmt"
-	// "os"
-	// "strings"
-	// "github.com/Ziloka/ProxyBroker/services"
+	"fmt"
+	"os"
+	"strings"
+	"github.com/Ziloka/ProxyBroker/services"
 	"github.com/urfave/cli/v2"
 )
 
 func Grab(*cli.Context) (err error) {
-	// proxies := services.Collect()
-	// // Display first 10 unchecked proxies
-	// for _, proxy := range proxies[:10] {
-	// 	fmt.Println("[+] "+ proxy)
-	// }
+	proxies := make(chan []string)
+	go services.Collect(proxies)
 
-	// if true {
-	// 	data := []byte(strings.Join(proxies, "\n"))
-	// 	f, fileCreateErr := os.Create("proxies.txt")
-	// 	if fileCreateErr != nil {
-	// 		panic(fileCreateErr)
-	// 	}
-	// 	fileWriteErr := os.WriteFile("proxies.txt", data, 0644)
-	// 	if fileWriteErr != nil {
-	// 		panic(fileWriteErr)
-	// 	}
-	// 	defer f.Close()
+	displayedProxies := []string{}
+	for _, proxy := range <-proxies {
+		displayedProxies = append(displayedProxies, proxy)
+		fmt.Println("[+] "+ proxy)
+	}
+	
+	if true {
+		data := []byte(strings.Join(displayedProxies, "\n"))
+		f, fileCreateErr := os.Create("proxies.txt")
+		if fileCreateErr != nil {
+			panic(fileCreateErr)
+		}
+		fileWriteErr := os.WriteFile("proxies.txt", data, 0644)
+		if fileWriteErr != nil {
+			panic(fileWriteErr)
+		}
+		defer f.Close()
 
-	// }
+	}
 	return nil
 }
