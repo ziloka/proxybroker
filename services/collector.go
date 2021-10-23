@@ -6,9 +6,13 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"regexp"
+	"strings"
 	"time"
+	"github.com/oschwald/geoip2-golang"
+	"github.com/Ziloka/ProxyBroker/utils"
 )
 
 
@@ -17,22 +21,22 @@ type sourceStruct struct {
 	Type string `json:"type"`
 }
 
-func getProxies() []string {
+func getProxies(types []string) []string {
 	// https://www.golangprograms.com/golang-read-json-file-into-struct.html
 	file, _ := ioutil.ReadFile("assets/sources.json")
 	data := []sourceStruct{}
 	json.Unmarshal([]byte(file), &data)
 	var sources []string
 	for _, source := range data {
-		if source.Type == "http" {
+		if len(types) == 0 || utils.Contains(types, source.Type) {
 			sources = append(sources, source.Url)
 		}
 	}
 	return sources
 }
 
-func Collect(ch chan []string) {
-	sources := getProxies()
+func Collect(db *geoip2.Reader, ch chan []string, types []string, countries []string, ports []string) {
+	sources := getProxies(types)
 	fmt.Printf("Found %v sources\n", len(sources))
 	httpClient := &http.Client{ Timeout: 10 * time.Second}
 	for _, url := range sources {
@@ -46,9 +50,24 @@ func Collect(ch chan []string) {
 		b, _ := io.ReadAll(res.Body)
 		content := string(b)
 		re, _ := regexp.Compile(`\d+\.\d+\.\d+\.\d+:\d+`)
-		proxiesFromSource := re.FindAllString(content, -1)
-		ch <- proxiesFromSource
-		log.Printf("Found %v proxies from source %v\n", len(proxiesFromSource), url)
+		proxies := re.FindAllString(content, -1)
+		valid := []string{}
+		// filter proxies
+		for _, proxy := range proxies {
+			host := strings.Split(proxy, ":")[0]
+			port := strings.Split(proxy, ":")[1]
+			ip := net.ParseIP(host)
+			record, recordErr := db.Country(ip)
+			if recordErr != nil {
+				continue;
+			}
+			country := record.Country.IsoCode
+			if (utils.Contains(ports, port) || len(ports) == 0) && (utils.Contains(countries, country) || len(countries) == 0) {
+				valid = append(valid, proxy)
+			}
+		}
+		ch <- valid
+		log.Printf("Found %v proxies from source %v\n", len(proxies), url)
 	}
 	log.Printf("Debug there are %d proxies\n", len(ch))
 	defer close(ch)

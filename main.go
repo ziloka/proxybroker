@@ -16,18 +16,22 @@ func main() {
 	app := &cli.App{
 		Name:  "ProxyBroker",
 		Usage: "proxybroker find",
+		UseShortOptionHandling: true,
 		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:  "find",
-				Value: "http",
-				Usage: "proxy protocol",
-			},
+			&cli.BoolFlag{Name: "verbose", Aliases: []string{"v"}},
 		},
 		Commands: []*cli.Command{
 			{
 				Name: "find",
 				Aliases: []string{"f"},
 				Usage: "Find and check proxies",
+				Flags: []cli.Flag{
+					&cli.StringFlag{Name: "types", Aliases: []string{"t"}},
+					&cli.StringFlag{Name: "timeout", Aliases: []string{"to"}},
+					&cli.StringFlag{Name: "countries", Aliases: []string{"c"}},
+					&cli.StringFlag{Name: "ports", Aliases: []string{"p"}},
+					&cli.StringFlag{Name: "lvl", Aliases: []string{"l"}},
+				},
 				Action: func(c *cli.Context) error {
 					// Run cmd using go run main.go find"
 					err := cmds.Find(c)
@@ -38,6 +42,13 @@ func main() {
 				Name: "grab",
 				Aliases: []string{"g"},
 				Usage: "Grab proxies from sites",
+				Flags: []cli.Flag{
+					&cli.StringFlag{Name: "types", Aliases: []string{"t"}},
+					&cli.StringFlag{Name: "timeout", Aliases: []string{"to"}},
+					&cli.StringFlag{Name: "countries", Aliases: []string{"c"}},
+					&cli.StringFlag{Name: "ports", Aliases: []string{"p"}},
+					&cli.StringFlag{Name: "lvl", Aliases: []string{"l"}},
+				},
 				Action: func (c *cli.Context) error {
 					// Run cmd using go run main.go grab"
 					err := cmds.Grab(c)

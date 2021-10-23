@@ -4,13 +4,33 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"github.com/Ziloka/ProxyBroker/services"
+	"github.com/oschwald/geoip2-golang"
 	"github.com/urfave/cli/v2"
+	"github.com/Ziloka/ProxyBroker/services"
 )
 
-func Grab(*cli.Context) (err error) {
+func Grab(c *cli.Context) (err error) {
+
+	// Set default values for flags
+	types := c.StringSlice("types")
+	if len(types) == 0 {
+		types = []string{"http", "https"}
+	}
+	timeout := c.Int("timeout")
+	if timeout == 0 {
+		timeout = 5000
+	}
+	countries := c.StringSlice("countries")
+	ports := c.StringSlice("ports")
+
+	db, dbErr := geoip2.Open("assets/GeoLite2-Country.mmdb")
+	if err != nil {
+		return dbErr
+	}
+	defer db.Close()
+
 	proxies := make(chan []string)
-	go services.Collect(proxies)
+	go services.Collect(db, proxies, types, countries, ports)
 
 	displayedProxies := []string{}
 	for _, proxy := range <-proxies {

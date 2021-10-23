@@ -4,16 +4,34 @@ import (
 	"fmt"
 	"net"
 	"strings"
-	"github.com/oschwald/geoip2-golang"
 	"github.com/urfave/cli/v2"
+	"github.com/oschwald/geoip2-golang"
 	"github.com/Ziloka/ProxyBroker/services"
 )
 
 func Find(c *cli.Context) (err error) {
 
+	// Set default values for flags
+	types := c.StringSlice("types")
+	if len(types) == 0 {
+		types = []string{"http", "https"}
+	}
+	timeout := c.Int("timeout")
+	if timeout == 0 {
+		timeout = 5000
+	}
+	countries := c.StringSlice("countries")
+	ports := c.StringSlice("ports")
+
+	db, dbErr := geoip2.Open("assets/GeoLite2-Country.mmdb")
+	if err != nil {
+		return dbErr
+	}
+	defer db.Close()
+
 	// Collect proxies
 	proxies := make(chan []string)
-	go services.Collect(proxies)
+	go services.Collect(db, proxies, types, countries, ports)
 	publicIpAddr, err := services.GetpublicIpAddr()
 	if err != nil {
 		return err
@@ -31,12 +49,6 @@ func Find(c *cli.Context) (err error) {
 			break
 		}
 	}
-
-	db, dbErr := geoip2.Open("assets/GeoLite2-Country.mmdb")
-	if err != nil {
-		return dbErr
-	}
-	defer db.Close()
 
 	for _, proxy := range checkedProxies[:10] {
 		host := strings.Split(proxy, ":")[0]
