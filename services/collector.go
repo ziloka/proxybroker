@@ -31,10 +31,9 @@ func getProxies() []string {
 	return sources
 }
 
-func Collect() []string {
+func Collect(ch chan []string) {
 	sources := getProxies()
 	fmt.Printf("Found %v sources\n", len(sources))
-	proxies := make([]string, 0)
 	httpClient := &http.Client{ Timeout: 10 * time.Second}
 	for _, url := range sources {
 		// https://stackoverflow.com/questions/17156371/how-to-get-json-response-from-http-get
@@ -48,11 +47,11 @@ func Collect() []string {
 		content := string(b)
 		re, _ := regexp.Compile(`\d+\.\d+\.\d+\.\d+:\d+`)
 		proxiesFromSource := re.FindAllString(content, -1)
-		proxies = append(proxies, proxiesFromSource...)
+		ch <- proxiesFromSource
 		log.Printf("Found %v proxies from source %v\n", len(proxiesFromSource), url)
 	}
-	log.Printf("Debug there are %d proxies\n", len(proxies))
-	return proxies
+	log.Printf("Debug there are %d proxies\n", len(ch))
+	close(ch)
 }
 
 func GetpublicIpAddr() (string, error) {

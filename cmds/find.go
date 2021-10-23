@@ -12,14 +12,15 @@ import (
 func Find(c *cli.Context) (err error) {
 
 	// Collect proxies
-	proxies := services.Collect()
+	proxies := make(chan []string,10000000)
+	services.Collect(proxies)
 	publicIpAddr, err := services.GetpublicIpAddr()
 	if err != nil {
 		return err
 	}
 	// Check Proxies
 	checkedProxies := []string{}
-	for _, proxy := range proxies {
+	for _, proxy := range <-proxies {
 		// https://reshefsharvit.medium.com/common-pitfalls-and-cases-when-using-goroutines-15107237d4f5
 		go services.Check(&checkedProxies, publicIpAddr, proxy)
 	}
