@@ -4,6 +4,7 @@ WORKDIR /usr/app/proxybroker
 COPY . .
 
 ENV GOOS=linux
+ENV CGO_ENABLED=0
 
 # https://blog.filippo.io/shrink-your-go-binaries-with-this-one-weird-trick/
 RUN go build -ldflags="-s -w" -o ProxyBroker main.go \
