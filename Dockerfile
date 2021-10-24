@@ -16,7 +16,7 @@ RUN go build -o ProxyBroker main.go
 FROM scratch
 
 # https://stackoverflow.com/a/61752498
-COPY --from=build etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /usr/app/proxybroker/ProxyBroker ProxyBroker
 
 ENTRYPOINT ["./ProxyBroker"]

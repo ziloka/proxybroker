@@ -24,7 +24,13 @@ func Grab(c *cli.Context, assetFS embed.FS) (err error) {
 	countries := c.StringSlice("countries")
 	ports := c.StringSlice("ports")
 
-	db, dbErr := geoip2.Open("assets/GeoLite2-Country.mmdb")
+	bytes, readFileError := assetFS.ReadFile("assets/GeoLite2-Country.mmdb")
+
+	if readFileError != nil {
+		return readFileError
+	}
+
+	db, dbErr := geoip2.FromBytes(bytes)
 	if err != nil {
 		return dbErr
 	}
