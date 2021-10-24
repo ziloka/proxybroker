@@ -3,11 +3,11 @@ package cmds
 import (
 	"embed"
 	"fmt"
-	"os"
-	"strings"
+	"github.com/Ziloka/ProxyBroker/services"
 	"github.com/oschwald/geoip2-golang"
 	"github.com/urfave/cli/v2"
-	"github.com/Ziloka/ProxyBroker/services"
+	"os"
+	"strings"
 )
 
 func Grab(c *cli.Context, assetFS embed.FS) (err error) {
@@ -42,9 +42,9 @@ func Grab(c *cli.Context, assetFS embed.FS) (err error) {
 	displayedProxies := []string{}
 	for _, proxy := range <-proxies {
 		displayedProxies = append(displayedProxies, proxy)
-		fmt.Println("[+] "+ proxy)
+		fmt.Println("[+] " + proxy)
 	}
-	
+
 	if true {
 		data := []byte(strings.Join(displayedProxies, "\n"))
 		f, fileCreateErr := os.Create("proxies.txt")

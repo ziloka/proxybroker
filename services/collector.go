@@ -4,6 +4,8 @@ import (
 	"embed"
 	"encoding/json"
 	"fmt"
+	"github.com/Ziloka/ProxyBroker/utils"
+	"github.com/oschwald/geoip2-golang"
 	"io"
 	"log"
 	"net"
@@ -11,13 +13,10 @@ import (
 	"regexp"
 	"strings"
 	"time"
-	"github.com/oschwald/geoip2-golang"
-	"github.com/Ziloka/ProxyBroker/utils"
 )
 
-
 type sourceStruct struct {
-	Url string `json:"url"`
+	Url  string `json:"url"`
 	Type string `json:"type"`
 }
 
@@ -38,14 +37,14 @@ func getProxies(assetFS embed.FS, types []string) []string {
 func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []string, types []string, countries []string, ports []string) {
 	sources := getProxies(assetFS, types)
 	fmt.Printf("Found %v sources\n", len(sources))
-	httpClient := &http.Client{ Timeout: 32 * time.Second}
+	httpClient := &http.Client{Timeout: 32 * time.Second}
 	for _, url := range sources {
 		// https://stackoverflow.com/questions/17156371/how-to-get-json-response-from-http-get
 		// https://stackoverflow.com/a/31129967
 		res, httpErr := httpClient.Get(url)
 		if httpErr != nil {
 			// fmt.Println(httpErr)
-			continue;
+			continue
 		}
 		defer res.Body.Close()
 		b, _ := io.ReadAll(res.Body)
@@ -60,7 +59,7 @@ func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []string, types []stri
 			ip := net.ParseIP(host)
 			record, recordErr := db.Country(ip)
 			if recordErr != nil {
-				continue;
+				continue
 			}
 			country := record.Country.IsoCode
 			if (utils.Contains(ports, port) || len(ports) == 0) && (utils.Contains(countries, country) || len(countries) == 0) {

@@ -3,11 +3,11 @@ package main
 import (
 	"embed"
 	"fmt"
+	"github.com/Ziloka/ProxyBroker/cmds"
+	"github.com/urfave/cli/v2"
 	"log"
 	"os"
 	"runtime"
-	"github.com/Ziloka/ProxyBroker/cmds"
-	"github.com/urfave/cli/v2"
 )
 
 // https://stackoverflow.com/questions/66285635/how-do-you-use-go-1-16-embed-features-in-subfolders-packages
@@ -21,17 +21,17 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	app := &cli.App{
-		Name:  "ProxyBroker",
-		Usage: "proxybroker find",
+		Name:                   "ProxyBroker",
+		Usage:                  "proxybroker find",
 		UseShortOptionHandling: true,
 		Flags: []cli.Flag{
 			&cli.BoolFlag{Name: "verbose", Aliases: []string{"v"}},
 		},
 		Commands: []*cli.Command{
 			{
-				Name: "find",
+				Name:    "find",
 				Aliases: []string{"f"},
-				Usage: "Find and check proxies",
+				Usage:   "Find and check proxies",
 				Flags: []cli.Flag{
 					&cli.StringFlag{Name: "types", Aliases: []string{"t"}},
 					&cli.StringFlag{Name: "timeout", Aliases: []string{"to"}},
@@ -46,9 +46,9 @@ func main() {
 				},
 			},
 			{
-				Name: "grab",
+				Name:    "grab",
 				Aliases: []string{"g"},
-				Usage: "Grab proxies from sites",
+				Usage:   "Grab proxies from sites",
 				Flags: []cli.Flag{
 					&cli.StringFlag{Name: "types", Aliases: []string{"t"}},
 					&cli.StringFlag{Name: "timeout", Aliases: []string{"to"}},
@@ -56,16 +56,16 @@ func main() {
 					&cli.StringFlag{Name: "ports", Aliases: []string{"p"}},
 					&cli.StringFlag{Name: "lvl", Aliases: []string{"l"}},
 				},
-				Action: func (c *cli.Context) error {
+				Action: func(c *cli.Context) error {
 					// Run cmd using go run main.go grab"
 					err := cmds.Grab(c, assetFS)
 					return err
 				},
 			},
 		},
-		
+
 		Action: func(c *cli.Context) error {
-			
+
 			fmt.Println("ProxyBroker find")
 			return nil
 		},

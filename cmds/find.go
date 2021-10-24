@@ -3,11 +3,11 @@ package cmds
 import (
 	"embed"
 	"fmt"
+	"github.com/Ziloka/ProxyBroker/services"
+	"github.com/oschwald/geoip2-golang"
+	"github.com/urfave/cli/v2"
 	"net"
 	"strings"
-	"github.com/urfave/cli/v2"
-	"github.com/oschwald/geoip2-golang"
-	"github.com/Ziloka/ProxyBroker/services"
 )
 
 func Find(c *cli.Context, assetFS embed.FS) (err error) {
