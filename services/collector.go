@@ -1,10 +1,10 @@
 package services
 
 import (
+	"embed"
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -21,9 +21,9 @@ type sourceStruct struct {
 	Type string `json:"type"`
 }
 
-func getProxies(types []string) []string {
+func getProxies(assetFS embed.FS, types []string) []string {
 	// https://www.golangprograms.com/golang-read-json-file-into-struct.html
-	file, _ := ioutil.ReadFile("assets/sources.json")
+	file, _ := assetFS.ReadFile("assets/sources.json")
 	data := []sourceStruct{}
 	json.Unmarshal([]byte(file), &data)
 	var sources []string
@@ -35,15 +35,16 @@ func getProxies(types []string) []string {
 	return sources
 }
 
-func Collect(db *geoip2.Reader, ch chan []string, types []string, countries []string, ports []string) {
-	sources := getProxies(types)
+func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []string, types []string, countries []string, ports []string) {
+	sources := getProxies(assetFS, types)
 	fmt.Printf("Found %v sources\n", len(sources))
-	httpClient := &http.Client{ Timeout: 10 * time.Second}
+	httpClient := &http.Client{ Timeout: 32 * time.Second}
 	for _, url := range sources {
 		// https://stackoverflow.com/questions/17156371/how-to-get-json-response-from-http-get
 		// https://stackoverflow.com/a/31129967
 		res, httpErr := httpClient.Get(url)
 		if httpErr != nil {
+			// fmt.Println(httpErr)
 			continue;
 		}
 		defer res.Body.Close()

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"log"
 	"os"
@@ -8,6 +9,12 @@ import (
 	"github.com/Ziloka/ProxyBroker/cmds"
 	"github.com/urfave/cli/v2"
 )
+
+// https://stackoverflow.com/questions/66285635/how-do-you-use-go-1-16-embed-features-in-subfolders-packages
+// https://stackoverflow.com/a/67357103
+
+//go:embed assets/*
+var assetFS embed.FS
 
 func main() {
 
@@ -34,7 +41,7 @@ func main() {
 				},
 				Action: func(c *cli.Context) error {
 					// Run cmd using go run main.go find"
-					err := cmds.Find(c)
+					err := cmds.Find(c, assetFS)
 					return err
 				},
 			},
@@ -51,7 +58,7 @@ func main() {
 				},
 				Action: func (c *cli.Context) error {
 					// Run cmd using go run main.go grab"
-					err := cmds.Grab(c)
+					err := cmds.Grab(c, assetFS)
 					return err
 				},
 			},

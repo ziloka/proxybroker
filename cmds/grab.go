@@ -1,6 +1,7 @@
 package cmds
 
 import (
+	"embed"
 	"fmt"
 	"os"
 	"strings"
@@ -9,7 +10,7 @@ import (
 	"github.com/Ziloka/ProxyBroker/services"
 )
 
-func Grab(c *cli.Context) (err error) {
+func Grab(c *cli.Context, assetFS embed.FS) (err error) {
 
 	// Set default values for flags
 	types := c.StringSlice("types")
@@ -30,7 +31,7 @@ func Grab(c *cli.Context) (err error) {
 	defer db.Close()
 
 	proxies := make(chan []string)
-	go services.Collect(db, proxies, types, countries, ports)
+	go services.Collect(assetFS, db, proxies, types, countries, ports)
 
 	displayedProxies := []string{}
 	for _, proxy := range <-proxies {

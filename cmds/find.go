@@ -1,6 +1,7 @@
 package cmds
 
 import (
+	"embed"
 	"fmt"
 	"net"
 	"strings"
@@ -9,7 +10,7 @@ import (
 	"github.com/Ziloka/ProxyBroker/services"
 )
 
-func Find(c *cli.Context) (err error) {
+func Find(c *cli.Context, assetFS embed.FS) (err error) {
 
 	// Set default values for flags
 	types := c.StringSlice("types")
@@ -31,7 +32,7 @@ func Find(c *cli.Context) (err error) {
 
 	// Collect proxies
 	proxies := make(chan []string)
-	go services.Collect(db, proxies, types, countries, ports)
+	go services.Collect(assetFS, db, proxies, types, countries, ports)
 	publicIpAddr, err := services.GetpublicIpAddr()
 	if err != nil {
 		return err
