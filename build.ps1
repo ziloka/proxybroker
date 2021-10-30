@@ -2,8 +2,8 @@
 $package = $args[0]
 
 if ($package.length -gt 0) {
-	echo "usage: $args[0] <package name>"
-	exit 1
+  echo "usage: $args[0] <package name>"
+  exit 1
 }
 $package_split = $package.split('/')
 $package_name = $package_split[$package_split.length - 1]

@@ -3,11 +3,10 @@ package services
 import (
 	"embed"
 	"encoding/json"
-	"fmt"
 	"github.com/Ziloka/ProxyBroker/utils"
 	"github.com/oschwald/geoip2-golang"
+	log "github.com/sirupsen/logrus"
 	"io"
-	"log"
 	"net"
 	"net/http"
 	"regexp"
@@ -36,7 +35,7 @@ func getProxies(assetFS embed.FS, types []string) []string {
 
 func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []string, types []string, countries []string, ports []string) {
 	sources := getProxies(assetFS, types)
-	fmt.Printf("Found %v sources\n", len(sources))
+	log.Debug("Found %v sources\n", len(sources))
 	httpClient := &http.Client{Timeout: 32 * time.Second}
 	for _, url := range sources {
 		// https://stackoverflow.com/questions/17156371/how-to-get-json-response-from-http-get
@@ -67,9 +66,9 @@ func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []string, types []stri
 			}
 		}
 		ch <- valid
-		log.Printf("Found %v proxies from source %v\n", len(proxies), url)
+		log.Debugf("Found %v proxies from source %v\n", len(proxies), url)
 	}
-	log.Printf("Debug there are %d proxies\n", len(ch))
+	log.Debugf("Debug there are %d proxies\n", len(ch))
 	defer close(ch)
 }
 
