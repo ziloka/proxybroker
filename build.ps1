@@ -28,8 +28,8 @@ for ($i=0; $i -le $platforms.Length-1; $i++) {
   go build -ldflags="-s -w" -o $output_name $package
   Remove-Item Env:\GOOS
   Remove-Item Env:\GOARCH
-  # if ($? -ne 0) {
-  #   echo "An error has occurred! Aborting the script execution..."
-  #   exit 1
-  # }
+  if ($? -ne 0) {
+    echo "An error has occurred! Aborting the script execution..."
+    exit 1
+  }
 }
