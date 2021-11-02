@@ -62,6 +62,7 @@ func Check(proxies chan structs.Proxy, myRemoteAddr string, proxy string) {
 }
 
 // https://stackoverflow.com/questions/30526946/time-http-response-in-go
+// https://stackoverflow.com/a/30547965
 // https://github.com/skyec/go-instrumented-roundtripper/blob/master/main.go
 // go run file.go http://google.com
 type customTransport struct {
