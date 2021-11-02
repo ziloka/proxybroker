@@ -25,9 +25,9 @@ jobs:
           go-version: '^1.17.2'
       - name: Build with Golang
         run: bash build.bash github.com/Ziloka/ProxyBroker
-      - name: Minimize Linux Executable Size (Strip debug data)
       - name: list files
         run: ls
+      - name: Minimize Linux Executable Size (Strip debug data)
         run: strip --strip-all ProxyBroker-linux-amd64 && strip --strip-all ProxyBroker-darwin-amd64 && strip --strip-all ProxyBroker-windows-amd64.exe
       - name: Pack Executables
         run: upx -9 ProxyBroker-linux-amd64 && upx -9 strip -9 ProxyBroker-darwin-amd64 && strip -9 ProxyBroker-windows-amd64.exe
