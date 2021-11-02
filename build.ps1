@@ -1,24 +1,35 @@
 # https://www.red-gate.com/simple-talk/sysadmin/powershell/how-to-use-parameters-in-powershell/
 $package = $args[0]
 
-if ($package.length -gt 0) {
-  echo "usage: $args[0] <package name>"
+if ($package.length -eq 0) {
+  Write-Output "usage: $($MyInvocation.MyCommand.Name) <package name>"
   exit 1
 }
 $package_split = $package.split('/')
 $package_name = $package_split[$package_split.length - 1]
 
-platforms=["windows/amd64" "linux/amd64", "darwin/amd64"]
+$platforms = @(
+  'windows/amd64',
+  'linux/amd64',
+  'darwin/amd64'
+)
 
-for ($platform in $platforms) {
+for ($i=0; $i -le $platforms.Length-1; $i++) {
+  $platform = $platforms[$i]
   $platform_split = $platform.split('/')
   $GOOS=$platform_split[0]
   $GOARCH=$platform_split[1]
-  ouput_name=$package_name"-"$GOOS"-"$GOARCH
+  $output_name="$package_name-$GOOS-$GOARCH"
   echo "Building $ouput_name"
-  go build -o $ouput_name
-  if ($? -ne 0) {
-    echo "Error building $ouput_name"
-    exit 1
-  }
+  # https://stackoverflow.com/questions/1420719/powershell-setting-an-environment-variable-for-a-single-command-only
+  # https://stackoverflow.com/a/1422082
+  $env:GOOS = $GOOS
+  $env:GOARCH = $GOARCH
+  go build -ldflags="-s -w" -o $output_name $package
+  Remove-Item Env:\GOOS
+  Remove-Item Env:\GOARCH
+  # if ($? -ne 0) {
+  #   echo "An error has occurred! Aborting the script execution..."
+  #   exit 1
+  # }
 }
