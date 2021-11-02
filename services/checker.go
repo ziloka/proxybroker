@@ -55,7 +55,7 @@ func Check(proxies chan structs.Proxy, myRemoteAddr string, proxy string) {
 				proxies <- proxyStruct
 			} else {
 				// Proxy is either transparent or anonymous
-				// *proxies = append(*proxies, proxy)
+				
 			}
 		}
 	}
