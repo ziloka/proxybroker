@@ -3,15 +3,17 @@ package services
 import (
 	"embed"
 	"encoding/json"
-	"github.com/Ziloka/ProxyBroker/utils"
-	"github.com/oschwald/geoip2-golang"
-	log "github.com/sirupsen/logrus"
 	"io"
 	"net"
 	"net/http"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/Ziloka/ProxyBroker/structs"
+	"github.com/Ziloka/ProxyBroker/utils"
+	"github.com/oschwald/geoip2-golang"
+	log "github.com/sirupsen/logrus"
 )
 
 type sourceStruct struct {
@@ -33,10 +35,17 @@ func getProxies(assetFS embed.FS, types []string) []string {
 	return sources
 }
 
-func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []string, types []string, countries []string, ports []string) {
+func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []structs.Proxy, types []string, countries []string, ports []string) {
 	sources := getProxies(assetFS, types)
 	log.Debug("Found %v sources\n", len(sources))
-	httpClient := &http.Client{Timeout: 32 * time.Second}
+	httpClient := &http.Client{
+		Timeout: 16 * time.Second,
+		Transport: &http.Transport{
+			MaxIdleConns: 100,
+			MaxConnsPerHost:  100,
+			MaxIdleConnsPerHost: 100,
+		},
+	}
 	for _, url := range sources {
 		// https://stackoverflow.com/questions/17156371/how-to-get-json-response-from-http-get
 		// https://stackoverflow.com/a/31129967
@@ -50,7 +59,7 @@ func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []string, types []stri
 		content := string(b)
 		re, _ := regexp.Compile(`\d+\.\d+\.\d+\.\d+:\d+`)
 		proxies := re.FindAllString(content, -1)
-		valid := []string{}
+		valid := []structs.Proxy{}
 		// filter proxies
 		for _, proxy := range proxies {
 			host := strings.Split(proxy, ":")[0]
@@ -62,7 +71,10 @@ func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []string, types []stri
 			}
 			country := record.Country.IsoCode
 			if (utils.Contains(ports, port) || len(ports) == 0) && (utils.Contains(countries, country) || len(countries) == 0) {
-				valid = append(valid, proxy)
+				proxyStruct := structs.Proxy{
+					Proxy: proxy,
+				}
+				valid = append(valid, proxyStruct)
 			}
 		}
 		ch <- valid

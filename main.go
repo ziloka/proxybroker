@@ -38,6 +38,7 @@ func main() {
           &cli.StringFlag{Name: "countries", Aliases: []string{"c"}},
           &cli.StringFlag{Name: "ports", Aliases: []string{"p"}},
           &cli.StringFlag{Name: "lvl", Aliases: []string{"l"}},
+          &cli.StringFlag{Name: "limit"},
         },
         Action: func(c *cli.Context) error {
           // Run cmd using go run main.go find"

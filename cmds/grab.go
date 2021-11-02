@@ -1,13 +1,15 @@
 package cmds
 
 import (
-  "embed"
-  "fmt"
-  "github.com/Ziloka/ProxyBroker/services"
-  "github.com/oschwald/geoip2-golang"
-  "github.com/urfave/cli/v2"
-  "os"
-  "strings"
+	"embed"
+	"fmt"
+	"os"
+	"strings"
+
+	"github.com/Ziloka/ProxyBroker/services"
+	"github.com/Ziloka/ProxyBroker/structs"
+	"github.com/oschwald/geoip2-golang"
+	"github.com/urfave/cli/v2"
 )
 
 func Grab(c *cli.Context, assetFS embed.FS) (err error) {
@@ -36,13 +38,13 @@ func Grab(c *cli.Context, assetFS embed.FS) (err error) {
   }
   defer db.Close()
 
-  proxies := make(chan []string)
+  proxies := make(chan []structs.Proxy)
   go services.Collect(assetFS, db, proxies, types, countries, ports)
 
   displayedProxies := []string{}
-  for _, proxy := range <-proxies {
-    displayedProxies = append(displayedProxies, proxy)
-    fmt.Println("[+] " + proxy)
+  for _, proxyStruct := range <-proxies {
+    displayedProxies = append(displayedProxies, proxyStruct.Proxy)
+    fmt.Println("[+] " + proxyStruct.Proxy)
   }
 
   if true {
