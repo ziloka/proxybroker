@@ -9,3 +9,16 @@ $package_split = $package.split('/')
 $package_name = $package_split[$package_split.length - 1]
 
 platforms=["windows/amd64" "linux/amd64", "darwin/amd64"]
+
+for ($platform in $platforms) {
+  $platform_split = $platform.split('/')
+  $GOOS=$platform_split[0]
+  $GOARCH=$platform_split[1]
+  ouput_name=$package_name"-"$GOOS"-"$GOARCH
+  echo "Building $ouput_name"
+  go build -o $ouput_name
+  if ($? -ne 0) {
+    echo "Error building $ouput_name"
+    exit 1
+  }
+}

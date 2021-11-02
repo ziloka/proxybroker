@@ -16,3 +16,10 @@ Proxy is an open source tool that asynchrously finds public proxies from multipl
 
 ## Good things to know
 - Use Https instead of http, http might leak your ip address if you are using a high level proxy
+
+## Building from source
+- [Golang 1.17](https://golang.org/)
+Run
+```
+go build -o proxybroker main.go
+```
