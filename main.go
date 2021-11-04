@@ -24,15 +24,13 @@ func main() {
     Name:                   "ProxyBroker",
     Usage:                  "proxybroker find",
     UseShortOptionHandling: true,
-    Flags: []cli.Flag{
-      &cli.BoolFlag{Name: "verbose", Aliases: []string{"v"}},
-    },
     Commands: []*cli.Command{
       {
         Name:    "find",
         Aliases: []string{"f"},
         Usage:   "Find and check proxies",
         Flags: []cli.Flag{
+          &cli.BoolFlag{Name: "verbose", Aliases: []string{"v"}},
           &cli.StringFlag{Name: "types", Aliases: []string{"t"}},
           &cli.StringFlag{Name: "timeout", Aliases: []string{"to"}},
           &cli.StringFlag{Name: "countries", Aliases: []string{"c"}},
@@ -51,6 +49,7 @@ func main() {
         Aliases: []string{"g"},
         Usage:   "Grab proxies from sites",
         Flags: []cli.Flag{
+          &cli.BoolFlag{Name: "verbose", Aliases: []string{"v"}},
           &cli.StringFlag{Name: "types", Aliases: []string{"t"}},
           &cli.StringFlag{Name: "timeout", Aliases: []string{"to"}},
           &cli.StringFlag{Name: "countries", Aliases: []string{"c"}},
@@ -68,6 +67,7 @@ func main() {
         Aliases: []string{"g"},
         Usage:   "Serve web service api that serves proxies",
         Flags: []cli.Flag{
+          &cli.BoolFlag{Name: "verbose", Aliases: []string{"v"}},
           &cli.StringFlag{Name: "port", Aliases: []string{"p"}},
         },
         Action: func(c *cli.Context) error {

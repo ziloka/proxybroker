@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"strings"
 	"time"
+	// proxyLib "golang.org/x/net/proxy"
 	"github.com/Ziloka/ProxyBroker/structs"
 	"github.com/Ziloka/ProxyBroker/utils"
 )
@@ -17,18 +18,34 @@ type HttpResponse struct {
 }
 
 // https://golangbyexample.com/return-value-goroutine-go/
-func Check(proxies chan structs.Proxy, myRemoteAddr string, proxy string) {
-	// https://stackoverflow.com/questions/14661511/setting-up-proxy-for-http-client
-	// https://stackoverflow.com/a/14663620
-	proxyUrl, _ := url.Parse("http://" + proxy)
-	tp := newTransport(proxyUrl)
-	// https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779
-	httpClient := &http.Client{
-		Transport: tp,
-	}
+func Check(proxies chan structs.Proxy, myRemoteAddr string, proxy structs.Proxy) {
+	// https://play.golang.org/p/l0iLtkD1DV
+	client := http.DefaultClient
+	tp := &customTransport{}
+	if proxy.Protocol == "http" {
+		// https://stackoverflow.com/questions/14661511/setting-up-proxy-for-http-client
+		// https://stackoverflow.com/a/14663620
+		proxyUrl, _ := url.Parse("http://" + proxy.Proxy)
+		tp = newTransport(proxyUrl)
+		// https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779
+		client = &http.Client{
+			Transport: tp,
+		}
+	} 
+	// else if proxy.Protocol == "socks5" {
+	// 	dialer, err := proxyLib.SOCKS5("tcp", proxy.Proxy, nil, proxyLib.Direct)
+	// 	if err != nil {
+			
+	// 	}
+		
+	// 	tp = newTransport(proxy)
+
+	// 	client = &http.Client{Transport: tp}
+	// }
+	
 
 	// https://stackoverflow.com/questions/17156371/how-to-get-json-response-from-http-get
-	res, httpGetErr := httpClient.Get("https://httpbin.org/ip?json")
+	res, httpGetErr := client.Get("https://httpbin.org/ip?json")
 	if httpGetErr != nil {
 		return
 	}
@@ -49,8 +66,10 @@ func Check(proxies chan structs.Proxy, myRemoteAddr string, proxy string) {
 				// fmt.Printf("D: %v, RD: %v, CD: %v\n", tp.Duration(), tp.ReqDuration(), tp.ConnDuration())
 				// Proxy is High
 				proxyStruct := structs.Proxy{
-					Proxy: proxy,
+					Proxy: proxy.Proxy,
 					AvgRespTime: tp.Duration(),
+					ConnDuration: tp.ConnDuration(),
+					ReqDuration: tp.ReqDuration(),
 				}
 				proxies <- proxyStruct
 			} else {
@@ -82,6 +101,7 @@ func newTransport(proxy *url.URL) *customTransport {
 			KeepAlive: 10 * time.Second,
 		},
 	}
+
 	tr.rtp = &http.Transport{
 		Proxy:               http.ProxyURL(proxy),
 		Dial:                tr.dial,
@@ -97,7 +117,7 @@ func (tr *customTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	return resp, err
 }
 
-func (tr *customTransport) dial(network, addr string) (net.Conn, error) {
+func (tr *customTransport) dial(network, addr string) (c net.Conn, err error) {
 	tr.connStart = time.Now()
 	cn, err := tr.dialer.Dial(network, addr)
 	tr.connEnd = time.Now()

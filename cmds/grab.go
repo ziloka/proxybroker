@@ -15,6 +15,7 @@ import (
 func Grab(c *cli.Context, assetFS embed.FS) (err error) {
 
   // Set default values for flags
+  verbose := c.Bool("verbose")
   types := c.StringSlice("types")
   if len(types) == 0 {
     types = []string{"http", "https"}
@@ -39,7 +40,7 @@ func Grab(c *cli.Context, assetFS embed.FS) (err error) {
   defer db.Close()
 
   proxies := make(chan []structs.Proxy)
-  go services.Collect(assetFS, db, proxies, types, countries, ports)
+  go services.Collect(assetFS, db, proxies, types, countries, ports, verbose)
 
   displayedProxies := []string{}
   for _, proxyStruct := range <-proxies {

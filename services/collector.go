@@ -9,11 +9,10 @@ import (
 	"regexp"
 	"strings"
 	"time"
-
+	"fmt"
 	"github.com/Ziloka/ProxyBroker/structs"
 	"github.com/Ziloka/ProxyBroker/utils"
 	"github.com/oschwald/geoip2-golang"
-	log "github.com/sirupsen/logrus"
 )
 
 type sourceStruct struct {
@@ -21,23 +20,19 @@ type sourceStruct struct {
 	Type string `json:"type"`
 }
 
-func getProxies(assetFS embed.FS, types []string) []string {
+func getProxies(assetFS embed.FS, types []string) []sourceStruct {
 	// https://www.golangprograms.com/golang-read-json-file-into-struct.html
 	file, _ := assetFS.ReadFile("assets/sources.json")
-	data := []sourceStruct{}
-	json.Unmarshal([]byte(file), &data)
-	var sources []string
-	for _, source := range data {
-		if len(types) == 0 || utils.Contains(types, source.Type) {
-			sources = append(sources, source.Url)
-		}
-	}
+	sources := []sourceStruct{}
+	json.Unmarshal([]byte(file), &sources)
 	return sources
 }
 
-func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []structs.Proxy, types []string, countries []string, ports []string) {
+func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []structs.Proxy, types []string, countries []string, ports []string, isVerbose bool) {
 	sources := getProxies(assetFS, types)
-	log.Debug("Found %v sources\n", len(sources))
+	if isVerbose {
+		fmt.Printf("Found %v sources\n", len(sources))
+	}
 	httpClient := &http.Client{
 		Timeout: 16 * time.Second,
 		Transport: &http.Transport{
@@ -46,10 +41,10 @@ func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []structs.Proxy, types
 			MaxIdleConnsPerHost: 100,
 		},
 	}
-	for _, url := range sources {
+	for _, source := range sources {
 		// https://stackoverflow.com/questions/17156371/how-to-get-json-response-from-http-get
 		// https://stackoverflow.com/a/31129967
-		res, httpErr := httpClient.Get(url)
+		res, httpErr := httpClient.Get(source.Url)
 		if httpErr != nil {
 			// fmt.Println(httpErr)
 			continue
@@ -73,14 +68,19 @@ func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []structs.Proxy, types
 			if (utils.Contains(ports, port) || len(ports) == 0) && (utils.Contains(countries, country) || len(countries) == 0) {
 				proxyStruct := structs.Proxy{
 					Proxy: proxy,
+					Protocol: source.Type,
 				}
 				valid = append(valid, proxyStruct)
 			}
 		}
 		ch <- valid
-		log.Debugf("Found %v proxies from source %v\n", len(proxies), url)
+		if isVerbose {
+			fmt.Printf("Found %v proxies from source %v\n", len(proxies), source.Url)
+		}
 	}
-	log.Debugf("Debug there are %d proxies\n", len(ch))
+	if isVerbose {
+		fmt.Printf("Debug there are %d proxies\n", len(ch))
+	}
 	defer close(ch)
 }
 

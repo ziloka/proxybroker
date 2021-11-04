@@ -16,7 +16,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hi there, I love %s!", r.URL.Path[1:])
 }
 
-func StartWebService(assetFS embed.FS, port string) {
+func StartWebService(assetFS embed.FS, port string, isVerbose bool) {
 
 	checkedProxies := make(chan structs.Proxy, 500)
   bytes, readFileError := assetFS.ReadFile("assets/GeoLite2-Country.mmdb")
@@ -39,7 +39,7 @@ func StartWebService(assetFS embed.FS, port string) {
 				
 				// Collect proxies
 				proxies := make(chan []structs.Proxy, 500)
-				go Collect(assetFS, db, proxies, nil, nil, nil)
+				go Collect(assetFS, db, proxies, nil, nil, nil, isVerbose)
 				publicIpAddr, err := GetpublicIpAddr()
 				if err != nil {
 					return
@@ -47,7 +47,7 @@ func StartWebService(assetFS embed.FS, port string) {
 				// Check Proxies
 				for _, proxy := range <-proxies {
 					// https://reshefsharvit.medium.com/common-pitfalls-and-cases-when-using-goroutines-15107237d4f5
-					go Check(checkedProxies, publicIpAddr, proxy.Proxy)
+					go Check(checkedProxies, publicIpAddr, proxy)
 				}
 
 			case <-quit:

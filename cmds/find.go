@@ -15,6 +15,7 @@ import (
 func Find(c *cli.Context, assetFS embed.FS) (err error) {
 
   // Set default values for flags
+  verbose := c.Bool("verbose")
   types := c.StringSlice("types")
   if len(types) == 0 {
     types = []string{"http", "https"}
@@ -44,7 +45,7 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 
   // Collect proxies
   proxies := make(chan []structs.Proxy)
-  go services.Collect(assetFS, db, proxies, types, countries, ports)
+  go services.Collect(assetFS, db, proxies, types, countries, ports, verbose)
   publicIpAddr, err := services.GetpublicIpAddr()
   if err != nil {
     return err
@@ -56,9 +57,12 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
   checkedProxies := make(chan structs.Proxy, 500)
   for _, proxy := range <-proxies {
     // https://reshefsharvit.medium.com/common-pitfalls-and-cases-when-using-goroutines-15107237d4f5
-    go services.Check(checkedProxies, publicIpAddr, proxy.Proxy)
+    go services.Check(checkedProxies, publicIpAddr, proxy)
   }
-  fmt.Println(time.Since(start))
+  
+  if verbose {
+    fmt.Printf("Time took to check proxies: %v\n", time.Since(start))
+  }
 
   index := 0
   for proxy := range checkedProxies {
@@ -74,7 +78,7 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
       if country == "" {
         country = "Unknown"
       }
-      fmt.Printf("<Proxy %v %.2fs %+v>\n", country, proxy.AvgRespTime.Seconds(), string(proxy.Proxy))
+      fmt.Printf("<Proxy %v %v %+v>\n", country, proxy.ConnDuration, string(proxy.Proxy))
     } else {
       break 
     }

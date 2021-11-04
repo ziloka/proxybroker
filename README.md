@@ -4,7 +4,6 @@ Proxy is an open source tool that asynchrously finds public proxies from multipl
 
 ## Features
 
--  
 - Supported protocols: HTTP(S), SOCKS4/5.
 - Proxies may be filtered by type, anonymity level, response time, country and status
 - Work as a proxy server that distributes incoming requests to external proxies. With automatic proxy rotation.
@@ -21,5 +20,9 @@ Proxy is an open source tool that asynchrously finds public proxies from multipl
 - [Golang 1.17](https://golang.org/)
 Run
 ```
-go build -o proxybroker main.go
+go build -o ProxyBroker main.go
 ```
+
+## Motiviation
+- Inspired by [ProxyBroker]()
+- Web Service inspired by [go-shadowsocks2](https://github.com/shadowsocks/go-shadowsocks2)
