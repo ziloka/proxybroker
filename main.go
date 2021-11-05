@@ -31,10 +31,10 @@ func main() {
         Usage:   "Find and check proxies",
         Flags: []cli.Flag{
           &cli.BoolFlag{Name: "verbose", Aliases: []string{"v"}},
-          &cli.StringFlag{Name: "types", Aliases: []string{"t"}},
+          &cli.StringSliceFlag{Name: "types", Aliases: []string{"t"}},
           &cli.StringFlag{Name: "timeout", Aliases: []string{"to"}},
-          &cli.StringFlag{Name: "countries", Aliases: []string{"c"}},
-          &cli.StringFlag{Name: "ports", Aliases: []string{"p"}},
+          &cli.StringSliceFlag{Name: "countries", Aliases: []string{"c"}},
+          &cli.StringSliceFlag{Name: "ports", Aliases: []string{"p"}},
           &cli.StringFlag{Name: "lvl", Aliases: []string{"l"}},
           &cli.StringFlag{Name: "limit"},
         },
@@ -50,10 +50,10 @@ func main() {
         Usage:   "Grab proxies from sites",
         Flags: []cli.Flag{
           &cli.BoolFlag{Name: "verbose", Aliases: []string{"v"}},
-          &cli.StringFlag{Name: "types", Aliases: []string{"t"}},
+          &cli.StringSliceFlag{Name: "types", Aliases: []string{"t"}},
           &cli.StringFlag{Name: "timeout", Aliases: []string{"to"}},
-          &cli.StringFlag{Name: "countries", Aliases: []string{"c"}},
-          &cli.StringFlag{Name: "ports", Aliases: []string{"p"}},
+          &cli.StringSliceFlag{Name: "countries", Aliases: []string{"c"}},
+          &cli.StringSliceFlag{Name: "ports", Aliases: []string{"p"}},
           &cli.StringFlag{Name: "lvl", Aliases: []string{"l"}},
         },
         Action: func(c *cli.Context) error {
@@ -68,7 +68,7 @@ func main() {
         Usage:   "Serve web service api that serves proxies",
         Flags: []cli.Flag{
           &cli.BoolFlag{Name: "verbose", Aliases: []string{"v"}},
-          &cli.StringFlag{Name: "port", Aliases: []string{"p"}},
+          &cli.StringSliceFlag{Name: "port", Aliases: []string{"p"}},
         },
         Action: func(c *cli.Context) error {
           // Run cmd using go run main.go grab"

@@ -19,16 +19,16 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func StartWebService(assetFS embed.FS, port string, isVerbose bool) {
 
 	checkedProxies := make(chan structs.Proxy, 500)
-  bytes, readFileError := assetFS.ReadFile("assets/GeoLite2-Country.mmdb")
+	bytes, readFileError := assetFS.ReadFile("assets/GeoLite2-Country.mmdb")
 
-  if readFileError != nil {
-    return
-  }
+	if readFileError != nil {
+		return
+	}
 
-  db, dbErr := geoip2.FromBytes(bytes)
-  if dbErr != nil {
-    return
-  }
+	db, dbErr := geoip2.FromBytes(bytes)
+	if dbErr != nil {
+		return
+	}
 
 	ticker := utils.NewTicker(5, time.Minute)
 	quit := make(chan string)
@@ -36,7 +36,7 @@ func StartWebService(assetFS embed.FS, port string, isVerbose bool) {
 		for {
 			select {
 			case <-ticker.C:
-				
+
 				// Collect proxies
 				proxies := make(chan []structs.Proxy, 500)
 				go Collect(assetFS, db, proxies, nil, nil, nil, isVerbose)

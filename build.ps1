@@ -1,3 +1,8 @@
+# https://www.digitalocean.com/community/tutorials/how-to-build-go-executables-for-multiple-platforms-on-ubuntu-16-04
+
+# Run to compile for the following platforms: MacOS, Windows, Linux (The most commonly used operating systems)
+# .\build.ps1 github.com/Ziloka/ProxyBroker
+
 # https://www.red-gate.com/simple-talk/sysadmin/powershell/how-to-use-parameters-in-powershell/
 $package = $args[0]
 

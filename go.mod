@@ -13,6 +13,5 @@ require (
 	github.com/oschwald/maxminddb-golang v1.8.0 // indirect
 	github.com/russross/blackfriday/v2 v2.0.1 // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
-	golang.org/x/net v0.0.0-20211101193420-4a448f8816b3 // indirect
 	golang.org/x/sys v0.0.0-20210423082822-04245dca01da // indirect
 )

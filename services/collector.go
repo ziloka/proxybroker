@@ -3,16 +3,16 @@ package services
 import (
 	"embed"
 	"encoding/json"
+	"fmt"
+	"github.com/Ziloka/ProxyBroker/structs"
+	"github.com/Ziloka/ProxyBroker/utils"
+	"github.com/oschwald/geoip2-golang"
 	"io"
 	"net"
 	"net/http"
 	"regexp"
 	"strings"
 	"time"
-	"fmt"
-	"github.com/Ziloka/ProxyBroker/structs"
-	"github.com/Ziloka/ProxyBroker/utils"
-	"github.com/oschwald/geoip2-golang"
 )
 
 type sourceStruct struct {
@@ -25,7 +25,13 @@ func getProxies(assetFS embed.FS, types []string) []sourceStruct {
 	file, _ := assetFS.ReadFile("assets/sources.json")
 	sources := []sourceStruct{}
 	json.Unmarshal([]byte(file), &sources)
-	return sources
+	valid := []sourceStruct{}
+	for _, source := range sources {
+		if utils.Contains(types, source.Type) {
+			valid = append(valid, source)
+		}
+	}
+	return valid
 }
 
 func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []structs.Proxy, types []string, countries []string, ports []string, isVerbose bool) {
@@ -36,8 +42,8 @@ func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []structs.Proxy, types
 	httpClient := &http.Client{
 		Timeout: 16 * time.Second,
 		Transport: &http.Transport{
-			MaxIdleConns: 100,
-			MaxConnsPerHost:  100,
+			MaxIdleConns:        100,
+			MaxConnsPerHost:     100,
 			MaxIdleConnsPerHost: 100,
 		},
 	}
@@ -46,7 +52,6 @@ func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []structs.Proxy, types
 		// https://stackoverflow.com/a/31129967
 		res, httpErr := httpClient.Get(source.Url)
 		if httpErr != nil {
-			// fmt.Println(httpErr)
 			continue
 		}
 		defer res.Body.Close()
@@ -67,8 +72,9 @@ func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []structs.Proxy, types
 			country := record.Country.IsoCode
 			if (utils.Contains(ports, port) || len(ports) == 0) && (utils.Contains(countries, country) || len(countries) == 0) {
 				proxyStruct := structs.Proxy{
-					Proxy: proxy,
+					Proxy:    proxy,
 					Protocol: source.Type,
+					Country: country,
 				}
 				valid = append(valid, proxyStruct)
 			}

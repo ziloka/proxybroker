@@ -2,7 +2,7 @@
 
 # https://www.digitalocean.com/community/tutorials/how-to-build-go-executables-for-multiple-platforms-on-ubuntu-16-04
 
-# Run to compile for the following platforms
+# Run to compile for the following platforms: MacOS, Windows, Linux (The most commonly used operating systems)
 # bash build.bash github.com/Ziloka/ProxyBroker
 
 package=$1

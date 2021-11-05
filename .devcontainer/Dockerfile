@@ -4,7 +4,7 @@
 # See here for image contents: https://github.com/microsoft/vscode-dev-containers/tree/v0.195.0/containers/go/.devcontainer/base.Dockerfile
 # [Choice] Go version (use -bullseye variants on local arm64/Apple Silicon): 1, 1.16, 1.17, 1-bullseye, 1.16-bullseye, 1.17-bullseye, 1-buster, 1.16-buster, 1.17-buster
 
-FROM golang:1.17.2-alpine3.14
+FROM golang:1.17.3-alpine3.14
 
 # https://pkg.go.dev/net/http
 # ENV GODEBUG http2debug=1
@@ -13,13 +13,32 @@ ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
-RUN apk add --no-cache --update musl-dev gcc git \
+# NDK version to use
+ENV NDK_VERSION="android-ndk-r23b-linux"
+# Set default locale
+ENV LANG="C.UTF-8"
+# glibc version to be installed
+ENV GLIBC_VERSION "2.34-r0"
+
+RUN apk add --no-cache --update musl-dev gcc make git \
   && apk add --no-cache --update binutils util-linux file
 
-RUN go get -v github.com/ramya-rao-a/go-outline \
-  && go get -v golang.org/x/tools/gopls \
-  && go get github.com/uudashr/gopkgs/v2/cmd/gopkgs \
-  && go get honnef.co/go/tools/cmd/staticcheck@latest
+RUN go get -v github.com/ramya-rao-a/go-outline && \
+  go get -v golang.org/x/tools/gopls && \
+  go get github.com/uudashr/gopkgs/v2/cmd/gopkgs && \
+  go get honnef.co/go/tools/cmd/staticcheck@latest
+
+# Install required deps to compile for all platforms
+# RUN apk add wget && \
+#   wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
+#   wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.34-r0/glibc-2.34-r0.apk && \
+#   apk add glibc-2.34-r0.apk && \
+#   wget -O /${NDK_VERSION}.zip https://dl.google.com/android/repository/${NDK_VERSION}.zip && \
+# 	unzip /${NDK_VERSION}.zip && \
+# 	rm /${NDK_VERSION}.zip
+
+# Add ndk-build to environment variables
+# ENV PATH="/${NDK_VERSION}/:${PATH}"
 
 # ARG VARIANT=1-bullseye
 # FROM mcr.microsoft.com/vscode/devcontainers/go:0-${VARIANT}

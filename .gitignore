@@ -1,2 +1,7 @@
 # Ignore personal perferences
 .vscode
+
+# Computer generated files
+dist
+ProxyBroker
+ProxyBroker.exe
