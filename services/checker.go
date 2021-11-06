@@ -5,7 +5,6 @@ import (
 	"github.com/Ziloka/ProxyBroker/structs"
 	"github.com/Ziloka/ProxyBroker/utils"
 	"io"
-	"net"
 	"net/http"
 	"strings"
 )
@@ -43,16 +42,13 @@ func filterProxies(proxies chan structs.Proxy, myRemoteAddr string, tp *structs.
 			if !strings.Contains(obj.Origin, myRemoteAddr) {
 				// fmt.Printf("D: %v, RD: %v, CD: %v\n", tp.Duration(), tp.ReqDuration(), tp.ConnDuration())
 				// Proxy is High
-				addrs, err := net.LookupAddr(proxy.Proxy)
-				if err != nil {
-					addrs = []string{}
-				}
+				// host := strings.Split(proxy.Proxy, ":")[0]
 				proxyStruct := structs.Proxy{
 					Proxy:        proxy.Proxy,
 					AvgRespTime:  tp.Duration(),
 					ConnDuration: tp.ConnDuration(),
 					ReqDuration:  tp.ReqDuration(),
-					HostName:     addrs,
+					// HostNames:    structs.ReverseDNSLookup(host),
 				}
 				proxies <- proxyStruct
 			} else {

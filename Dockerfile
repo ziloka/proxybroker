@@ -1,4 +1,4 @@
-FROM golang:1.17.2-alpine3.14 as build
+FROM golang:1.17.3-alpine3.14 as build
 
 WORKDIR /usr/app/proxybroker
 COPY . .

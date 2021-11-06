@@ -21,7 +21,7 @@ ENV LANG="C.UTF-8"
 ENV GLIBC_VERSION "2.34-r0"
 
 RUN apk add --no-cache --update musl-dev gcc make git \
-  && apk add --no-cache --update binutils util-linux file
+  && apk add --no-cache --update bind-tools binutils util-linux file
 
 RUN go get -v github.com/ramya-rao-a/go-outline && \
   go get -v golang.org/x/tools/gopls && \

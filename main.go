@@ -31,6 +31,7 @@ func main() {
         Usage:   "Find and check proxies",
         Flags: []cli.Flag{
           &cli.BoolFlag{Name: "verbose", Aliases: []string{"v"}},
+					&cli.BoolFlag{Name: "raw", Aliases: []string{"r"}},
           &cli.StringSliceFlag{Name: "types", Aliases: []string{"t"}},
           &cli.StringFlag{Name: "timeout", Aliases: []string{"to"}},
           &cli.StringSliceFlag{Name: "countries", Aliases: []string{"c"}},

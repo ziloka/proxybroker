@@ -14,7 +14,7 @@ compile:
 	GOOS=android GOARCH=amd64 go build -o dist/ProxyBroker-android-amd64 main.go
 	GOOS=android GOARCH=arm go build -o dist/ProxyBroker-android-arm main.go
 	GOOS=android GOARCH=arm64 go build -o dist/ProxyBroker-android-arm64 main.go
-	GOOS=darwin GOARCH=amd64 go build -o dist/ProxyBroker-darwin-386 main.go
+	GOOS=darwin GOARCH=amd64 go build -o dist/ProxyBroker-darwin-amd64 main.go
 	GOOS=darwin GOARCH=arm64 go build -o dist/ProxyBroker-darwin-arm64 main.go
 	GOOS=dragonfly GOARCH=amd64 go build -o dist/ProxyBroker-dragonfly-amd64 main.go
 	GOOS=freebsd GOARCH=386 go build -o dist/ProxyBroker-freebsd-386 main.go
@@ -52,5 +52,5 @@ compile:
 	GOOS=solaris GOARCH=amd64 go build -o dist/ProxyBroker-solaris-amd64 main.go
 	GOOS=windows GOARCH=386 go build -o dist/ProxyBroker-windows-386 main.go
 	GOOS=windows GOARCH=amd64 go build -o dist/ProxyBroker-windows-amd64 main.go
-	GOOS=windows GOARCH=arm go build -o dist/ProxyBroker-windows-arm main.go
+	GOOS=windows GOARCH=arm go build -o dis0.t/ProxyBroker-windows-arm main.go
 	GOOS=windows GOARCH=amd64 go build -o dist/ProxyBroker-windows-amd64 main.go

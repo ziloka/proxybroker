@@ -5,6 +5,7 @@ import (
   "net/http"
   "net/url"
   "time"
+  proxyLib "golang.org/x/net/proxy"
   "github.com/Ziloka/ProxyBroker/structs/socks"
 )
 
@@ -46,11 +47,19 @@ func NewTransport(protocol string, proxy string) *CustomTransport {
       Dial:                dialSocksProxy,
     }
   } else if protocol == "socks5" {
-    // https://play.golang.org/p/l0iLtkD1DV
-    dialSocksProxy := socks.DialSocksProxy(socks.SOCKS5, proxy)
-    tr.rtp = &http.Transport{
-      Dial:                dialSocksProxy,
+    dialer, err := proxyLib.SOCKS5("tcp", proxy, nil, proxyLib.Direct)
+    if err != nil {
+
+    } else {
+      tr.rtp = &http.Transport{
+        Dial:                dialer.Dial,
+      }
     }
+    // https://play.golang.org/p/l0iLtkD1DV
+    // dialSocksProxy := socks.DialSocksProxy(socks.SOCKS5, proxy)
+    // tr.rtp = &http.Transport{
+    //   Dial:                dialSocksProxy,
+    // }
   }
 
   

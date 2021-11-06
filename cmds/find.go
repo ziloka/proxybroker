@@ -13,6 +13,7 @@ import (
 func Find(c *cli.Context, assetFS embed.FS) (err error) {
 
 	// Set default values for flags
+	raw := c.Bool("raw")
 	verbose := c.Bool("verbose")
 	types := c.StringSlice("types")
 	if len(types) == 0 {
@@ -66,7 +67,12 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 	for proxy := range checkedProxies {
 		if index < limit {
 			index++
-			fmt.Printf("<Proxy %v %v %+v>\n", proxy.Country, proxy.ConnDuration, string(proxy.Proxy))
+			// fmt.Println(proxy.HostNames)
+			if raw {
+				fmt.Println(proxy.Proxy)
+			} else {
+				fmt.Printf("<Proxy %v %v %+v>\n", proxy.Country, proxy.ConnDuration, proxy.Proxy)
+			}
 		} else {
 			break
 		}

@@ -1,6 +1,9 @@
 package structs
 
-import "time"
+import (
+  "github.com/miekg/dns"
+  "time"
+)
 
 type Proxy struct {
   Protocol     string        `json:"protocol"`
@@ -10,5 +13,5 @@ type Proxy struct {
   ReqDuration  time.Duration `json:"reqDuration"`
   Country      string        `json:"country"`
   IsoCode      string        `json:"isoCode"`
-  HostName     []string        `json:"hostName"`
+  HostNames    []dns.RR      `json:"hostNames"`
 }
