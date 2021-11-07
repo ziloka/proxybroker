@@ -36,6 +36,10 @@
     "type": "http"
   },
   {
+    "url": "https://proxylist.geonode.com/api/proxy-list?limit=200&page=1&sort_by=lastChecked&sort_type=desc&protocols=http",
+    "type": "http"
+  },
+  {
     "url": "https://www.sslproxies.org/",
     "type": "https"
   },
@@ -49,6 +53,10 @@
   },
   {
     "url": "https://www.proxy-list.download/api/v1/get?type=https",
+    "type": "https"
+  },
+  {
+    "url": "https://proxylist.geonode.com/api/proxy-list?limit=200&page=1&sort_by=lastChecked&sort_type=desc&protocols=https",
     "type": "https"
   },
   {
@@ -72,6 +80,10 @@
     "type": "socks4"
   },
   {
+    "url": "https://proxylist.geonode.com/api/proxy-list?limit=200&page=1&sort_by=lastChecked&sort_type=desc&protocols=socks4",
+    "type": "socks4"
+  },
+  {
     "url": "https://api.proxyscrape.com/v2/?request=getproxies&protocol=socks5&timeout=10000&country=all",
     "type": "socks5"
   },
@@ -89,6 +101,10 @@
   },
   {
     "url": "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks5.txt",
+    "type": "socks5"
+  },
+  {
+    "url": "https://proxylist.geonode.com/api/proxy-list?limit=200&page=1&sort_by=lastChecked&sort_type=desc&protocols=socks5",
     "type": "socks5"
   }
 ]

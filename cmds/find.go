@@ -67,7 +67,6 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 	for proxy := range checkedProxies {
 		if index < limit {
 			index++
-			// fmt.Println(proxy.HostNames)
 			if raw {
 				fmt.Println(proxy.Proxy)
 			} else {
