@@ -1,6 +1,6 @@
 # ProxyBroker
 
-Proxy is an open source tool that asynchrously finds public proxies from multiple sources and concurrently checks them
+Proxy is an open source tool that asynchronously finds public proxies from multiple sources and concurrently checks them
 
 ## Features
 
