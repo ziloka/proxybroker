@@ -6,14 +6,11 @@ import (
 	"fmt"
 	"github.com/Ziloka/ProxyBroker/structs"
 	"github.com/Ziloka/ProxyBroker/utils"
-	"github.com/mxschmitt/playwright-go"
 	"github.com/oschwald/geoip2-golang"
 	"io"
-	"log"
 	"net"
 	"net/http"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -79,7 +76,6 @@ func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []structs.Proxy, types
 		fmt.Printf("Debug there are %d proxies\n", len(ch))
 	}
 
-	ch <- getProxiesFromNNTime(db)
 	defer close(ch)
 }
 
@@ -114,93 +110,4 @@ func GetpublicIpAddr() (string, error) {
 	obj := &HttpResponse{}
 	json.NewDecoder(res.Body).Decode(obj)
 	return obj.Origin, nil
-}
-
-func getProxiesFromNNTime(db *geoip2.Reader) []structs.Proxy {
-	proxies := []structs.Proxy{}
-
-	getProxiesOnPage := func(ch chan []structs.Proxy, pageNum string) ([]structs.Proxy, int) {
-		numOfPages := 0
-		var proxies []structs.Proxy
-		pw, err := playwright.Run(&playwright.RunOptions{
-			SkipInstallBrowsers: true,
-			Browsers:            []string{"chromium"},
-		})
-		if err != nil {
-			log.Fatalf("could not start playwright: %v", err)
-		}
-		browser, err := pw.Chromium.Launch()
-		if err != nil {
-			log.Fatalf("could not launch browser: %v", err)
-		}
-		page, err := browser.NewPage()
-		if err != nil {
-			log.Fatalf("could not create page: %v", err)
-		}
-		if _, err = page.Goto("http://nntime.com/proxy-list-" + pageNum + ".htm"); err != nil {
-			log.Fatalf("could not goto: %v", err)
-		}
-		// https://stackoverflow.com/a/5418836
-		pagesNumElement, err := page.QuerySelector("div#navigation > a:nth-last-child(3)")
-		if err != nil {
-			log.Fatalf("could not query selector: %v", err)
-		}
-		lastPageNum, err := pagesNumElement.InnerText()
-		if err != nil {
-			log.Fatalf("could not get inner text: %v", err)
-		}
-
-		lastPageNumInt, err := strconv.Atoi(lastPageNum)
-		if err != nil {
-			log.Fatalf("could not convert to int: %v", err)
-		}
-		numOfPages = lastPageNumInt
-		entries, err := page.QuerySelectorAll("table#proxylist > tbody > tr")
-		if err != nil {
-			log.Fatalf("could not get entries: %v", err)
-		}
-		for _, entry := range entries {
-			element, err := entry.QuerySelector("td:nth-child(2)")
-			if err != nil {
-				log.Fatalf("could not get title element: %v", err)
-			}
-			proxy, err := element.InnerText()
-			if err != nil {
-				log.Fatalf("could not get text content: %v", err)
-			}
-			proxies = append(proxies, structs.Proxy{
-				Proxy: proxy,
-			})
-
-		}
-		if err = browser.Close(); err != nil {
-			log.Fatalf("could not close browser: %v", err)
-		}
-		if err = pw.Stop(); err != nil {
-			log.Fatalf("could not stop Playwright: %v", err)
-		}
-		ch <- proxies
-		return proxies, numOfPages
-	}
-
-	ch := make(chan []structs.Proxy, 200)
-	_, numOfPages := getProxiesOnPage(ch, "01")
-	for i := 2; i <= numOfPages; i++ {
-		// https://stackoverflow.com/a/51546906
-		go getProxiesOnPage(ch, fmt.Sprintf("%02d", i))
-	}
-
-i := 1
-getProxies:
-	for {
-		select {
-		case proxiesOnPage := <-ch:
-			proxies = append(proxies, proxiesOnPage...)
-			i++
-			if i > numOfPages {
-				break getProxies
-			}
-		}
-	}
-	return proxies
 }

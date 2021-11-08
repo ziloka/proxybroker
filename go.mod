@@ -7,13 +7,9 @@ require (
 	github.com/urfave/cli/v2 v2.3.0
 )
 
-require h12.io/socks v1.0.3 // indirect
-
 require (
-	github.com/danwakefield/fnmatch v0.0.0-20160403171240-cbb64ac3d964 // indirect
-	github.com/gorilla/websocket v1.4.2 // indirect
-	github.com/mxschmitt/playwright-go v0.1400.0 // direct
-	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	h12.io/socks v1.0.3
 )
 
 require (

@@ -4,7 +4,9 @@ WORKDIR /usr/app/proxybroker
 COPY . .
 
 ENV GOOS=linux
-ENV  CGO_ENABLED=0
+ENV CGO_ENABLED=0
+
+RUN apk add --no-cache ca-certificates
 
 # https://blog.filippo.io/shrink-your-go-binaries-with-this-one-weird-trick/
 RUN go install -ldflags '-extldflags "-static"' && \
