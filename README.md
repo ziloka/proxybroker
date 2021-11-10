@@ -24,5 +24,5 @@ go build -o ProxyBroker main.go
 ```
 
 ## Motiviation
-- Inspired by [ProxyBroker]()
+- Inspired by [ProxyBroker](https://github.com/constverum/ProxyBroker) (A more maintained version of that [project](https://github.com/bluet/proxybroker2))
 - Web Service inspired by [go-shadowsocks2](https://github.com/shadowsocks/go-shadowsocks2)
