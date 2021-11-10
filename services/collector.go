@@ -68,10 +68,10 @@ func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []structs.Proxy, types
 				valid = append(valid, proxyStruct)
 			}
 		}
-		ch <- valid
 		if isVerbose {
 			fmt.Printf("Found %v proxies from source %v\n", len(proxies), source.Url)
 		}
+		ch <- valid
 	}
 
 	// proxies that are easy to collect

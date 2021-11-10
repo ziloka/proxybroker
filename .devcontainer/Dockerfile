@@ -8,6 +8,8 @@ FROM golang:1.17.3-alpine3.14
 
 # https://pkg.go.dev/net/http
 # ENV GODEBUG http2debug=1
+# https://syslog.ravelin.com/a-profiling-adventure-to-speed-up-go-5cfa198759db
+ENV GOTRACE 1
 
 RUN apk add --no-cache --update musl-dev gcc make git \
   && apk add --no-cache --update bind-tools binutils util-linux file

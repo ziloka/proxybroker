@@ -4,18 +4,6 @@
     "type": "http"
   },
   {
-    "url": "https://www.us-proxy.org/",
-    "type": "http"
-  },
-  {
-    "url": "https://www.sslproxies.org/",
-    "type": "http"
-  },
-  {
-    "url": "https://free-proxy-list.net/",
-    "type": "http"
-  },
-  {
     "url": "https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list-raw.txt",
     "type": "http"
   },
@@ -38,10 +26,6 @@
   {
     "url": "https://proxylist.geonode.com/api/proxy-list?limit=200&page=1&sort_by=lastChecked&sort_type=desc&protocols=http",
     "type": "http"
-  },
-  {
-    "url": "https://www.sslproxies.org/",
-    "type": "https"
   },
   {
     "url": "https://www.proxy-list.download/HTTPS",

@@ -74,7 +74,6 @@ func filterProxies(proxies chan structs.Proxy, myRemoteAddr string, tp *structs.
 				proxy.AvgRespTime = tp.Duration()
 				proxy.ConnDuration = tp.ConnDuration()
 				proxy.ReqDuration = tp.ReqDuration()
-
 				proxies <- proxy
 			}
 		}

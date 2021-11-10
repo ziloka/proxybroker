@@ -3,11 +3,11 @@ package cmds
 import (
 	"embed"
 	"fmt"
-	"os"
 	"github.com/Ziloka/ProxyBroker/services"
 	"github.com/Ziloka/ProxyBroker/structs"
 	"github.com/oschwald/geoip2-golang"
 	"github.com/urfave/cli/v2"
+	"os"
 )
 
 func Find(c *cli.Context, assetFS embed.FS) (err error) {
@@ -36,12 +36,13 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 	defer db.Close()
 
 	// Collect proxies
-	proxies := make(chan []structs.Proxy, 100000)
+	proxies := make(chan []structs.Proxy, limit*5)
 	services.Collect(assetFS, db, proxies, types, countries, ports, verbose)
 	publicIpAddr, err := services.GetpublicIpAddr()
 	if err != nil {
 		return err
 	}
+
 	// Check Proxies
 	// https://stackoverflow.com/questions/41906146/why-go-channels-limit-the-buffer-size
 	// https://stackoverflow.com/a/41906488
@@ -66,5 +67,4 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 	}
 
 	return err
-
 }

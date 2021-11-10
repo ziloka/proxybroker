@@ -18,5 +18,4 @@ func Serve(c *cli.Context, assetFS embed.FS) (err error) {
 	services.StartWebService(assetFS, port, verbose)
 
 	return nil
-
 }
