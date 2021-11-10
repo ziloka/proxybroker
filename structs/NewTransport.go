@@ -1,12 +1,14 @@
 package structs
 
 import (
-	"h12.io/socks"
-	proxyLib "golang.org/x/net/proxy"
 	"net"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/Ziloka/ProxyBroker/utils"
+	proxyLib "golang.org/x/net/proxy"
+	"h12.io/socks"
 )
 
 // https://stackoverflow.com/questions/30526946/time-http-response-in-go
@@ -31,7 +33,7 @@ func NewTransport(protocol string, proxy string) *CustomTransport {
 		},
 	}
 
-	if protocol == "http" {
+	if utils.Contains([]string{"http", "https"}, protocol) {
 		proxyUrl, _ := url.Parse("http://" + proxy)
 		tr.rtp = &http.Transport{
 			Proxy:               http.ProxyURL(proxyUrl),

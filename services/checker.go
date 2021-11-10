@@ -2,11 +2,11 @@ package services
 
 import (
 	"encoding/json"
+	"github.com/Ziloka/ProxyBroker/structs"
+	"github.com/Ziloka/ProxyBroker/utils"
 	"io"
 	"net/http"
 	"strings"
-	"github.com/Ziloka/ProxyBroker/structs"
-	"github.com/Ziloka/ProxyBroker/utils"
 )
 
 type HttpResponse struct {
@@ -14,11 +14,15 @@ type HttpResponse struct {
 }
 
 // https://golangbyexample.com/return-value-goroutine-go/
-func Check(proxies chan structs.Proxy, myRemoteAddr string, proxy structs.Proxy) {
+func Check(proxies chan structs.Proxy, myRemoteAddr string, proxy structs.Proxy, verbose bool) {
 	// test proxy with provided protocol
 	if proxy.Protocol != "" {
 		trp := structs.NewTransport(proxy.Protocol, proxy.Proxy)
-		httpClient := &http.Client{Transport: trp}
+		// https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779
+		httpClient := &http.Client{
+			Transport: trp,
+			// Timeout: time.Second * 5,
+		}
 		res, httpGetErr := httpClient.Get("https://httpbin.org/ip?json")
 		if httpGetErr != nil {
 			return
@@ -32,13 +36,17 @@ func Check(proxies chan structs.Proxy, myRemoteAddr string, proxy structs.Proxy)
 		res := &http.Response{}
 		for _, protocol := range protocols {
 			trp = structs.NewTransport(protocol, proxy.Proxy)
-			httpClient := &http.Client{Transport: trp}
+			// https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779
+			httpClient := &http.Client{
+				Transport: trp,
+				// Timeout: time.Second * 5,
+			}
 			httpbinRes, httpGetErr := httpClient.Get("https://httpbin.org/ip?json")
 			if httpGetErr != nil {
 				continue
 			}
-				defer httpbinRes.Body.Close()
-				res = httpbinRes
+			defer httpbinRes.Body.Close()
+			res = httpbinRes
 		}
 		if res != nil {
 			filterProxies(proxies, myRemoteAddr, trp, res, proxy)

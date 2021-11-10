@@ -3,18 +3,19 @@ package cmds
 import (
 	"embed"
 	"fmt"
-	"os"
-	"strings"
-
 	"github.com/Ziloka/ProxyBroker/services"
 	"github.com/Ziloka/ProxyBroker/structs"
+	"github.com/Ziloka/ProxyBroker/utils"
 	"github.com/oschwald/geoip2-golang"
 	"github.com/urfave/cli/v2"
+	"os"
+	"strings"
 )
 
 func Grab(c *cli.Context, assetFS embed.FS) (err error) {
 
 	// Set default values for flags
+	outfile := c.String("outfile")
 	verbose := c.Bool("verbose")
 	types := c.StringSlice("types")
 	if len(types) == 0 {
@@ -27,7 +28,8 @@ func Grab(c *cli.Context, assetFS embed.FS) (err error) {
 	countries := c.StringSlice("countries")
 	ports := c.StringSlice("ports")
 
-	bytes, readFileError := assetFS.ReadFile("assets/GeoLite2-Country.mmdb")
+	zipBytes, readFileError := assetFS.ReadFile("assets/GeoLite2-Country.zip")
+	bytes := utils.ReadZIP(zipBytes)
 
 	if readFileError != nil {
 		return readFileError
@@ -45,21 +47,24 @@ func Grab(c *cli.Context, assetFS embed.FS) (err error) {
 	displayedProxies := []string{}
 	for _, proxyStruct := range <-proxies {
 		displayedProxies = append(displayedProxies, proxyStruct.Proxy)
-		fmt.Println("[+] " + proxyStruct.Proxy)
 	}
 
-	if true {
+	if outfile == "" {
+		for _, proxy := range displayedProxies {
+			fmt.Println("[+] " + proxy)
+		}
+	} else {
 		data := []byte(strings.Join(displayedProxies, "\n"))
 		f, fileCreateErr := os.Create("proxies.txt")
 		if fileCreateErr != nil {
 			panic(fileCreateErr)
 		}
-		fileWriteErr := os.WriteFile("proxies.txt", data, 0644)
+		fileWriteErr := os.WriteFile(outfile, data, 0644)
 		if fileWriteErr != nil {
 			panic(fileWriteErr)
 		}
 		defer f.Close()
-
 	}
+
 	return nil
 }

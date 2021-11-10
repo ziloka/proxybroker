@@ -3,11 +3,13 @@ package cmds
 import (
 	"embed"
 	"fmt"
+	"os"
+
 	"github.com/Ziloka/ProxyBroker/services"
 	"github.com/Ziloka/ProxyBroker/structs"
+	"github.com/Ziloka/ProxyBroker/utils"
 	"github.com/oschwald/geoip2-golang"
 	"github.com/urfave/cli/v2"
-	"time"
 )
 
 func Find(c *cli.Context, assetFS embed.FS) (err error) {
@@ -20,7 +22,7 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 		types = []string{"http", "https"}
 	}
 	timeout := c.Int("timeout")
-    if timeout == 0 {
+	if timeout == 0 {
 		timeout = 5000
 	}
 	limit := c.Int("limit")
@@ -30,37 +32,26 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 	countries := c.StringSlice("countries")
 	ports := c.StringSlice("ports")
 
-	bytes, readFileError := assetFS.ReadFile("assets/GeoLite2-Country.mmdb")
+	zipBytes, _ := assetFS.ReadFile("assets/GeoLite2-Country.zip")
+	bytes := utils.ReadZIP(zipBytes)
 
-	if readFileError != nil {
-		return readFileError
-	}
-
-	db, dbErr := geoip2.FromBytes(bytes)
-	if err != nil {
-		return dbErr
-	}
+	db, _ := geoip2.FromBytes(bytes)
 	defer db.Close()
 
 	// Collect proxies
-	proxies := make(chan []structs.Proxy)
-	go services.Collect(assetFS, db, proxies, types, countries, ports, verbose)
+	proxies := make(chan []structs.Proxy, 100000)
+	services.Collect(assetFS, db, proxies, types, countries, ports, verbose)
 	publicIpAddr, err := services.GetpublicIpAddr()
 	if err != nil {
 		return err
 	}
-	start := time.Now()
 	// Check Proxies
 	// https://stackoverflow.com/questions/41906146/why-go-channels-limit-the-buffer-size
 	// https://stackoverflow.com/a/41906488
-	checkedProxies := make(chan structs.Proxy, 500)
+	checkedProxies := make(chan structs.Proxy, 5000)
 	for _, proxy := range <-proxies {
 		// https://reshefsharvit.medium.com/common-pitfalls-and-cases-when-using-goroutines-15107237d4f5
-		go services.Check(checkedProxies, publicIpAddr, proxy)
-	}
-
-	if verbose {
-		fmt.Printf("Time took to check proxies: %v\n", time.Since(start))
+		go services.Check(checkedProxies, publicIpAddr, proxy, verbose)
 	}
 
 	index := 0
@@ -73,7 +64,7 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 				fmt.Printf("<Proxy %v %v %+v>\n", proxy.Country, proxy.ConnDuration, proxy.Proxy)
 			}
 		} else {
-			break
+			os.Exit(0)
 		}
 	}
 

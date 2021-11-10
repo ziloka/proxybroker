@@ -6,12 +6,11 @@ COPY . .
 ENV GOOS=linux
 ENV CGO_ENABLED=0
 
-RUN apk add --no-cache ca-certificates
+RUN apk add --no-cache ca-certificates upx
 
 # https://blog.filippo.io/shrink-your-go-binaries-with-this-one-weird-trick/
 RUN go install -ldflags '-extldflags "-static"' && \
   go build -ldflags="-s -w" -o ProxyBroker main.go && \
-  apk add binutils upx && \
   strip --strip-all ProxyBroker && \
   upx -9 ProxyBroker
 

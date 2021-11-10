@@ -26,16 +26,7 @@ RUN apk add --no-cache --update musl-dev gcc make git \
 RUN go get -v github.com/ramya-rao-a/go-outline && \
   go get -v golang.org/x/tools/gopls && \
   go get github.com/uudashr/gopkgs/v2/cmd/gopkgs && \
-  go get honnef.co/go/tools/cmd/staticcheck@latest
-
-# Install required deps to compile for all platforms
-# RUN apk add wget && \
-#   wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
-#   wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.34-r0/glibc-2.34-r0.apk && \
-#   apk add glibc-2.34-r0.apk && \
-#   wget -O /${NDK_VERSION}.zip https://dl.google.com/android/repository/${NDK_VERSION}.zip && \
-# 	unzip /${NDK_VERSION}.zip && \
-# 	rm /${NDK_VERSION}.zip
+  go install honnef.co/go/tools/cmd/staticcheck@latest
 
 # Add ndk-build to environment variables
 # ENV PATH="/${NDK_VERSION}/:${PATH}"

@@ -25,6 +25,20 @@ func main() {
     Usage:                  "proxybroker find",
     UseShortOptionHandling: true,
     Commands: []*cli.Command{
+			{
+				Name: "check",
+				Aliases: []string{"c"},
+				Usage: "checks given proxies in file",
+				Flags: []cli.Flag{
+					&cli.BoolFlag{Name: "verbose", Aliases: []string{"v"}},
+					&cli.BoolFlag{Name: "raw", Aliases: []string{"r"}},
+					&cli.StringFlag{Name: "file", Aliases: []string{"f"}},
+				},
+				Action: func (c *cli.Context) error {
+					err := cmds.Check(c, assetFS)
+					return err
+				},
+			},
       {
         Name:    "find",
         Aliases: []string{"f"},
@@ -51,8 +65,9 @@ func main() {
         Usage:   "Grab proxies from sites",
         Flags: []cli.Flag{
           &cli.BoolFlag{Name: "verbose", Aliases: []string{"v"}},
+					&cli.StringFlag{Name: "outfile", Aliases: []string{"o"}},
           &cli.StringSliceFlag{Name: "types", Aliases: []string{"t"}},
-          &cli.StringFlag{Name: "timeout", Aliases: []string{"to"}},
+          &cli.StringFlag{Name: "timeout", Aliases: []string{"tmo"}},
           &cli.StringSliceFlag{Name: "countries", Aliases: []string{"c"}},
           &cli.StringSliceFlag{Name: "ports", Aliases: []string{"p"}},
           &cli.StringFlag{Name: "lvl", Aliases: []string{"l"}},

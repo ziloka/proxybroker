@@ -25,22 +25,23 @@ func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []structs.Proxy, types
 	if isVerbose {
 		fmt.Printf("Found %v sources\n", len(sources))
 	}
-	httpClient := &http.Client{
-		Timeout: 16 * time.Second,
-		Transport: &http.Transport{
-			MaxIdleConns:        100,
-			MaxConnsPerHost:     100,
-			MaxIdleConnsPerHost: 100,
-		},
-	}
 
-	// proxies that are easy to collect
-	for _, source := range sources {
+	getProxies := func(source sourceStruct) {
+
+		httpClient := &http.Client{
+			Timeout: 16 * time.Second,
+			Transport: &http.Transport{
+				MaxIdleConns:        100,
+				MaxConnsPerHost:     100,
+				MaxIdleConnsPerHost: 100,
+			},
+		}
+
 		// https://stackoverflow.com/questions/17156371/how-to-get-json-response-from-http-get
 		// https://stackoverflow.com/a/31129967
 		res, httpErr := httpClient.Get(source.Url)
 		if httpErr != nil {
-			panic(httpErr)
+			return
 		}
 		defer res.Body.Close()
 		b, _ := io.ReadAll(res.Body)
@@ -72,11 +73,15 @@ func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []structs.Proxy, types
 			fmt.Printf("Found %v proxies from source %v\n", len(proxies), source.Url)
 		}
 	}
+
+	// proxies that are easy to collect
+	for _, source := range sources {
+		go getProxies(source)
+	}
+
 	if isVerbose {
 		fmt.Printf("Debug there are %d proxies\n", len(ch))
 	}
-
-	defer close(ch)
 }
 
 func getProxies(assetFS embed.FS, types []string) []sourceStruct {
