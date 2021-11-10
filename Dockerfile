@@ -6,7 +6,7 @@ COPY . .
 ENV GOOS=linux
 ENV CGO_ENABLED=0
 
-RUN apk add --no-cache ca-certificates upx
+RUN apk add --no-cache ca-certificates upx binutils
 
 # https://blog.filippo.io/shrink-your-go-binaries-with-this-one-weird-trick/
 RUN go install -ldflags '-extldflags "-static"' && \
