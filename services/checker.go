@@ -71,13 +71,11 @@ func filterProxies(proxies chan structs.Proxy, myRemoteAddr string, tp *structs.
 			if !strings.Contains(obj.Origin, myRemoteAddr) {
 				// fmt.Printf("D: %v, RD: %v, CD: %v\n", tp.Duration(), tp.ReqDuration(), tp.ConnDuration())
 				// Proxy is High
-				proxyStruct := structs.Proxy{
-					Proxy:        proxy.Proxy,
-					AvgRespTime:  tp.Duration(),
-					ConnDuration: tp.ConnDuration(),
-					ReqDuration:  tp.ReqDuration(),
-				}
-				proxies <- proxyStruct
+				proxy.AvgRespTime = tp.Duration()
+				proxy.ConnDuration = tp.ConnDuration()
+				proxy.ReqDuration = tp.ReqDuration()
+
+				proxies <- proxy
 			}
 		}
 	}

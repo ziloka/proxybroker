@@ -4,10 +4,8 @@ import (
 	"embed"
 	"fmt"
 	"os"
-
 	"github.com/Ziloka/ProxyBroker/services"
 	"github.com/Ziloka/ProxyBroker/structs"
-	"github.com/Ziloka/ProxyBroker/utils"
 	"github.com/oschwald/geoip2-golang"
 	"github.com/urfave/cli/v2"
 )
@@ -32,8 +30,7 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 	countries := c.StringSlice("countries")
 	ports := c.StringSlice("ports")
 
-	zipBytes, _ := assetFS.ReadFile("assets/GeoLite2-Country.zip")
-	bytes := utils.ReadZIP(zipBytes)
+	bytes, _ := assetFS.ReadFile("assets/GeoLite2-Country.mmdb")
 
 	db, _ := geoip2.FromBytes(bytes)
 	defer db.Close()
@@ -68,6 +65,6 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 		}
 	}
 
-	return nil
+	return err
 
 }
