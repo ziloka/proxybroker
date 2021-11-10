@@ -7,5 +7,8 @@ app/build
 # Ignore .idea project specific settings directory
 .idea
 
+# Ignore vscode project specific settings directory
+.vscode
+
 ProxyBroker.exe
 ProxyBroker.build_artifacts.txt
