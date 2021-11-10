@@ -9,17 +9,6 @@ FROM golang:1.17.3-alpine3.14
 # https://pkg.go.dev/net/http
 # ENV GODEBUG http2debug=1
 
-ARG USERNAME=vscode
-ARG USER_UID=1000
-ARG USER_GID=$USER_UID
-
-# NDK version to use
-ENV NDK_VERSION="android-ndk-r23b-linux"
-# Set default locale
-ENV LANG="C.UTF-8"
-# glibc version to be installed
-ENV GLIBC_VERSION "2.34-r0"
-
 RUN apk add --no-cache --update musl-dev gcc make git \
   && apk add --no-cache --update bind-tools binutils util-linux file
 
