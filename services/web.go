@@ -18,7 +18,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func StartWebService(assetFS embed.FS, port string, verbose bool) {
 
-  checkedProxies := make(chan structs.Proxy, 500)
+	checkedProxies := []structs.Proxy{}
+  checkedProxiesChan := make(chan structs.Proxy, 500)
   bytes, readFileError := assetFS.ReadFile("assets/GeoLite2-Country.mmdb")
 
   if readFileError != nil {
@@ -38,17 +39,22 @@ func StartWebService(assetFS embed.FS, port string, verbose bool) {
       case <-ticker.C:
 
         // Collect proxies
-        proxies := make(chan []structs.Proxy, 500)
-        go Collect(assetFS, db, proxies, nil, nil, nil, verbose)
+        proxiesChan := make(chan []structs.Proxy, 500)
+      	Collect(assetFS, db, proxiesChan, []string{"http","https","socks4", "socks5"}, []string{}, []string{}, verbose)
         publicIpAddr, err := GetpublicIpAddr()
         if err != nil {
           return
         }
         // Check Proxies
-        for _, proxy := range <-proxies {
+        for _, proxy := range <-proxiesChan {
+					fmt.Println(proxy)
           // https://reshefsharvit.medium.com/common-pitfalls-and-cases-when-using-goroutines-15107237d4f5
-          go Check(checkedProxies, publicIpAddr, proxy, verbose)
+          go Check(checkedProxiesChan, publicIpAddr, proxy, verbose)
         }
+
+				for proxy := range checkedProxiesChan {
+					checkedProxies = append(checkedProxies, proxy)
+				}
 
       case <-quit:
         ticker.Stop()

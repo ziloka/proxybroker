@@ -84,7 +84,7 @@ func main() {
 				Usage:   "Serve web service api that serves proxies",
 				Flags: []cli.Flag{
 					&cli.BoolFlag{Name: "verbose", Aliases: []string{"v"}},
-					&cli.StringSliceFlag{Name: "port", Aliases: []string{"p"}},
+					&cli.StringFlag{Name: "port", Aliases: []string{"p"}},
 				},
 				Action: func(c *cli.Context) error {
 					// Run cmd using go run main.go grab"

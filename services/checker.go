@@ -2,11 +2,11 @@ package services
 
 import (
 	"encoding/json"
-	"github.com/Ziloka/ProxyBroker/structs"
-	"github.com/Ziloka/ProxyBroker/utils"
 	"io"
 	"net/http"
 	"strings"
+	"github.com/Ziloka/ProxyBroker/structs"
+	"github.com/Ziloka/ProxyBroker/utils"
 )
 
 type HttpResponse struct {
