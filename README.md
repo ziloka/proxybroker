@@ -14,6 +14,7 @@ Proxy is an open source tool that asynchronously finds public proxies from multi
 - Operating system must be Windows, MacOS, or Linux
 
 ## Good things to know
+- [Why I rewrote it in golang](https://www.baeldung.com/concurrency-principles-patterns#1-goroutines-in-go)
 - Use Https instead of http, http might leak your ip address if you are using a high level proxy
 
 ## Building from source
