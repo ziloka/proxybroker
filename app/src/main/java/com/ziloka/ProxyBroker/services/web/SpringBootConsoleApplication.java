@@ -1,10 +1,7 @@
 package com.ziloka.ProxyBroker.services.web;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonParser;
-import com.maxmind.geoip2.DatabaseReader;
 import com.ziloka.ProxyBroker.services.ProxyCollector;
-import com.ziloka.ProxyBroker.services.ProxyThread;
 import com.ziloka.ProxyBroker.services.models.LookupResult;
 
 import com.ziloka.ProxyBroker.services.models.ProxyType;
@@ -19,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.ProxySelector;
 import java.net.URI;
@@ -27,8 +23,6 @@ import java.net.http.*;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 @Component
@@ -51,32 +45,32 @@ public class SpringBootConsoleApplication {
             @Override
             public void run() {
 
-                try {
-                    ArrayList<String> proxies = proxyProvider.getProxies(List.of(ProxyType.ALL));
-                    ExecutorService executorService = Executors.newCachedThreadPool();
-
-                    HttpClient client = HttpClient.newHttpClient();
-                    HttpRequest request = HttpRequest.newBuilder(
-                            URI.create("http://httpbin.org/ip?json")
-                    ).build();
-                    HttpResponse<String> res = client.send(request, HttpResponse.BodyHandlers.ofString());
-                    String externalIpAddr = JsonParser.parseString(res.body()).getAsJsonObject().get("origin").getAsString();
-
-                    InputStream database = getClass().getClassLoader().getResourceAsStream("GeoLite2-Country.mmdb");
-                    DatabaseReader dbReader = new DatabaseReader.Builder(database)
-                                .build();
-
-                    proxies.addAll(cache.keySet());
-                    // Add more proxies & Check current proxies & see if they are still alive
-                    for (String proxy : proxies) {
-                        ProxyThread proxyThread = new ProxyThread(dbReader, cache, externalIpAddr, proxy, List.of(ProxyType.ALL), "High");
-                        executorService.submit(proxyThread);
-                    }
-
-                    executorService.shutdown();
-                } catch(IOException | InterruptedException e) {
-
-                }
+//                try {
+//                    ArrayList<String> proxies = proxyProvider.getProxies(List.of(ProxyType.ALL));
+//                    ExecutorService executorService = Executors.newCachedThreadPool();
+//
+//                    HttpClient client = HttpClient.newHttpClient();
+//                    HttpRequest request = HttpRequest.newBuilder(
+//                            URI.create("http://httpbin.org/ip?json")
+//                    ).build();
+//                    HttpResponse<String> res = client.send(request, HttpResponse.BodyHandlers.ofString());
+//                    String externalIpAddr = JsonParser.parseString(res.body()).getAsJsonObject().get("origin").getAsString();
+//
+//                    InputStream database = getClass().getClassLoader().getResourceAsStream("GeoLite2-Country.mmdb");
+//                    DatabaseReader dbReader = new DatabaseReader.Builder(database)
+//                                .build();
+//
+//                    proxies.addAll(cache.keySet());
+//                    // Add more proxies & Check current proxies & see if they are still alive
+//                    for (String proxy : proxies) {
+//                        ProxyThread proxyThread = new ProxyThread(dbReader, cache, externalIpAddr, proxy, List.of(ProxyType.ALL), "High");
+//                        executorService.submit(proxyThread);
+//                    }
+//
+//                    executorService.shutdown();
+//                } catch(IOException | InterruptedException e) {
+//
+//                }
 
             }
             // 300000ms is 5 minutes

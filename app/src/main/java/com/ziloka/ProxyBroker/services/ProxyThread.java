@@ -39,7 +39,7 @@ public class ProxyThread implements Runnable {
         this.types = types;
         this.lvl = lvl;
         this.proxyChecker = new ProxyChecker(dbReader, onlineProxies, externalIpAddr, proxy, types);
-        this.proxyLookup = new ProxyLookup(dbReader, host, port);
+        this.proxyLookup = new ProxyLookup(dbReader);
     }
 
     /**
@@ -50,7 +50,7 @@ public class ProxyThread implements Runnable {
             boolean result = this.proxyChecker.check();
             boolean isLvl = this.lvl.length() == 0 || proxyChecker.lvl.equals(this.lvl);
             if(result && isLvl){
-                LookupResult proxyInfo = this.proxyLookup.getInfo();
+                LookupResult proxyInfo = this.proxyLookup.getInfo(host, port);
 //                proxyInfo.setProxyType(this.proxyChecker.getProtocol());
                 this.onlineProxies.put(this.proxy, proxyInfo);
             } else if(this.onlineProxies.get(this.proxy) != null) {

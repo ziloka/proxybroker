@@ -5,8 +5,8 @@ package com.ziloka.ProxyBroker.services.models;
  */
 public class LookupResult {
 
-    final private String proxyHost;
-    final private Integer proxyPort;
+    final public String proxyHost;
+    final public Integer proxyPort;
     private ProxyType proxyType;
     final private String isoCode;
     final private String countryName;
@@ -18,8 +18,13 @@ public class LookupResult {
     public LookupResult(String proxyHost, Integer proxyPort, String isoCode, String countryName) {
         this.proxyHost = proxyHost;
         this.proxyPort = proxyPort;
+<<<<<<< Updated upstream
         this.isoCode = isoCode != null ? isoCode : "Unknown";
         this.countryName = countryName != null ? countryName : "Unknown";
+=======
+        this.isoCode = !isoCode.equals(null) ? isoCode : "Unknown";
+        this.countryName = !countryName.equals(null) ? countryName : "Unknown";
+>>>>>>> Stashed changes
     }
 
     public void setProxyType(ProxyType proxyType) {
