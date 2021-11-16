@@ -18,8 +18,8 @@ public class LookupResult {
     public LookupResult(String proxyHost, Integer proxyPort, String isoCode, String countryName) {
         this.proxyHost = proxyHost;
         this.proxyPort = proxyPort;
-        this.isoCode = isoCode;
-        this.countryName = countryName;
+        this.isoCode = isoCode != null ? isoCode : "Unknown";
+        this.countryName = countryName != null ? countryName : "Unknown";
     }
 
     public void setProxyType(ProxyType proxyType) {

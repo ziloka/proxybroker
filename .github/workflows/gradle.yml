@@ -5,9 +5,9 @@ name: Gradle Build
 
 on:
   push:
-    branches: [ main ]
+    branches: [ java-legacy ]
   pull_request:
-    branches: [ main ]
+    branches: [ java-legacy ]
 
 jobs:
   build:
