@@ -9,6 +9,7 @@ app/build
 
 # Ignore vscode project specific settings directory
 .vscode
+app/bin
 
 ProxyBroker.exe
 ProxyBroker.build_artifacts.txt

@@ -1,4 +1,4 @@
-package com.ziloka.ProxyBroker.subcmds;
+package com.ziloka.ProxyBroker.cmds;
 
 import com.ziloka.ProxyBroker.services.web.SpringBootConsoleApplication;
 

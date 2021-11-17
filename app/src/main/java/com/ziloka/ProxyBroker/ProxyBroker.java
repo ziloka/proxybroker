@@ -1,9 +1,9 @@
 package com.ziloka.ProxyBroker;
 
 import com.ziloka.ProxyBroker.handlers.ShortErrorMessageHandler;
-import com.ziloka.ProxyBroker.subcmds.FindCommand;
-import com.ziloka.ProxyBroker.subcmds.GrabCommand;
-import com.ziloka.ProxyBroker.subcmds.ServeCommand;
+import com.ziloka.ProxyBroker.cmds.FindCommand;
+import com.ziloka.ProxyBroker.cmds.GrabCommand;
+import com.ziloka.ProxyBroker.cmds.ServeCommand;
 import picocli.CommandLine;
 import picocli.CommandLine.ParseResult;
 import picocli.CommandLine.Command;

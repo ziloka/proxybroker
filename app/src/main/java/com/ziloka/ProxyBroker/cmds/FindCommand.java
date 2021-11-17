@@ -1,11 +1,11 @@
-package com.ziloka.ProxyBroker.subcmds;
+package com.ziloka.ProxyBroker.cmds;
 
 import com.google.gson.JsonParser;
-import com.ziloka.ProxyBroker.services.ProxyCollector;
-import com.ziloka.ProxyBroker.services.ProxyThread;
+import com.maxmind.geoip2.exception.GeoIp2Exception;
+import com.ziloka.ProxyBroker.services.ProxyService;
 import com.ziloka.ProxyBroker.services.models.LookupResult;
 import com.ziloka.ProxyBroker.services.models.ProxyType;
-import com.ziloka.ProxyBroker.subcmds.converters.IProxyTypeConverter;
+import com.ziloka.ProxyBroker.cmds.converters.IProxyTypeConverter;
 
 import com.maxmind.geoip2.DatabaseReader;
 import org.apache.logging.log4j.Level;
@@ -17,15 +17,16 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 /**
  * Command under proxybroker command
@@ -75,8 +76,8 @@ public class FindCommand implements Callable<Integer> {
 
             LOG.debug("Collecting proxies");
 
-            ProxyCollector proxyProvider = new ProxyCollector(types, countries);
-            ArrayList<String> proxies = proxyProvider.getProxies(types);
+            // Producer consumer pattern
+            // https://dzone.com/articles/producer-consumer-pattern
 
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder(
@@ -85,33 +86,42 @@ public class FindCommand implements Callable<Integer> {
             HttpResponse<String> res = client.send(request, HttpResponse.BodyHandlers.ofString());
             String externalIpAddr = JsonParser.parseString(res.body()).getAsJsonObject().get("origin").getAsString();
 
-            // String#format
-            // https://www.javatpoint.com/java-string-format
-            LOG.debug(String.format("There are %d unchecked proxies", proxies.size()));
-
-            // Simple iteration on average takes more than 30+ minutes to check 200 proxies
-            // On average takes ~20 seconds to check 200 proxies
-            // https://www.baeldung.com/java-future#more-multithreading-with-thread-pools
-            ExecutorService executorService = Executors.newCachedThreadPool();
-            ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executorService;
-
             InputStream database = getClass().getClassLoader().getResourceAsStream("GeoLite2-Country.mmdb");
             DatabaseReader dbReader = new DatabaseReader.Builder(database)
                     .build();
-            for (String proxy : proxies) {
-                try {
-                    ProxyThread proxyThread = new ProxyThread(dbReader, onlineProxies, externalIpAddr, proxy, types, lvl);
-                    executorService.submit(proxyThread);
-                } catch (Exception e){
-                    e.printStackTrace();
+            final ProxyService ps = new ProxyService(dbReader, onlineProxies, externalIpAddr, types, lvl, countries, limit);
+
+            Thread t1 = new Thread(new Runnable(){
+                @Override
+                public void run(){
+                    try {
+                        ps.produce();
+                    } catch(InterruptedException e){
+                        e.printStackTrace();
+                    }
                 }
-            }
+            });
 
-            LOG.debug(String.format("Multithreading ProxyCheckTask.class using %d threads", threadPoolExecutor.getActiveCount()));
+            Thread t2 = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        ps.consume();
+                    } catch (InterruptedException | IOException | GeoIp2Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
 
-            executorService.shutdown();
-            // Wait for all threads states to be terminated or until x amount of proxies are received
-            while (!executorService.isTerminated() && !(onlineProxies.size() >= limit)){
+            // Start both threads
+            t1.start();
+            t2.start();
+
+            // t1 finishes before t2
+            t1.join();
+            t2.join();
+
+            while (!(onlineProxies.size() >= limit)){
 
             }
 
@@ -131,9 +141,9 @@ public class FindCommand implements Callable<Integer> {
             // ProxyBroker --outfile=proxies.txt
             if(OutFile.length() != 0){
                 BufferedWriter writer = new BufferedWriter(new FileWriter(OutFile));
-                writer.write(String.join("\n", proxies));
+                writer.write(String.join("\n", onlineProxies.values().stream().map((i) -> i.proxyHost + ":" + i.proxyPort).collect(Collectors.joining())));
                 writer.close();
-                System.out.printf("Wrote %s checked proxies to %s\n", proxies.size(), OutFile);
+                System.out.printf("Wrote %s checked proxies to %s\n", onlineProxies.size(), OutFile);
             } else {
                 onlineProxies.keySet().stream().limit(limit).forEach((entry) -> {
                     LookupResult value = onlineProxies.get(entry);

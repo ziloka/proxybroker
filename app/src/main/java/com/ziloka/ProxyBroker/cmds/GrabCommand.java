@@ -1,23 +1,14 @@
-package com.ziloka.ProxyBroker.subcmds;
+package com.ziloka.ProxyBroker.cmds;
 
-import com.ziloka.ProxyBroker.services.ProxyCollector;
-import com.ziloka.ProxyBroker.services.models.LookupResult;
 import com.ziloka.ProxyBroker.services.models.ProxyType;
-import com.ziloka.ProxyBroker.subcmds.converters.IProxyTypeConverter;
-import org.apache.logging.log4j.Level;
+import com.ziloka.ProxyBroker.cmds.converters.IProxyTypeConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Command(name = "grab")
 public class GrabCommand implements Callable<Integer> {
@@ -50,25 +41,25 @@ public class GrabCommand implements Callable<Integer> {
     @Override
     public Integer call(){
 
-        try {
-            if(isVerbose) Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.DEBUG);
-            else Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.OFF);
+//        try {
+//            if(isVerbose) Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.DEBUG);
+//            else Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.OFF);
+//
+//            ConcurrentHashMap<String, LookupResult> onlineProxies = new ConcurrentHashMap<>();
+//
+//            LOG.debug("Collecting proxies");
+//
+//            ProxyCollector proxyProvider = new ProxyCollector(types, countries);
+//            ArrayList<String> proxies = proxyProvider.getProxies(types);
+//
+//            BufferedWriter writer = new BufferedWriter(new FileWriter(OutFile));
+//            writer.write(String.join("\n", proxies));
+//            writer.close();
 
-            ConcurrentHashMap<String, LookupResult> onlineProxies = new ConcurrentHashMap<>();
-
-            LOG.debug("Collecting proxies");
-
-            ProxyCollector proxyProvider = new ProxyCollector(types, countries);
-            ArrayList<String> proxies = proxyProvider.getProxies(types);
-
-            BufferedWriter writer = new BufferedWriter(new FileWriter(OutFile));
-            writer.write(String.join("\n", proxies));
-            writer.close();
-
-            System.out.printf("Wrote %s proxies to %s\n", proxies.size(), OutFile);
-        } catch(IOException e){
-
-        }
+//            System.out.printf("Wrote %s proxies to %s\n", proxies.size(), OutFile);
+//        } catch(IOException e){
+//
+//        }
 
         return 0;
     }

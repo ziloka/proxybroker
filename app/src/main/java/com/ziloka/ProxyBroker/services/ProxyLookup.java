@@ -21,9 +21,8 @@ public class ProxyLookup {
 
     /**
      * @param dbReader - Max Mind Geo Ip2 database reader
-     * @param host - Proxy host
      */
-    public ProxyLookup(DatabaseReader dbReader, String host, Integer port) {
+    public ProxyLookup(DatabaseReader dbReader) {
         this.dbReader = dbReader;
         this.host = host;
         this.port = port;
@@ -34,13 +33,13 @@ public class ProxyLookup {
      * @throws IOException Failed I/O Operation
      * @throws GeoIp2Exception Generic GeoIP2 Error
      */
-    public LookupResult getInfo() throws IOException, GeoIp2Exception {
-        InetAddress ipAddress = InetAddress.getByName(this.host);
+    public LookupResult getInfo(String host, Integer port) throws IOException, GeoIp2Exception {
+        InetAddress ipAddress = InetAddress.getByName(host);
         CountryResponse response = this.dbReader.country(ipAddress);
         Country country = response.getCountry();
         return new LookupResult(
                 ipAddress.getHostAddress(),
-                this.port,
+                port,
                 country.getIsoCode(),
                 country.getName()
         );
