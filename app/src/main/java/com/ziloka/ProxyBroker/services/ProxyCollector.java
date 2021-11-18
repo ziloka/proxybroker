@@ -1,13 +1,10 @@
 package com.ziloka.ProxyBroker.services;
 
 import com.ziloka.ProxyBroker.services.models.ProxySource;
-import com.ziloka.ProxyBroker.services.models.ProxyType;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,19 +28,11 @@ import java.util.stream.Collectors;
 
 public class ProxyCollector {
 
-    private final Logger LOG = LogManager.getLogger(ProxyCollector.class);
-
-    private final List<ProxyType> type;
-    private final String countries;
-
     /**
      * @param type - Proxy Type
      * @param countries - Proxy must be from specified countries
      */
-    public ProxyCollector(List<ProxyType> type, String countries) {
-        this.type = type;
-        this.countries = countries;
-    }
+    public ProxyCollector() {}
 
     /**
      * Load proxy sources from resources/ProxySources.json file
@@ -96,7 +85,7 @@ public class ProxyCollector {
         return proxy;
     }
 
-    public ArrayList<String> getProxies(String proxySource) {
+    public static ArrayList<String> getProxies(String proxySource) {
 
         ArrayList<String> result = new ArrayList<>();
 
@@ -117,12 +106,9 @@ public class ProxyCollector {
                     String html = res.body();
                     Pattern optionNamePattern = Pattern.compile("\\d+\\.\\d+\\.\\d+\\.\\d+:\\d+");
                     Matcher matcher = optionNamePattern.matcher(html);
-                    int count = 0;
                     while(matcher.find()){
-                        count++;
                         result.add(matcher.group().trim());
                     }
-                    LOG.debug(String.format("Found %d proxies using source: %s", count, proxySource));
                 } else {
                     System.out.println("GET request not worked");
                     System.out.println("Status Code"+ statusCode);

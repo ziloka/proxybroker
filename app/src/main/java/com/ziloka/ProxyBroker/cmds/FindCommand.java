@@ -25,7 +25,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -89,7 +90,7 @@ public class FindCommand implements Callable<Integer> {
             InputStream database = getClass().getClassLoader().getResourceAsStream("GeoLite2-Country.mmdb");
             DatabaseReader dbReader = new DatabaseReader.Builder(database)
                     .build();
-            final ProxyService ps = new ProxyService(dbReader, onlineProxies, externalIpAddr, types, lvl, countries, limit);
+            final ProxyService ps = new ProxyService(dbReader, onlineProxies, externalIpAddr, types, countries, lvl, limit);
 
             Thread t1 = new Thread(new Runnable(){
                 @Override
@@ -121,7 +122,7 @@ public class FindCommand implements Callable<Integer> {
             t1.join();
             t2.join();
 
-            while (!(onlineProxies.size() >= limit)){
+            while (onlineProxies.size() <= limit){
 
             }
 
@@ -145,6 +146,7 @@ public class FindCommand implements Callable<Integer> {
                 writer.close();
                 System.out.printf("Wrote %s checked proxies to %s\n", onlineProxies.size(), OutFile);
             } else {
+              System.out.printf("Proxies length: %d\n", onlineProxies.size());
                 onlineProxies.keySet().stream().limit(limit).forEach((entry) -> {
                     LookupResult value = onlineProxies.get(entry);
                     System.out.printf("<Proxy %s %s>\n", value.getCountryName(), entry);

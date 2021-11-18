@@ -2,8 +2,6 @@ package com.ziloka.ProxyBroker.cmds;
 
 import com.ziloka.ProxyBroker.services.models.ProxyType;
 import com.ziloka.ProxyBroker.cmds.converters.IProxyTypeConverter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -12,8 +10,6 @@ import java.util.concurrent.Callable;
 
 @Command(name = "grab")
 public class GrabCommand implements Callable<Integer> {
-
-    private final Logger LOG = LogManager.getLogger(GrabCommand.class);
 
     // https://picocli.info/apidocs/picocli/CommandLine.Option.html
     @Option(names = "--types", defaultValue = "http", type = IProxyTypeConverter.class, converter = IProxyTypeConverter.class)

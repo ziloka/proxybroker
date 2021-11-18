@@ -8,9 +8,6 @@ import com.ziloka.ProxyBroker.services.models.ProxyType;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryUsage;
-import java.net.http.HttpClient;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,19 +26,19 @@ public class ProxyService {
     private final ConcurrentHashMap<String, LookupResult> onlineProxies;
     private final String externalIpAddr;
     private final List<ProxyType> types;
-    private final String lvl;
     private final String countries;
-    private final ProxyLookup proxyLookup;
-    private final int limit;
+    private final String lvl;
+    private final Integer limit;
+    // https://www.baeldung.com/java-future#more-multithreading-with-thread-pools
+    private final ExecutorService executorService = Executors.newCachedThreadPool();
 
-    public ProxyService(DatabaseReader dbReader, ConcurrentHashMap<String, LookupResult> onlineProxies, String externalIpAddr, List<ProxyType> types, String lvl, String countries, int limit) {
+    public ProxyService(DatabaseReader dbReader, ConcurrentHashMap<String, LookupResult> onlineProxies, String externalIpAddr, List<ProxyType> types, String countries, String lvl, Integer limit) {
         this.dbReader = dbReader;
         this.onlineProxies = onlineProxies;
         this.externalIpAddr = externalIpAddr;
         this.types = types;
-        this.lvl = lvl;
         this.countries = countries;
-        this.proxyLookup = new ProxyLookup(dbReader);
+        this.lvl = lvl;
         this.limit = limit;
     }
 
@@ -50,8 +47,6 @@ public class ProxyService {
         while (true) {
             synchronized (this){
                 while (list.size() == capacity) wait();
-
-                ProxyCollector proxyProvider = new ProxyCollector(types, countries);
 
                 Supplier<List<String>> getSpecifiedProxySource = () -> proxySources.stream()
                         .filter(x -> proxySources.stream().filter(e -> e.equals(x)).count() == 1)
@@ -62,14 +57,8 @@ public class ProxyService {
                         ? proxySources.stream().map(x -> x.url).collect(Collectors.toList())
                         : getSpecifiedProxySource.get();
 
-                HttpClient client = HttpClient.newBuilder()
-                        .version(HttpClient.Version.HTTP_2)
-                        .followRedirects(HttpClient.Redirect.NORMAL)
-                        .connectTimeout(Duration.ofSeconds(8))
-                        .build();
-
                 for(String proxySource : iterateProxiesList) {
-                    ArrayList<String> proxies = proxyProvider.getProxies(proxySource);
+                    ArrayList<String> proxies = ProxyCollector.getProxies(proxySource);
                     list.add(proxies);
 
                     // notify consumer thread that it can start consuming
@@ -83,13 +72,10 @@ public class ProxyService {
     // do task #2
     public void consume() throws InterruptedException, IOException, GeoIp2Exception {
 
-        // https://www.baeldung.com/java-future#more-multithreading-with-thread-pools
-        ExecutorService executorService = Executors.newCachedThreadPool();
-
         while (true) {
           // https://stackoverflow.com/questions/13578855/get-memory-used-by-a-process-java/13578901
           // https://stackoverflow.com/a/13578901
-          System.out.printf("Freed memory: %dmb\n", ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed()/1024/1024);
+          System.out.printf("Used memory: %dmb\n", ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed()/1024/1024);
             synchronized (this)
             {
                 // consumer thread waits while list
@@ -100,10 +86,9 @@ public class ProxyService {
                 // to retrieve the first job in the list
                 ArrayList<String> proxies = list.removeFirst();
 
-//                System.out.println(proxies);
                 // Business logic
                 for(String proxy : proxies) {
-                    executorService.submit(new ProxyThread(dbReader, onlineProxies, externalIpAddr, proxy, types, lvl));
+                    executorService.submit(new ProxyThread(onlineProxies, dbReader, externalIpAddr, proxy, types, countries, lvl));
                 }
 
                 // Wake up producer thread
