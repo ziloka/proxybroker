@@ -39,8 +39,9 @@ func StartWebService(assetFS embed.FS, port string, verbose bool) {
       case <-ticker.C:
 
         // Collect proxies
+				quit := make(chan bool)
         proxiesChan := make(chan []structs.Proxy, 500)
-      	Collect(assetFS, db, proxiesChan, []string{"http","https","socks4", "socks5"}, []string{}, []string{}, verbose)
+      	Collect(assetFS, db, quit, proxiesChan, []string{"http","https","socks4", "socks5"}, []string{}, []string{}, verbose)
         publicIpAddr, err := GetpublicIpAddr()
         if err != nil {
           return

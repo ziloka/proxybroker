@@ -20,13 +20,13 @@ type sourceStruct struct {
 	Type string `json:"type"`
 }
 
-func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []structs.Proxy, types []string, countries []string, ports []string, isVerbose bool) {
+func Collect(assetFS embed.FS, db *geoip2.Reader, quit chan bool, ch chan []structs.Proxy, types []string, countries []string, ports []string, isVerbose bool) {
 	sources := getProxies(assetFS, types)
 	if isVerbose {
 		fmt.Printf("Found %v sources\n", len(sources))
 	}
 
-	getProxies := func(source sourceStruct) {
+	getProxies := func(source sourceStruct, lastElement bool) {
 
 		httpClient := &http.Client{
 			Timeout: 16 * time.Second,
@@ -72,11 +72,18 @@ func Collect(assetFS embed.FS, db *geoip2.Reader, ch chan []structs.Proxy, types
 			fmt.Printf("Found %v proxies from source %v\n", len(proxies), source.Url)
 		}
 		ch <- valid
+		if(lastElement){
+			quit <- true
+		}
 	}
 
 	// proxies that are easy to collect
-	for _, source := range sources {
-		go getProxies(source)
+	for i, source := range sources {
+		lastSource := false
+		if (i == len(sources)-1){
+			lastSource = true
+		}
+		go getProxies(source, lastSource)
 	}
 
 	if isVerbose {
