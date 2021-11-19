@@ -52,6 +52,9 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 		for {
 			select {
 				case proxiesArr := <- proxies:
+					if verbose {
+						fmt.Printf("Recieved %d proxies\n", len(proxiesArr))
+					}
 					for i := range proxiesArr {
 						go services.Check(checkedProxies, publicIpAddr, proxiesArr[i], verbose)
 					}
