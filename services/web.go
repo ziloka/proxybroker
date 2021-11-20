@@ -59,7 +59,7 @@ func StartWebService(assetFS embed.FS, port string, verbose bool) {
 						}
 					case receivedProxy := <-checkedProxiesChan:
 						if verbose {
-							fmt.Println("finished processing %s proxy", receivedProxy.Proxy)
+							fmt.Printf("finished processing %s proxy", receivedProxy.Proxy)
 						}
 						convertToArrStr := func () ([]string) {
 							arr := []string{}
