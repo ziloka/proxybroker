@@ -1,16 +1,26 @@
+# https://stackoverflow.com/questions/58593661/slow-gradle-build-in-docker-caching-gradle-build
+# https://stackoverflow.com/a/59022743
+FROM alpine:3.14.2 as cache
+
+RUN apk add --no-cache gradle && \
+  mkdir -p /home/gradle/cache_home
+ENV GRADLE_USER_HOME /home/gradle/cache_home
+COPY app/build.gradle /home/gradle/java-code/
+WORKDIR /home/gradle/java-code
+
+RUN gradle clean build -i --stacktrace
+
 # https://stackoverflow.com/questions/53669151/java-11-application-as-lightweight-docker-image
 # https://levelup.gitconnected.com/java-developing-smaller-docker-images-with-jdeps-and-jlink-d4278718c550
 FROM alpine:3.14.2 as build
 
 WORKDIR /usr/app/proxybroker
 COPY . .
+COPY --from=cache /home/gradle/cache_home /home/gradle/.gradle
 ENV JAVA_MINIMAL="/opt/java-minimal"
-
 RUN apk add --no-cache openjdk11-jdk openjdk11-jmods gradle
 
-RUN gradle wrapper \
-    && ./gradlew build \
-    && ./gradlew copyDependencies
+RUN gradle bootJar -i --stacktrace
 
 # https://nipafx.dev/jdeps-tutorial-analyze-java-project-dependencies/
 # find JDK dependencies dynamically from jar
@@ -57,4 +67,5 @@ ENV LD_LIBRARY_PATH /usr/lib
 
 COPY --from=build /usr/app/proxybroker/app/build/libs/ProxyBroker.jar .
 COPY --from=build $JAVA_HOME $JAVA_HOME
+
 ENTRYPOINT ["java", "-jar", "ProxyBroker.jar"]
