@@ -69,13 +69,22 @@ func filterProxies(proxies chan structs.Proxy, myRemoteAddr string, tp *structs.
 			obj := &HttpResponse{}
 			json.Unmarshal(b, &obj)
 			if !strings.Contains(obj.Origin, myRemoteAddr) {
-				// fmt.Printf("D: %v, RD: %v, CD: %v\n", tp.Duration(), tp.ReqDuration(), tp.ConnDuration())
 				// Proxy is High
+				proxy.IsOnline = true
 				proxy.AvgRespTime = tp.Duration()
 				proxy.ConnDuration = tp.ConnDuration()
 				proxy.ReqDuration = tp.ReqDuration()
 				proxies <- proxy
+			} else {
+				proxy.IsOnline = false
+				proxies <- proxy
 			}
+		} else {
+			proxy.IsOnline = false
+			proxies <- proxy
 		}
+	} else {
+		proxy.IsOnline = false
+		proxies <- proxy
 	}
 }
