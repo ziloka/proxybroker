@@ -2,19 +2,13 @@ package services
 
 import (
 	"embed"
-	"encoding/json"
 	"fmt"
 	"github.com/Ziloka/ProxyBroker/structs"
 	"github.com/Ziloka/ProxyBroker/utils"
+	"github.com/gin-gonic/gin"
 	"github.com/oschwald/geoip2-golang"
-	"log"
-	"net/http"
 	"time"
 )
-
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hi there, I love %s!", r.URL.Path[1:])
-}
 
 func StartWebService(assetFS embed.FS, port string, verbose bool) {
 
@@ -59,11 +53,11 @@ func StartWebService(assetFS embed.FS, port string, verbose bool) {
 						}
 					case receivedProxy := <-checkedProxiesChan:
 						if verbose {
-							fmt.Printf("finished processing %s proxy", receivedProxy.Proxy)
+							fmt.Printf("finished processing %s proxy\n", receivedProxy.Proxy)
 						}
-						convertToArrStr := func () ([]string) {
+						convertToArrStr := func() []string {
 							arr := []string{}
-							for _, proxyStruct := range(checkedProxies) {
+							for _, proxyStruct := range checkedProxies {
 								arr = append(arr, proxyStruct.Proxy)
 							}
 							return arr
@@ -83,19 +77,11 @@ func StartWebService(assetFS embed.FS, port string, verbose bool) {
 		}
 	}()
 
-	http.HandleFunc("/", handler)
-	http.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
+	r := gin.Default()
 
-		jsonResponse, jsonErr := json.Marshal(checkedProxies)
-		if jsonErr != nil {
-			return
-		}
-
-		fmt.Fprint(w, string(jsonResponse))
-
+	r.GET("/api", func(c *gin.Context) {
+		c.JSON(200, checkedProxies)
 	})
-
-	// https://stackoverflow.com/a/11124241
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), nil))
+	r.Run()
 
 }

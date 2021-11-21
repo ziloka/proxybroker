@@ -1,0 +1,53 @@
+swagger: "2.0"
+basePath: /
+host: localhost
+info:
+  description: "Stores proxies for you"
+  title: "ProxyBroker"
+  version: 1.0.0
+schemes:
+  - http
+  - https
+definitions:
+  proxy:
+    type: object
+    properties:
+      proxy:
+        type: string
+        format: string
+        readOnly: true
+      protocol:
+        type: string
+        format: string
+        readOnly: true
+      avgRespTime:
+        type: int64
+        format: int64
+        readOnly: true
+      connDuration:
+        type: int64
+        format: int64
+        readOnly: true
+      country:
+        type: string
+        format: string
+        readOnly: true
+      isoCode: 
+        type: string
+        format: string
+        readOnly: true
+      reqDuration:
+        type: string
+        format: string
+        readOnly: true
+paths:
+  /api:
+    get:
+      responses:
+        200: 
+          description: "List of proxies with specified specifications"
+          schema:
+            type: 
+              - array
+            proxy:
+              $ref: "$definitions/proxy"

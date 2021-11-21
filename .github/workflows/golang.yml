@@ -30,7 +30,7 @@ jobs:
       - name: Minimize Linux Executable Size (Strip debug data)
         run: strip --strip-all ProxyBroker-linux-amd64 & strip --strip-all ProxyBroker-windows-amd64.exe
       - name: Pack Executables
-        run: upx -9 ProxyBroker-linux-amd64 && upx -9 ProxyBroker-darwin-amd64 && upx -9 ProxyBroker-windows-amd64.exe
+        run: upx --best --lmza ProxyBroker-linux-amd64 && upx --best --lmza ProxyBroker-darwin-amd64 && upx --best --lmza ProxyBroker-windows-amd64.exe
       - name: Archive code
         uses: actions/upload-artifact@v2
         with:
