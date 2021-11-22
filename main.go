@@ -1,13 +1,22 @@
+///usr/bin/true; exec /usr/bin/env go run "$0" "$@"
+// https://stackoverflow.com/questions/7707178/whats-the-appropriate-go-shebang-line
+
 package main
 
 import (
 	"embed"
 	"fmt"
+	"github.com/Ziloka/ProxyBroker/cmds"
+	"github.com/urfave/cli/v2"
 	"log"
 	"os"
 	"runtime"
-	"github.com/Ziloka/ProxyBroker/cmds"
-	"github.com/urfave/cli/v2"
+)
+
+var (
+	SHA_HASH      string // sha1 revision used to build the program
+	BUILD_TIME    string // when the executable was built
+	BUILD_VERSION string // program version
 )
 
 // https://stackoverflow.com/questions/66285635/how-do-you-use-go-1-16-embed-features-in-subfolders-packages
@@ -25,6 +34,15 @@ func main() {
 		Usage:                  "proxybroker find",
 		UseShortOptionHandling: true,
 		Commands: []*cli.Command{
+			{
+				Name:    "version",
+				Aliases: []string{"v"},
+				Usage:   "displays build information",
+				Action: func(c *cli.Context) error {
+					fmt.Printf("Build on %s from sha1 %s\n Build Version: %s\n", BUILD_TIME, SHA_HASH, BUILD_VERSION)
+					return nil
+				},
+			},
 			{
 				Name:    "check",
 				Aliases: []string{"c"},
