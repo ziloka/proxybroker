@@ -15,6 +15,7 @@ CFLAGS = -Wall -Wextra -Werror -g
 # https://stackoverflow.com/questions/12187078/why-cant-gcc-find-my-static-library
 main: main.o ./libs/curl/lib/.libs/libcurl.a
 	$(CC) $(CFLAGS) -o ProxyBroker main.o -Llibs/curl/lib/.libs/curl.a -lcurl
+	make clean
 
 # https://stackoverflow.com/questions/558803/how-to-add-a-default-include-path-for-gcc-in-linux
 # The main.o target can be written more simply
@@ -31,4 +32,6 @@ main.o: src/main.cpp
 	cd ../../
 
 clean:
-	-rm *.o *.a ProxyBroker
+	-rm -f *.o *.a && \
+	cd ./libs/curl && \
+	make clean
