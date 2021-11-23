@@ -1,5 +1,9 @@
 make.exe --dry-run --always-make --keep-going --print-directory
 make: Entering directory 'c:/Users/Connor/Documents/Code/ProxyBroker'
-make: Nothing to be done for 'all'.
+g++ -Wall -Wextra -Werror -g -I ./include -c src/main.cpp 
+autoreconf -fi
+./libs/curl/configure --with-openssl
+make -C ./libs/curl
+g++ -Wall -Wextra -Werror -g -o main main.o -Llibs/curl/lib/.libs/curl.a -lcurl
 make: Leaving directory 'c:/Users/Connor/Documents/Code/ProxyBroker'
  

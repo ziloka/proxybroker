@@ -1,4 +1,6 @@
 make.exe all --print-data-base --no-builtin-variables --no-builtin-rules --question
+make: *** No rule to make target 'all'.  Stop.
+ 
 # GNU Make 4.3
 # Built for Windows32
 # Copyright (C) 1988-2020 Free Software Foundation, Inc.
@@ -6,10 +8,12 @@ make.exe all --print-data-base --no-builtin-variables --no-builtin-rules --quest
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sat Nov 13 13:33:46 2021
+# Make data base, printed on Mon Nov 22 21:44:00 2021
 
 # Variables
 
+# environment
+FPS_BROWSER_APP_PROFILE_STRING = Internet Explorer
 # environment
 SYSTEMDRIVE = C:
 # environment
@@ -21,7 +25,7 @@ USERPROFILE = C:\Users\Connor
 # environment
 LOCALAPPDATA = C:\Users\Connor\AppData\Local
 # environment
-VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-54bd51e8-202d-4c40-a608-265556d4c2aa-sock
+VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-f87d4d47-b1fc-438b-82eb-c8170b7ba59b-sock
 # environment
 VSCODE_CWD = C:\Users\Connor\AppData\Local\Programs\Microsoft VS Code
 # environment
@@ -39,7 +43,9 @@ GOPATH = C:\Users\Connor\go
 # automatic
 @D = $(patsubst %/,%,$(patsubst %\,%,$(dir $@)))
 # environment
-CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_6324_ZGOUDZKFERGNOQJE
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_20740_GBJZYSMBZEAFAJTV
+# environment
+FPS_BROWSER_USER_PROFILE_STRING = Default
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # default
@@ -53,7 +59,7 @@ VSCODE_LOG_STACK = false
 # automatic
 %F = $(notdir $%)
 # environment
-VSCODE_CODE_CACHE_PATH = C:\Users\Connor\AppData\Roaming\Code\CachedData\3a6960b964327f0e3882ce18fcebd07ed191b316
+VSCODE_CODE_CACHE_PATH = C:\Users\Connor\AppData\Roaming\Code\CachedData\ccbaa2d27e38e5afa3e5c21c1c7bef4657064247
 # environment
 LANG = C
 # default
@@ -97,7 +103,7 @@ MAKEFILE_LIST := Makefile
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-VSCODE_PID = 6324
+VSCODE_PID = 20740
 # automatic
 ?D = $(patsubst %/,%,$(patsubst %\,%,$(dir $?)))
 # automatic
@@ -106,8 +112,6 @@ VSCODE_PID = 6324
 <D = $(patsubst %/,%,$(patsubst %\,%,$(dir $<)))
 # environment
 VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}
-# makefile (from 'Makefile', line 9)
-INCLUDE = -I/usr/local/include
 # environment
 ONEDRIVECONSUMER = C:\Users\Connor\OneDrive
 # default
@@ -131,7 +135,7 @@ MAKELEVEL := 0
 # default
 MAKE = $(MAKE_COMMAND)
 # environment
-PATH = C:\Program Files (x86)\VMware\VMware Workstation\bin\;C:\Windows\System32;C:\Windows;C:\Windows\System32\wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\ATI Technologies\ATI.ACE\Core-Static;C:\ProgramData\chocolatey\bin;C:\Program Files\Git\cmd;C:\Program Files\nodejs;C:\Users\Connor\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Program Files (x86)\Gradle\gradle-7.1-bin\gradle-7.1\bin;C:\Program Files (x86)\SQLite3\sqlite-tools-win32-x86-3350500;C:\Program Files (x86)\Maven\apache-maven-3.8.1-bin\apache-maven-3.8.1\bin;C:\Program Files (x86)\Act\0.2.23;C:\Program Files\GraalVM\graalvm-ce-java16-windows-amd64-21.2.0\graalvm-ce-java16-21.2.0\bin;C:\Program Files (x86)\GnuPG\bin;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30037\bin\Hostx86\x64;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Program Files\Go\bin;C:\Program Files\PowerShell\7\;C:\msys64\mingw64\bin;C:\Users\Connor\AppData\Local\Programs\Python\Python310\Scripts\;C:\Users\Connor\AppData\Local\Programs\Python\Python310\;C:\Users\Connor\AppData\Local\Microsoft\WindowsApps;C:\Users\Connor\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Connor\AppData\Local\GitHubDesktop\bin;C:\Users\Connor\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Users\Connor\AppData\Local\JetBrains\IntelliJ IDEA Community Edition 2021.1.3\bin;C:\Users\Connor\AppData\Local\atom\bin;C:\Users\Connor\AppData\Local\Microsoft\WindowsApps;C:\Program Files\CMake\bin;C:\Users\Connor\go\bin;C:\Program Files (x86)\GitHub CLI\;C:\Users\Connor\AppData\Local\Programs\Fiddler
+PATH = C:\Program Files (x86)\VMware\VMware Workstation\bin\;C:\Windows\System32;C:\Windows;C:\Windows\System32\wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\ATI Technologies\ATI.ACE\Core-Static;C:\ProgramData\chocolatey\bin;C:\Program Files\Git\cmd;C:\Program Files\nodejs;C:\Users\Connor\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Program Files (x86)\Gradle\gradle-7.1-bin\gradle-7.1\bin;C:\Program Files (x86)\SQLite3\sqlite-tools-win32-x86-3350500;C:\Program Files (x86)\Maven\apache-maven-3.8.1-bin\apache-maven-3.8.1\bin;C:\Program Files (x86)\Act\0.2.23;C:\Program Files\GraalVM\graalvm-ce-java16-windows-amd64-21.2.0\graalvm-ce-java16-21.2.0\bin;C:\Program Files (x86)\GnuPG\bin;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30037\bin\Hostx86\x64;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Go\bin;C:\Program Files\PowerShell\7\;C:\msys64\mingw64\bin;;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Users\Connor\AppData\Local\Programs\Python\Python310\Scripts\;C:\Users\Connor\AppData\Local\Programs\Python\Python310\;C:\Users\Connor\AppData\Local\Microsoft\WindowsApps;C:\Users\Connor\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Connor\AppData\Local\GitHubDesktop\bin;C:\Users\Connor\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Users\Connor\AppData\Local\JetBrains\IntelliJ IDEA Community Edition 2021.1.3\bin;C:\Users\Connor\AppData\Local\atom\bin;C:\Users\Connor\AppData\Local\Microsoft\WindowsApps;C:\Program Files\CMake\bin;C:\Users\Connor\go\bin;C:\Program Files (x86)\GitHub CLI\;C:\Users\Connor\AppData\Local\Programs\Fiddler
 # environment
 COMPUTERNAME = ROCK
 # default
@@ -140,8 +144,6 @@ MAKEFILES :=
 ^F = $(notdir $^)
 # environment
 PROMPT = $P$G
-# makefile (from 'Makefile', line 11)
-LDLIBS = -lcurl
 # environment
 CHOCOLATEYLASTPATHUPDATE = 132679173720660279
 # environment
@@ -169,15 +171,13 @@ GNUMAKEFLAGS :=
 # environment
 OS = Windows_NT
 # makefile
-.DEFAULT_GOAL := all
+.DEFAULT_GOAL := main
 # environment
 NVM_HOME = C:\Users\Connor\AppData\Roaming\nvm
 # default
 MAKE_VERSION := 4.3
 # environment
 PROGRAMFILES(X86) = C:\Program Files (x86)
-# makefile (from 'Makefile', line 10)
-LDFLAGS = -L/usr/local/lib 
 # environment
 USERDOMAIN_ROAMINGPROFILE = ROCK
 # environment
@@ -186,8 +186,8 @@ NUMBER_OF_PROCESSORS = 8
 PUBLIC = C:\Users\Public
 # environment
 APPDATA = C:\Users\Connor\AppData\Roaming
-# makefile (from 'Makefile', line 6)
-CFLAGS = -Wall -Werror
+# makefile (from 'Makefile', line 9)
+CFLAGS = -Wall -Wextra -Werror -g
 # environment
 HOMEDRIVE = C:
 # environment
@@ -203,13 +203,11 @@ ELECTRON_RUN_AS_NODE = 1
 # environment
 TEMP = C:\Users\Connor\AppData\Local\Temp
 # environment
-VSCODE_IPC_HOOK = \\.\pipe\9217d6eee1ab04fe6cc566ad46ec2966-1.62.2-main-sock
+VSCODE_IPC_HOOK = \\.\pipe\9217d6eee1ab04fe6cc566ad46ec2966-1.62.3-main-sock
 # default
 .RECIPEPREFIX := 
 # automatic
 <F = $(notdir $<)
-# makefile (from 'Makefile', line 15)
-OUT = test
 # default
 SUFFIXES := 
 # environment
@@ -220,14 +218,12 @@ SESSIONNAME = Console
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell nocomment grouped-target extra-prereqs archives jobserver output-sync load
 # environment
 PROCESSOR_REVISION = 2a07
-# makefile (from 'Makefile', line 5)
-CXX = g++
-# makefile (from 'Makefile', line 14)
-SOURCES = src/main.cpp
+# makefile (from 'Makefile', line 8)
+CC = g++
 # environment
 PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 42 Stepping 7, GenuineIntel
 # variable set hash-table stats:
-# Load=108/1024=11%, Rehash=0, Collisions=9/137=7%
+# Load=105/1024=10%, Rehash=0, Collisions=10/132=8%
 
 # Pattern-specific Variable Values
 
@@ -235,9 +231,9 @@ PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 42 Stepping 7, GenuineIntel
 
 # Directories
 
-# . (key c:/Users/Connor/Documents/Code/ProxyBroker, mtime 1636827055): 15 files, no impossibilities.
+# . (key c:/Users/Connor/Documents/Code/ProxyBroker, mtime 1637635422): 16 files, no impossibilities.
 
-# 15 files, no impossibilities in 1 directories.
+# 16 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -248,15 +244,31 @@ PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 42 Stepping 7, GenuineIntel
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2021-11-13 13:33:43
+#  Last modified 2021-11-22 21:32:30
 #  File has been updated.
 #  Successfully updated.
 
 # Not a target:
-src/main.o:
+src/main.cpp:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
+
+clean:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 32):
+	-rm *.o *.a
+
+libs/curl/lib/.libs/libcurl.a:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 27):
+	autoreconf -fi
+	./libs/curl/configure --with-openssl
+	make -C ./libs/curl
 
 # Not a target:
 .DEFAULT:
@@ -264,45 +276,41 @@ src/main.o:
 #  Modification time never checked.
 #  File has not been updated.
 
-all: build
-#  Phony target (prerequisite of .PHONY).
-#  Command line target.
-#  Implicit rule search has not been done.
-#  File does not exist.
-#  File has been updated.
-#  Successfully updated.
-
 # Not a target:
-build:
+all:
+#  Command line target.
 #  Implicit rule search has been done.
-#  Last modified 2021-11-13 13:15:42
-#  File has been updated.
-#  Successfully updated.
+#  File does not exist.
+#  File has not been updated.
 
-test: src/main.o
+main: main.o libs/curl/lib/.libs/libcurl.a
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
+#  recipe to execute (from 'Makefile', line 17):
+	$(CC) $(CFLAGS) -o main main.o -Llibs/curl/lib/.libs/curl.a -lcurl
 
-.PHONY: all
+main.o: src/main.cpp
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
+#  recipe to execute (from 'Makefile', line 22):
+	$(CC) $(CFLAGS) -I ./include -c src/main.cpp 
 
 # files hash-table stats:
-# Load=8/1024=1%, Rehash=0, Collisions=0/22=0%
+# Load=9/1024=1%, Rehash=0, Collisions=0/24=0%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 21 / storage = 190 B / avg = 9 B
-# current buf: size = 8174 B / used = 190 B / count = 21 / avg = 9 B
+# strcache buffers: 1 (0) / strings = 23 / storage = 219 B / avg = 9 B
+# current buf: size = 8174 B / used = 219 B / count = 23 / avg = 9 B
 
-# strcache performance: lookups = 31 / hit rate = 32%
+# strcache performance: lookups = 34 / hit rate = 32%
 # hash-table stats:
-# Load=21/8192=0%, Rehash=0, Collisions=0/31=0%
-# Finished Make data base on Sat Nov 13 13:33:46 2021
+# Load=23/8192=0%, Rehash=0, Collisions=0/34=0%
+# Finished Make data base on Mon Nov 22 21:44:00 2021
 
  

@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/vscode/devcontainers/base:dev-alpine-3.14
 
-RUN apk add --no-cache gdb file g++ clang coreutils curl-dev
+RUN apk add --no-cache gcc g++ musl-dev make curl-dev
 
 #RUN rm /etc/alpine-release \
 #&&	wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \

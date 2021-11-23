@@ -1,8 +1,0 @@
-version: '3.4'
-
-services:
-  proxybroker:
-    image: proxybroker
-    build:
-      context: .
-      dockerfile: ./Dockerfile
