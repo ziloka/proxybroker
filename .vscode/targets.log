@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon Nov 22 21:44:00 2021
+# Make data base, printed on Mon Nov 22 22:11:26 2021
 
 # Variables
 
@@ -25,7 +25,7 @@ USERPROFILE = C:\Users\Connor
 # environment
 LOCALAPPDATA = C:\Users\Connor\AppData\Local
 # environment
-VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-f87d4d47-b1fc-438b-82eb-c8170b7ba59b-sock
+VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-69567a65-5eac-4c4c-998f-fba19b30f2a7-sock
 # environment
 VSCODE_CWD = C:\Users\Connor\AppData\Local\Programs\Microsoft VS Code
 # environment
@@ -231,7 +231,7 @@ PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 42 Stepping 7, GenuineIntel
 
 # Directories
 
-# . (key c:/Users/Connor/Documents/Code/ProxyBroker, mtime 1637635422): 16 files, no impossibilities.
+# . (key c:/Users/Connor/Documents/Code/ProxyBroker, mtime 1637636584): 16 files, no impossibilities.
 
 # 16 files, no impossibilities in 1 directories.
 
@@ -311,6 +311,6 @@ main.o: src/main.cpp
 # strcache performance: lookups = 34 / hit rate = 32%
 # hash-table stats:
 # Load=23/8192=0%, Rehash=0, Collisions=0/34=0%
-# Finished Make data base on Mon Nov 22 21:44:00 2021
+# Finished Make data base on Mon Nov 22 22:11:26 2021
 
  
