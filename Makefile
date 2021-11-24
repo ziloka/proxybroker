@@ -20,7 +20,6 @@ main: build/main.o ./libs/curl/lib/.libs/libcurl.a
 # https://stackoverflow.com/questions/558803/how-to-add-a-default-include-path-for-gcc-in-linux
 # The main.o target can be written more simply
 build/main.o: src/main.cpp 
-	mkdir build
 	$(CC) $(CFLAGS) -o build/main.o -I ./include -c src/main.cpp 
 
 # requires libtool, autoconf, libssl

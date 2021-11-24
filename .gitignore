@@ -1,1 +1,8 @@
 build
+.vscode/configurationCache.log
+.vscode/dryrun.log
+.vscode/targets.log
+CMakeCache.txt
+CPackConfig.cmake
+CPackSourceConfig.cmake
+DARTConfiguration.tcl

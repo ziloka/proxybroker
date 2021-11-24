@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon Nov 22 22:11:26 2021
+# Make data base, printed on Tue Nov 23 17:54:00 2021
 
 # Variables
 
@@ -25,9 +25,9 @@ USERPROFILE = C:\Users\Connor
 # environment
 LOCALAPPDATA = C:\Users\Connor\AppData\Local
 # environment
-VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-69567a65-5eac-4c4c-998f-fba19b30f2a7-sock
+VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-35a45bf8-78bc-4711-8bda-d0d07946b3da-sock
 # environment
-VSCODE_CWD = C:\Users\Connor\AppData\Local\Programs\Microsoft VS Code
+VSCODE_CWD = C:\Users\Connor\Documents\Code
 # environment
 CHOCOLATEYINSTALL = C:\ProgramData\chocolatey
 # environment
@@ -43,7 +43,7 @@ GOPATH = C:\Users\Connor\go
 # automatic
 @D = $(patsubst %/,%,$(patsubst %\,%,$(dir $@)))
 # environment
-CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_20740_GBJZYSMBZEAFAJTV
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_9856_AKWBGPZNVQEHYJRM
 # environment
 FPS_BROWSER_USER_PROFILE_STRING = Default
 # environment
@@ -103,7 +103,7 @@ MAKEFILE_LIST := Makefile
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-VSCODE_PID = 20740
+VSCODE_PID = 9856
 # automatic
 ?D = $(patsubst %/,%,$(patsubst %\,%,$(dir $?)))
 # automatic
@@ -231,9 +231,9 @@ PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 42 Stepping 7, GenuineIntel
 
 # Directories
 
-# . (key c:/Users/Connor/Documents/Code/ProxyBroker, mtime 1637636584): 16 files, no impossibilities.
+# . (key c:/Users/Connor/Documents/Code/ProxyBroker, mtime 1637689458): 19 files, no impossibilities.
 
-# 16 files, no impossibilities in 1 directories.
+# 19 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -244,7 +244,7 @@ PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 42 Stepping 7, GenuineIntel
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2021-11-22 21:32:30
+#  Last modified 2021-11-23 11:57:15
 #  File has been updated.
 #  Successfully updated.
 
@@ -258,17 +258,21 @@ clean:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 32):
-	-rm *.o *.a
+#  recipe to execute (from 'Makefile', line 36):
+	-rm -f *.o *.a && \
+	cd ./libs/curl && \
+	make clean
 
 libs/curl/lib/.libs/libcurl.a:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 27):
-	autoreconf -fi
-	./libs/curl/configure --with-openssl
-	make -C ./libs/curl
+#  recipe to execute (from 'Makefile', line 29):
+	cd libs/curl && \
+	autoreconf -fi && \
+	./configure --with-openssl && \
+	make && \
+	cd ../../
 
 # Not a target:
 .DEFAULT:
@@ -283,19 +287,21 @@ all:
 #  File does not exist.
 #  File has not been updated.
 
-main: main.o libs/curl/lib/.libs/libcurl.a
+main: build/main.o libs/curl/lib/.libs/libcurl.a
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
 #  recipe to execute (from 'Makefile', line 17):
-	$(CC) $(CFLAGS) -o main main.o -Llibs/curl/lib/.libs/curl.a -lcurl
+	$(CC) $(CFLAGS) -o build/ProxyBroker build/main.o -Llibs/curl/lib/.libs/curl.a -lcurl
+	make clean
 
-main.o: src/main.cpp
+build/main.o: src/main.cpp
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 22):
-	$(CC) $(CFLAGS) -I ./include -c src/main.cpp 
+#  recipe to execute (from 'Makefile', line 23):
+	mkdir build
+	$(CC) $(CFLAGS) -o build/main.o -I ./include -c src/main.cpp 
 
 # files hash-table stats:
 # Load=9/1024=1%, Rehash=0, Collisions=0/24=0%
@@ -305,12 +311,12 @@ main.o: src/main.cpp
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 23 / storage = 219 B / avg = 9 B
-# current buf: size = 8174 B / used = 219 B / count = 23 / avg = 9 B
+# strcache buffers: 1 (0) / strings = 27 / storage = 272 B / avg = 10 B
+# current buf: size = 8174 B / used = 272 B / count = 27 / avg = 10 B
 
-# strcache performance: lookups = 34 / hit rate = 32%
+# strcache performance: lookups = 37 / hit rate = 27%
 # hash-table stats:
-# Load=23/8192=0%, Rehash=0, Collisions=0/34=0%
-# Finished Make data base on Mon Nov 22 22:11:26 2021
+# Load=27/8192=0%, Rehash=0, Collisions=0/37=0%
+# Finished Make data base on Tue Nov 23 17:54:00 2021
 
  
