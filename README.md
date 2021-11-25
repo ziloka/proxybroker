@@ -21,6 +21,7 @@ Proxy is an open source tool that asynchronously finds public proxies from multi
 - [Golang 1.17](https://golang.org/)
 Run
 ```
+cd src && \
 go build -o ProxyBroker main.go
 ```
 

@@ -1,2 +1,8 @@
 # Ignore personal visual studio code preferences
 .vscode
+.devcontainer
+.github
+docs
+build.bash
+build.ps1
+Makefile
