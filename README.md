@@ -24,7 +24,8 @@ Proxy is an open source tool that asynchronously finds public proxies from multi
 - [OpenSSL Development files](https://www.openssl.org/source/)
 Run
 
-Linux ```
+Linux
+```
 git clone --recurse-submodules -j8 https://github.com/Ziloka/ProxyBroker.git && \
 git switch cpp && \
 git submodule update --init && \
