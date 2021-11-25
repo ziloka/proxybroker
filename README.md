@@ -21,14 +21,18 @@ Proxy is an open source tool that asynchronously finds public proxies from multi
 - [gcc](https://gcc.gnu.org/install/download.html)
 - [cmake](https://cmake.org/download/)
 - [make](https://www.gnu.org/software/make/)
+- [OpenSSL Development files](https://www.openssl.org/source/)
 Run
-```
+
+Linux ```
+git clone --recurse-submodules -j8 https://github.com/Ziloka/ProxyBroker.git && \
+git switch cpp && \
+git submodule update --init && \
 mkdir build && \
 cd build && \
 cmake ../
+make
 ```
-
-
 
 ## Motiviation
 - Inspired by [ProxyBroker](https://github.com/constverum/ProxyBroker) (A more maintained version of that [project](https://github.com/bluet/proxybroker2))

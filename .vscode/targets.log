@@ -7,8 +7,9 @@ make: *** No rule to make target 'all'.  Stop.
 # License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
+ 
 
-# Make data base, printed on Tue Nov 23 17:54:00 2021
+# Make data base, printed on Wed Nov 24 18:42:04 2021
 
 # Variables
 
@@ -25,7 +26,7 @@ USERPROFILE = C:\Users\Connor
 # environment
 LOCALAPPDATA = C:\Users\Connor\AppData\Local
 # environment
-VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-35a45bf8-78bc-4711-8bda-d0d07946b3da-sock
+VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-f93057cb-c2bb-4ebf-b1aa-2dd6db59eb7b-sock
 # environment
 VSCODE_CWD = C:\Users\Connor\Documents\Code
 # environment
@@ -43,7 +44,7 @@ GOPATH = C:\Users\Connor\go
 # automatic
 @D = $(patsubst %/,%,$(patsubst %\,%,$(dir $@)))
 # environment
-CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_9856_AKWBGPZNVQEHYJRM
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_14848_HBZYJRQWNJEUWQDB
 # environment
 FPS_BROWSER_USER_PROFILE_STRING = Default
 # environment
@@ -103,7 +104,7 @@ MAKEFILE_LIST := Makefile
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-VSCODE_PID = 9856
+VSCODE_PID = 14848
 # automatic
 ?D = $(patsubst %/,%,$(patsubst %\,%,$(dir $?)))
 # automatic
@@ -171,7 +172,7 @@ GNUMAKEFLAGS :=
 # environment
 OS = Windows_NT
 # makefile
-.DEFAULT_GOAL := main
+.DEFAULT_GOAL := ProxyBroker
 # environment
 NVM_HOME = C:\Users\Connor\AppData\Roaming\nvm
 # default
@@ -186,8 +187,8 @@ NUMBER_OF_PROCESSORS = 8
 PUBLIC = C:\Users\Public
 # environment
 APPDATA = C:\Users\Connor\AppData\Roaming
-# makefile (from 'Makefile', line 9)
-CFLAGS = -Wall -Wextra -Werror -g
+# makefile (from 'Makefile', line 3)
+CFLAGS = -Wall -Wextra -g 
 # environment
 HOMEDRIVE = C:
 # environment
@@ -218,7 +219,8 @@ SESSIONNAME = Console
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell nocomment grouped-target extra-prereqs archives jobserver output-sync load
 # environment
 PROCESSOR_REVISION = 2a07
-# makefile (from 'Makefile', line 8)
+# makefile (from 'Makefile 
+', line 2)
 CC = g++
 # environment
 PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 42 Stepping 7, GenuineIntel
@@ -231,9 +233,9 @@ PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 42 Stepping 7, GenuineIntel
 
 # Directories
 
-# . (key c:/Users/Connor/Documents/Code/ProxyBroker, mtime 1637689458): 19 files, no impossibilities.
+# . (key c:/Users/Connor/Documents/Code/ProxyBroker, mtime 1637784240): 17 files, no impossibilities.
 
-# 19 files, no impossibilities in 1 directories.
+# 17 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -241,12 +243,27 @@ PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 42 Stepping 7, GenuineIntel
 
 # Files
 
+ProxyBroker: build/main.o build/collector.o libs/curl/lib/.libs/libcurl.a
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 10):
+	$(CC) $(CFLAGS) -o build/ProxyBroker build/main.o build/collector.o -Llibs/curl/lib/.libs/libcurl.a -lcurl
+	make clean
+
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2021-11-23 11:57:15
+#  Last modified 2021-11-24 18:32:26
 #  File has been updated.
 #  Successfully updated.
+
+build/collector.o: src/services/collector.cpp
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 20):
+	$(CC) $(CFLAGS) -o build/collector.o -I ./include -c src/services/collector.cpp
 
 # Not a target:
 src/main.cpp:
@@ -258,21 +275,25 @@ clean:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 36):
-	-rm -f *.o *.a && \
-	cd ./libs/curl && \
-	make clean
+#  recipe to execute (from 'Makefile', line 32):
+	rm -f build/*.o
 
 libs/curl/lib/.libs/libcurl.a:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 29):
+#  recipe to execute (from 'Makefile', line 25):
 	cd libs/curl && \
 	autoreconf -fi && \
 	./configure --with-openssl && \
 	make && \
 	cd ../../
+
+# Not a target:
+src/services/collector.cpp:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 # Not a target:
 .DEFAULT:
@@ -287,36 +308,30 @@ all:
 #  File does not exist.
 #  File has not been updated.
 
-main: build/main.o libs/curl/lib/.libs/libcurl.a
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 17):
-	$(CC) $(CFLAGS) -o build/ProxyBroker build/main.o -Llibs/curl/lib/.libs/curl.a -lcurl
-	make clean
-
 build/main.o: src/main.cpp
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 23):
+#  recipe to execute (from 'Makefile', line 15):
+	rm -rf build
 	mkdir build
-	$(CC) $(CFLAGS) -o build/main.o -I ./include -c src/main.cpp 
+	$(CC) $(CFLAGS) -o build/main.o -I ./include -c src/main.cpp
+	
 
 # files hash-table stats:
-# Load=9/1024=1%, Rehash=0, Collisions=0/24=0%
+# Load=11/1024=1%, Rehash=0, Collisions=0/29=0%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 27 / storage = 272 B / avg = 10 B
-# current buf: size = 8174 B / used = 272 B / count = 27 / avg = 10 B
+# strcache buffers: 1 (0) / strings = 27 / storage = 298 B / avg = 11 B
+# current buf: size = 8174 B / used = 298 B / count = 27 / avg = 11 B
 
-# strcache performance: lookups = 37 / hit rate = 27%
+# strcache performance: lookups = 39 / hit rate = 30%
 # hash-table stats:
-# Load=27/8192=0%, Rehash=0, Collisions=0/37=0%
-# Finished Make data base on Tue Nov 23 17:54:00 2021
+# Load=27/8192=0%, Rehash=0, Collisions=0/39=0%
+# Finished Make data base on Wed Nov 24 18:42:04 2021
 
  
