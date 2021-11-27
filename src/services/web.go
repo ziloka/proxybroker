@@ -10,7 +10,15 @@ import (
 	"time"
 )
 
-func StartWebService(assetFS embed.FS, port string, verbose bool) {
+func StartService(assetFS embed.FS, port string, verbose bool, isRestService bool){
+	if(isRestService){
+		startWebService(assetFS, port, verbose)
+	} else {
+
+	}
+}
+
+func startWebService(assetFS embed.FS, port string, verbose bool) {
 
 	checkedProxies := []structs.Proxy{}
 	checkedProxiesChan := make(chan structs.Proxy, 99999)

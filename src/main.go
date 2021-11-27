@@ -103,6 +103,7 @@ func main() {
 				Flags: []cli.Flag{
 					&cli.BoolFlag{Name: "verbose", Aliases: []string{"v"}},
 					&cli.StringFlag{Name: "port", Aliases: []string{"p"}},
+					&cli.BoolFlag{Name: "rest", Aliases: []string{"r"}},
 				},
 				Action: func(c *cli.Context) error {
 					// Run cmd using go run main.go grab"

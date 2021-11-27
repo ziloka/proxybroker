@@ -11,11 +11,12 @@ func Serve(c *cli.Context, assetFS embed.FS) (err error) {
 
 	verbose := c.Bool("verbose")
 	port := c.String("port")
+	isRestService := c.Bool("rest")
 	if port == "" {
 		port = "8080"
 	}
 	fmt.Printf("Running web service at http://127.0.0.1:%v\n", port)
-	services.StartWebService(assetFS, port, verbose)
+	services.StartService(assetFS, port, verbose, isRestService)
 
 	return nil
 }
