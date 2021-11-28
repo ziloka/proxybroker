@@ -68,6 +68,7 @@ func filterProxies(proxies chan structs.Proxy, myRemoteAddr string, tp *structs.
 			// https://stackoverflow.com/a/21198571
 			obj := &HttpResponse{}
 			json.Unmarshal(b, &obj)
+			// Don't add duplicates of proxies
 			if !strings.Contains(obj.Origin, myRemoteAddr) {
 				// Proxy is High
 				proxy.IsOnline = true

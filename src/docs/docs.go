@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"strings"
 	"text/template"
-
 	"github.com/swaggo/swag"
 )
 
