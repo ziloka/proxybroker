@@ -23,10 +23,10 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: '^1.17.2'
+      - name: change current directory
+        run: cd src
       - name: Build with Golang
         run: bash build.bash github.com/Ziloka/ProxyBroker bleeding-release
-      - name: list files
-        run: ls
       - name: Minimize Linux Executable Size (Strip debug data)
         run: strip --strip-all ProxyBroker-linux-amd64 & strip --strip-all ProxyBroker-windows-amd64.exe
       - name: Pack Executables
