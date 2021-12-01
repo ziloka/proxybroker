@@ -24,7 +24,7 @@ jobs:
         with:
           go-version: '^1.17.2'
       - name: Build with Golang
-        run: cd src && bash build.bash github.com/Ziloka/ProxyBroker bleeding-release
+        run: cd src && bash ../build.bash github.com/Ziloka/ProxyBroker bleeding-release
       - name: Minimize Linux Executable Size (Strip debug data)
         run: strip --strip-all ProxyBroker-linux-amd64 & strip --strip-all ProxyBroker-windows-amd64.exe
       - name: Pack Executables
