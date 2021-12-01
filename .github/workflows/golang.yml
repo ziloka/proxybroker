@@ -26,11 +26,11 @@ jobs:
       - name: Build with Golang
         run: cd src && bash ../build.bash github.com/Ziloka/ProxyBroker bleeding-release
       - name: Minimize Linux Executable Size (Strip debug data)
-        run: strip --strip-all ProxyBroker-linux-amd64 & strip --strip-all ProxyBroker-windows-amd64.exe
+        run: strip --strip-all src/ProxyBroker-linux-amd64 & strip --strip-all src/ProxyBroker-windows-amd64.exe
       - name: Pack Executables
-        run: upx --best --lmza ProxyBroker-linux-amd64 && upx --best --lmza ProxyBroker-darwin-amd64 && upx --best --lmza ProxyBroker-windows-amd64.exe
+        run: upx --best --lmza src/ProxyBroker-linux-amd64 && upx --best --lmza src/ProxyBroker-darwin-amd64 && upx --best --lmza src/ProxyBroker-windows-amd64.exe
       - name: Archive code
         uses: actions/upload-artifact@v2
         with:
           name: build-artifacts
-          path: './ProxyBroker*'
+          path: './src/ProxyBroker*'
