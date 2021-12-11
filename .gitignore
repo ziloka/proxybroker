@@ -5,4 +5,8 @@
 dist
 ProxyBroker
 ProxyBroker.exe
+ProxyBroker-drawin-amd64
+ProxyBroker-linux-amd64
+ProxyBroker-windows-amd64
+ProxyBroker*
 proxies.txt
