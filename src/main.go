@@ -39,55 +39,8 @@ func main() {
 				Aliases: []string{"v"},
 				Usage:   "displays build information",
 				Action: func(c *cli.Context) error {
-					fmt.Printf("Build on %s from sha1 %s\nBuild Version: %s\n", BUILD_TIME, SHA_HASH, BUILD_VERSION)
+					fmt.Printf("Build on %s from sha1 %s\nBuild Version: %s\nCompiled Date: %s\n", BUILD_TIME, SHA_HASH, BUILD_VERSION, c.App.Compiled);
 					return nil
-				},
-			},
-			{
-				Name:    "check",
-				Aliases: []string{"c"},
-				Usage:   "checks given proxies in file",
-				Flags: []cli.Flag{
-					&cli.BoolFlag{
-						Name: "raw",
-						Aliases: []string{"r"},
-						Value: false,
-						DefaultText: "false",
-					},
-					&cli.StringSliceFlag{
-						Name: "types",
-						Aliases: []string{"t"},
-						// Value: &cli.StringSlice{"http", "https"},
-						DefaultText: "http, https",
-					},
-					&cli.IntFlag{
-						Name: "timeout",
-						Aliases: []string{"tmo"},
-						Value: 5000,
-						DefaultText: "5000",
-					},
-					&cli.StringSliceFlag{
-						Name: "countries",
-						Aliases: []string{"c"},
-					},
-					&cli.IntSliceFlag{
-						Name: "ports",
-						Aliases: []string{"p"},
-					},
-					&cli.StringFlag{
-						Name: "lvl",
-						Aliases: []string{"l"},
-					},
-					&cli.StringFlag{
-						Name: "input",
-						Aliases: []string{"i"},
-						Value: "proxies.txt",
-						DefaultText: "proxies.txt",
-					},
-				},
-				Action: func(c *cli.Context) error {
-					err := cmds.Check(c, assetFS)
-					return err
 				},
 			},
 			{
@@ -104,7 +57,7 @@ func main() {
 					&cli.StringSliceFlag{
 						Name: "types",
 						Aliases: []string{"t"},
-						// Value: &cli.StringSlice{"http", "https"},
+						Value: cli.NewStringSlice("http", "https"),
 						DefaultText: "http, https",
 					},
 					&cli.IntFlag{
@@ -134,6 +87,53 @@ func main() {
 				Action: func(c *cli.Context) error {
 					// Run cmd using go run main.go find"
 					err := cmds.Find(c, assetFS)
+					return err
+				},
+			},
+			{
+				Name:    "check",
+				Aliases: []string{"c"},
+				Usage:   "checks given proxies in file",
+				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name: "raw",
+						Aliases: []string{"r"},
+						Value: false,
+						DefaultText: "false",
+					},
+					&cli.StringSliceFlag{
+						Name: "types",
+						Aliases: []string{"t"},
+						Value: cli.NewStringSlice("http", "https"),
+						DefaultText: "http, https",
+					},
+					&cli.IntFlag{
+						Name: "timeout",
+						Aliases: []string{"tmo"},
+						Value: 5000,
+						DefaultText: "5000",
+					},
+					&cli.StringSliceFlag{
+						Name: "countries",
+						Aliases: []string{"c"},
+					},
+					&cli.IntSliceFlag{
+						Name: "ports",
+						Aliases: []string{"p"},
+					},
+					&cli.StringFlag{
+						Name: "lvl",
+						Aliases: []string{"l"},
+					},
+					&cli.StringFlag{
+						Name: "input",
+						Aliases: []string{"i"},
+						Value: "proxies.txt",
+						DefaultText: "proxies.txt",
+					},
+				},
+				Action: func(c *cli.Context) error {
+					err := cmds.Check(c, assetFS)
 					return err
 				},
 			},
@@ -191,8 +191,8 @@ func main() {
 				},
 				Action: func(c *cli.Context) error {
 					// Run cmd using go run main.go grab"
-					err := cmds.Serve(c, assetFS)
-					return err
+					err := cmds.Serve(c, assetFS);
+					return err;
 				},
 			},
 		},
@@ -207,8 +207,8 @@ func main() {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			fmt.Println("ProxyBroker find")
-			return nil
+			fmt.Println("ProxyBroker find");
+			return nil;
 		},
 	}
 
