@@ -48,9 +48,18 @@ func main() {
 				Aliases: []string{"c"},
 				Usage:   "checks given proxies in file",
 				Flags: []cli.Flag{
-					&cli.BoolFlag{Name: "verbose", Aliases: []string{"v"}},
-					&cli.BoolFlag{Name: "raw", Aliases: []string{"r"}},
-					&cli.StringFlag{Name: "file", Aliases: []string{"f"}},
+					&cli.BoolFlag{
+						Name: "verbose",
+						Aliases: []string{"v"},
+					},
+					&cli.BoolFlag{
+						Name: "raw",
+						Aliases: []string{"r"},
+					},
+					&cli.StringFlag{
+						Name: "file",
+						Aliases: []string{"f"},
+					},
 				},
 				Action: func(c *cli.Context) error {
 					err := cmds.Check(c, assetFS)
@@ -62,14 +71,37 @@ func main() {
 				Aliases: []string{"f"},
 				Usage:   "Find and check proxies",
 				Flags: []cli.Flag{
-					&cli.BoolFlag{Name: "verbose", Aliases: []string{"v"}},
-					&cli.BoolFlag{Name: "raw", Aliases: []string{"r"}},
-					&cli.StringSliceFlag{Name: "types", Aliases: []string{"t"}},
-					&cli.StringFlag{Name: "timeout", Aliases: []string{"to"}},
-					&cli.StringSliceFlag{Name: "countries", Aliases: []string{"c"}},
-					&cli.StringSliceFlag{Name: "ports", Aliases: []string{"p"}},
-					&cli.StringFlag{Name: "lvl", Aliases: []string{"l"}},
-					&cli.StringFlag{Name: "limit"},
+					&cli.BoolFlag{
+						Name: "verbose",
+						Aliases: []string{"v"},
+					},
+					&cli.BoolFlag{
+						Name: "raw",
+						Aliases: []string{"r"},
+					},
+					&cli.StringSliceFlag{
+						Name: "types",
+						Aliases: []string{"t"},
+					},
+					&cli.StringFlag{
+						Name: "timeout",
+						Aliases: []string{"to"},
+					},
+					&cli.StringSliceFlag{
+						Name: "countries",
+						Aliases: []string{"c"},
+					},
+					&cli.StringSliceFlag{
+						Name: "ports",
+						Aliases: []string{"p"},
+					},
+					&cli.StringFlag{
+						Name: "lvl",
+						Aliases: []string{"l"},
+					},
+					&cli.StringFlag{
+						Name: "limit",
+					},
 				},
 				Action: func(c *cli.Context) error {
 					// Run cmd using go run main.go find"
@@ -82,13 +114,34 @@ func main() {
 				Aliases: []string{"g"},
 				Usage:   "Grab proxies from sites",
 				Flags: []cli.Flag{
-					&cli.BoolFlag{Name: "verbose", Aliases: []string{"v"}},
-					&cli.StringFlag{Name: "outfile", Aliases: []string{"o"}},
-					&cli.StringSliceFlag{Name: "types", Aliases: []string{"t"}},
-					&cli.StringFlag{Name: "timeout", Aliases: []string{"tmo"}},
-					&cli.StringSliceFlag{Name: "countries", Aliases: []string{"c"}},
-					&cli.StringSliceFlag{Name: "ports", Aliases: []string{"p"}},
-					&cli.StringFlag{Name: "lvl", Aliases: []string{"l"}},
+					&cli.BoolFlag{
+						Name: "verbose",
+						Aliases: []string{"v"},
+					},
+					&cli.StringFlag{
+						Name: "outfile",
+						Aliases: []string{"o"},
+					},
+					&cli.StringSliceFlag{
+						Name: "types",
+						Aliases: []string{"t"},
+					},
+					&cli.StringFlag{
+						Name: "timeout",
+						Aliases: []string{"tmo"},
+					},
+					&cli.StringSliceFlag{
+						Name: "countries",
+						Aliases: []string{"c"},
+					},
+					&cli.StringSliceFlag{
+						Name: "ports",
+						Aliases: []string{"p"},
+					},
+					&cli.StringFlag{
+						Name: "lvl",
+						Aliases: []string{"l"},
+					},
 				},
 				Action: func(c *cli.Context) error {
 					// Run cmd using go run main.go grab"
@@ -101,9 +154,18 @@ func main() {
 				Aliases: []string{"g"},
 				Usage:   "Serve web service api that serves proxies",
 				Flags: []cli.Flag{
-					&cli.BoolFlag{Name: "verbose", Aliases: []string{"v"}},
-					&cli.StringFlag{Name: "port", Aliases: []string{"p"}},
-					&cli.BoolFlag{Name: "rest", Aliases: []string{"r"}},
+					&cli.BoolFlag{
+						Name: "verbose",
+						Aliases: []string{"v"},
+					},
+					&cli.StringFlag{
+						Name: "port",
+						Aliases: []string{"p"},
+					},
+					&cli.BoolFlag{
+						Name: "rest",
+						Aliases: []string{"r"},
+					},
 				},
 				Action: func(c *cli.Context) error {
 					// Run cmd using go run main.go grab"
