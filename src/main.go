@@ -39,7 +39,7 @@ func main() {
 				Aliases: []string{"v"},
 				Usage:   "displays build information",
 				Action: func(c *cli.Context) error {
-					fmt.Printf("Build on %s from sha1 %s\n Build Version: %s\n", BUILD_TIME, SHA_HASH, BUILD_VERSION)
+					fmt.Printf("Build on %s from sha1 %s\nBuild Version: %s\n", BUILD_TIME, SHA_HASH, BUILD_VERSION)
 					return nil
 				},
 			},
@@ -49,16 +49,40 @@ func main() {
 				Usage:   "checks given proxies in file",
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
-						Name: "verbose",
-						Aliases: []string{"v"},
-					},
-					&cli.BoolFlag{
 						Name: "raw",
 						Aliases: []string{"r"},
+						Value: false,
+						DefaultText: "false",
+					},
+					&cli.StringSliceFlag{
+						Name: "types",
+						Aliases: []string{"t"},
+						// Value: &cli.StringSlice{"http", "https"},
+						DefaultText: "http, https",
+					},
+					&cli.IntFlag{
+						Name: "timeout",
+						Aliases: []string{"tmo"},
+						Value: 5000,
+						DefaultText: "5000",
+					},
+					&cli.StringSliceFlag{
+						Name: "countries",
+						Aliases: []string{"c"},
+					},
+					&cli.IntSliceFlag{
+						Name: "ports",
+						Aliases: []string{"p"},
 					},
 					&cli.StringFlag{
-						Name: "file",
-						Aliases: []string{"f"},
+						Name: "lvl",
+						Aliases: []string{"l"},
+					},
+					&cli.StringFlag{
+						Name: "input",
+						Aliases: []string{"i"},
+						Value: "proxies.txt",
+						DefaultText: "proxies.txt",
 					},
 				},
 				Action: func(c *cli.Context) error {
@@ -72,26 +96,28 @@ func main() {
 				Usage:   "Find and check proxies",
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
-						Name: "verbose",
-						Aliases: []string{"v"},
-					},
-					&cli.BoolFlag{
 						Name: "raw",
 						Aliases: []string{"r"},
+						Value: false,
+						DefaultText: "false",
 					},
 					&cli.StringSliceFlag{
 						Name: "types",
 						Aliases: []string{"t"},
+						// Value: &cli.StringSlice{"http", "https"},
+						DefaultText: "http, https",
 					},
-					&cli.StringFlag{
+					&cli.IntFlag{
 						Name: "timeout",
 						Aliases: []string{"to"},
+						Value: 5000,
+						DefaultText: "5000",
 					},
 					&cli.StringSliceFlag{
 						Name: "countries",
 						Aliases: []string{"c"},
 					},
-					&cli.StringSliceFlag{
+					&cli.IntSliceFlag{
 						Name: "ports",
 						Aliases: []string{"p"},
 					},
@@ -99,8 +125,10 @@ func main() {
 						Name: "lvl",
 						Aliases: []string{"l"},
 					},
-					&cli.StringFlag{
+					&cli.IntFlag{
 						Name: "limit",
+						Value: 10,
+						DefaultText: "10",
 					},
 				},
 				Action: func(c *cli.Context) error {
@@ -114,21 +142,15 @@ func main() {
 				Aliases: []string{"g"},
 				Usage:   "Grab proxies from sites",
 				Flags: []cli.Flag{
-					&cli.BoolFlag{
-						Name: "verbose",
-						Aliases: []string{"v"},
-					},
 					&cli.StringFlag{
 						Name: "outfile",
 						Aliases: []string{"o"},
+						Value: "proxies.txt",
+						DefaultText: "proxies.txt",
 					},
 					&cli.StringSliceFlag{
 						Name: "types",
 						Aliases: []string{"t"},
-					},
-					&cli.StringFlag{
-						Name: "timeout",
-						Aliases: []string{"tmo"},
 					},
 					&cli.StringSliceFlag{
 						Name: "countries",
@@ -154,17 +176,17 @@ func main() {
 				Aliases: []string{"g"},
 				Usage:   "Serve web service api that serves proxies",
 				Flags: []cli.Flag{
-					&cli.BoolFlag{
-						Name: "verbose",
-						Aliases: []string{"v"},
-					},
-					&cli.StringFlag{
+					&cli.IntFlag{
 						Name: "port",
 						Aliases: []string{"p"},
+						Value: 8080,
+						DefaultText: "8080",
 					},
 					&cli.BoolFlag{
 						Name: "rest",
 						Aliases: []string{"r"},
+						Value: true,
+						DefaultText: "true",
 					},
 				},
 				Action: func(c *cli.Context) error {
@@ -174,7 +196,16 @@ func main() {
 				},
 			},
 		},
-
+		// Global flags information
+		// https://github.com/urfave/cli/issues/325
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name: "verbose",
+				Aliases: []string{"v"},
+				Value: false,
+				DefaultText: "false",
+			},
+		},
 		Action: func(c *cli.Context) error {
 			fmt.Println("ProxyBroker find")
 			return nil

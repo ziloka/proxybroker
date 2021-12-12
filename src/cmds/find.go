@@ -16,19 +16,9 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 	raw := c.Bool("raw")
 	verbose := c.Bool("verbose")
 	types := c.StringSlice("types")
-	if len(types) == 0 {
-		types = []string{"http", "https"}
-	}
-	timeout := c.Int("timeout")
-	if timeout == 0 {
-		timeout = 5000
-	}
 	limit := c.Int("limit")
-	if limit == 0 {
-		limit = 10
-	}
 	countries := c.StringSlice("countries")
-	ports := c.StringSlice("ports")
+	ports := c.IntSlice("ports")
 
 	bytes, _ := assetFS.ReadFile("assets/GeoLite2-Country.mmdb")
 

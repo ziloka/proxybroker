@@ -33,7 +33,7 @@ func NewTransport(protocol string, proxy string) *CustomTransport {
 		},
 	}
 
-	if utils.Contains([]string{"http", "https"}, protocol) {
+	if utils.StringContains([]string{"http", "https"}, protocol) {
 		proxyUrl, _ := url.Parse("http://" + proxy)
 		tr.rtp = &http.Transport{
 			Proxy:               http.ProxyURL(proxyUrl),
