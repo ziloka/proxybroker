@@ -4,7 +4,7 @@
 # See here for image contents: https://github.com/microsoft/vscode-dev-containers/tree/v0.195.0/containers/go/.devcontainer/base.Dockerfile
 # [Choice] Go version (use -bullseye variants on local arm64/Apple Silicon): 1, 1.16, 1.17, 1-bullseye, 1.16-bullseye, 1.17-bullseye, 1-buster, 1.16-buster, 1.17-buster
 
-FROM golang:1.17.3-alpine3.14
+FROM golang:1.17.5-alpine3.15
 
 # https://pkg.go.dev/net/http
 # ENV GODEBUG http2debug=1

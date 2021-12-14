@@ -26,13 +26,14 @@ func Check(c *cli.Context, assetFS embed.FS) (err error) {
 		return err
 	}
 
+	proxies := []structs.Proxy{};
 	checkedProxies := make(chan structs.Proxy, 500)
 	for _, proxy := range strings.Split(string(dat), "\n") {
 		proxyStruct := structs.Proxy{
 			Proxy: proxy,
 		}
 		// https://reshefsharvit.medium.com/common-pitfalls-and-cases-when-using-goroutines-15107237d4f5
-		go services.Check(checkedProxies, publicIpAddr, proxyStruct, verbose)
+		go services.Check(checkedProxies, &proxies, publicIpAddr, proxyStruct, verbose)
 	}
 
 	for proxy := range checkedProxies {
@@ -41,6 +42,7 @@ func Check(c *cli.Context, assetFS embed.FS) (err error) {
 		} else {
 			fmt.Printf("<Proxy %v %v %+v>\n", proxy.Country, proxy.ConnDuration, proxy.Proxy)
 		}
+		proxies = append(proxies, proxy);
 	}
 
 	return nil

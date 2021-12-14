@@ -18,15 +18,8 @@ func Grab(c *cli.Context, assetFS embed.FS) (err error) {
 	outfile := c.String("outfile")
 	verbose := c.Bool("verbose")
 	types := c.StringSlice("types")
-	if len(types) == 0 {
-		types = []string{"http", "https"}
-	}
-	timeout := c.Int("timeout")
-	if timeout == 0 {
-		timeout = 5000
-	}
 	countries := c.StringSlice("countries")
-	ports := c.StringSlice("ports")
+	ports := c.IntSlice("ports")
 
 	zipBytes, readFileError := assetFS.ReadFile("assets/GeoLite2-Country.zip")
 	bytes := utils.ReadZIP(zipBytes)

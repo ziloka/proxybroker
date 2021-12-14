@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func StartService(assetFS embed.FS, port string, verbose bool, isRestService bool){
+func StartService(assetFS embed.FS, port int, verbose bool, isRestService bool){
 	if(isRestService){
 		startWebService(assetFS, port, verbose)
 	} else {
@@ -18,7 +18,7 @@ func StartService(assetFS embed.FS, port string, verbose bool, isRestService boo
 	}
 }
 
-func startWebService(assetFS embed.FS, port string, verbose bool) {
+func startWebService(assetFS embed.FS, port int, verbose bool) {
 
 	checkedProxies := []structs.Proxy{}
 	checkedProxiesChan := make(chan structs.Proxy, 99999)
@@ -43,7 +43,7 @@ func startWebService(assetFS embed.FS, port string, verbose bool) {
 				// Collect proxies
 				quit := make(chan bool)
 				proxiesChan := make(chan []structs.Proxy, 99999)
-				Collect(assetFS, db, quit, proxiesChan, []string{"http", "https", "socks4", "socks5"}, []string{}, []string{}, verbose)
+				Collect(assetFS, db, quit, proxiesChan, []string{"http", "https", "socks4", "socks5"}, []string{}, []int{}, verbose)
 				publicIpAddr, err := GetpublicIpAddr()
 				if err != nil {
 					return
@@ -57,7 +57,7 @@ func startWebService(assetFS embed.FS, port string, verbose bool) {
 					select {
 					case proxiesArr := <-proxiesChan:
 						for i := range proxiesArr {
-							go Check(checkedProxiesChan, publicIpAddr, proxiesArr[i], verbose)
+							go Check(checkedProxiesChan, &checkedProxies, publicIpAddr, proxiesArr[i], verbose)
 						}
 					case receivedProxy := <-checkedProxiesChan:
 						if verbose {
@@ -71,7 +71,7 @@ func startWebService(assetFS embed.FS, port string, verbose bool) {
 							return arr
 						}
 
-						if receivedProxy.IsOnline && !utils.Contains(convertToArrStr(), receivedProxy.Proxy) {
+						if receivedProxy.IsOnline && !utils.StringContains(convertToArrStr(), receivedProxy.Proxy) {
 							checkedProxies = append(checkedProxies, receivedProxy)
 						}
 					case <-quit:

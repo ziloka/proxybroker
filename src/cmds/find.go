@@ -16,19 +16,9 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 	raw := c.Bool("raw")
 	verbose := c.Bool("verbose")
 	types := c.StringSlice("types")
-	if len(types) == 0 {
-		types = []string{"http", "https"}
-	}
-	timeout := c.Int("timeout")
-	if timeout == 0 {
-		timeout = 5000
-	}
 	limit := c.Int("limit")
-	if limit == 0 {
-		limit = 10
-	}
 	countries := c.StringSlice("countries")
-	ports := c.StringSlice("ports")
+	ports := c.IntSlice("ports")
 
 	bytes, _ := assetFS.ReadFile("assets/GeoLite2-Country.mmdb")
 
@@ -37,8 +27,8 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 
 	// Collect proxies
 	quit := make(chan bool)
-	proxies := make(chan []structs.Proxy, 99999)
-	services.Collect(assetFS, db, quit, proxies, types, countries, ports, verbose)
+	uncheckedProxies := make(chan []structs.Proxy, 99999)
+	services.Collect(assetFS, db, quit, uncheckedProxies, types, countries, ports, verbose)
 	publicIpAddr, err := services.GetpublicIpAddr()
 	if err != nil {
 		return err
@@ -47,16 +37,17 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 	// Check Proxies
 	// https://stackoverflow.com/questions/41906146/why-go-channels-limit-the-buffer-size
 	// https://stackoverflow.com/a/41906488
-	checkedProxies := make(chan structs.Proxy, 99999)
+	checkedProxies := make(chan structs.Proxy, 99999);
+	proxies := []structs.Proxy{};
 	waitForProxies:
 		for {
 			select {
-				case proxiesArr := <- proxies:
+				case proxiesArr := <- uncheckedProxies:
 					if verbose {
 						fmt.Printf("Received %d proxies\n", len(proxiesArr))
 					}
 					for _, proxy := range proxiesArr {
-						go services.Check(checkedProxies, publicIpAddr, proxy, verbose)
+						go services.Check(checkedProxies, &proxies, publicIpAddr, proxy, verbose)
 					}
 				case <-quit:
 					break waitForProxies

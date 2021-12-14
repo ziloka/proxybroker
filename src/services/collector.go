@@ -4,15 +4,16 @@ import (
 	"embed"
 	"encoding/json"
 	"fmt"
-	"github.com/Ziloka/ProxyBroker/structs"
-	"github.com/Ziloka/ProxyBroker/utils"
-	"github.com/oschwald/geoip2-golang"
 	"io"
 	"net"
 	"net/http"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
+	"github.com/Ziloka/ProxyBroker/structs"
+	"github.com/Ziloka/ProxyBroker/utils"
+	"github.com/oschwald/geoip2-golang"
 )
 
 type sourceStruct struct {
@@ -20,7 +21,7 @@ type sourceStruct struct {
 	Type string `json:"type"`
 }
 
-func Collect(assetFS embed.FS, db *geoip2.Reader, quit chan bool, ch chan []structs.Proxy, types []string, countries []string, ports []string, isVerbose bool) {
+func Collect(assetFS embed.FS, db *geoip2.Reader, quit chan bool, ch chan []structs.Proxy, types []string, countries []string, ports []int, isVerbose bool) {
 	sources := getProxies(assetFS, types)
 	if isVerbose {
 		fmt.Printf("Found %v sources\n", len(sources))
@@ -52,14 +53,15 @@ func Collect(assetFS embed.FS, db *geoip2.Reader, quit chan bool, ch chan []stru
 		// filter proxies
 		for _, proxy := range proxies {
 			host := strings.Split(proxy, ":")[0]
-			port := strings.Split(proxy, ":")[1]
+			portStr := strings.Split(proxy, ":")[1]
+			port, _ := strconv.Atoi(portStr)
 			ip := net.ParseIP(host)
 			record, recordErr := db.Country(ip)
 			if recordErr != nil {
 				continue
 			}
 			country := record.Country.IsoCode
-			if (utils.Contains(ports, port) || len(ports) == 0) && (utils.Contains(countries, country) || len(countries) == 0) {
+			if (utils.IntContains(ports, port) || len(ports) == 0) && (utils.StringContains(countries, country) || len(countries) == 0) {
 				proxyStruct := structs.Proxy{
 					Proxy:    proxy,
 					Protocol: source.Type,
@@ -98,18 +100,23 @@ func getProxies(assetFS embed.FS, types []string) []sourceStruct {
 	json.Unmarshal([]byte(file), &sources)
 	valid := []sourceStruct{}
 
-	// lowercase all types
-	tempTypes := types
-	types = []string{}
-	for _, source := range tempTypes {
-		types = append(types, strings.ToLower(source))
+	if(len(types) > 0) {
+		// lowercase all types
+		tempTypes := types
+		types = []string{}
+		for _, source := range tempTypes {
+			types = append(types, strings.ToLower(source))
+		}
+
+		for _, source := range sources {
+			if utils.StringContains(types, source.Type) {
+				valid = append(valid, source)
+			}
+		}
+	} else {
+		valid = sources
 	}
 
-	for _, source := range sources {
-		if utils.Contains(types, source.Type) {
-			valid = append(valid, source)
-		}
-	}
 	return valid
 }
 
