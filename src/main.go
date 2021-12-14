@@ -10,6 +10,7 @@ import (
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
+	"time"
 	"runtime"
 )
 
@@ -60,7 +61,7 @@ func main() {
 						Value: cli.NewStringSlice("http", "https"),
 						DefaultText: "http, https",
 					},
-					&cli.IntFlag{
+					&cli.DurationFlag{
 						Name: "timeout",
 						Aliases: []string{"to"},
 						Value: 5000,
@@ -107,10 +108,10 @@ func main() {
 						Value: cli.NewStringSlice("http", "https"),
 						DefaultText: "http, https",
 					},
-					&cli.IntFlag{
+					&cli.DurationFlag{
 						Name: "timeout",
 						Aliases: []string{"tmo"},
-						Value: 5000,
+						Value: time.Second * 5,
 						DefaultText: "5000",
 					},
 					&cli.StringSliceFlag{
@@ -124,6 +125,8 @@ func main() {
 					&cli.StringFlag{
 						Name: "lvl",
 						Aliases: []string{"l"},
+						Value: "High",
+						DefaultText: "High",
 					},
 					&cli.StringFlag{
 						Name: "input",

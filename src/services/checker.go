@@ -14,7 +14,7 @@ type HttpResponse struct {
 }
 
 // https://golangbyexample.com/return-value-goroutine-go/
-func Check(proxies chan structs.Proxy, myRemoteAddr string, proxy structs.Proxy, verbose bool) {
+func Check(proxiesChan chan structs.Proxy, proxies *[]structs.Proxy, myRemoteAddr string, proxy structs.Proxy, verbose bool) {
 	// test proxy with provided protocol
 	if proxy.Protocol != "" {
 		trp := structs.NewTransport(proxy.Protocol, proxy.Proxy)
@@ -28,7 +28,7 @@ func Check(proxies chan structs.Proxy, myRemoteAddr string, proxy structs.Proxy,
 			return
 		}
 		defer res.Body.Close()
-		filterProxies(proxies, myRemoteAddr, trp, res, proxy)
+		filterProxies(proxiesChan, myRemoteAddr, trp, res, proxy)
 	} else {
 		// test proxy with all protocols
 		protocols := []string{"http", "socks4", "socks5"}
@@ -49,13 +49,13 @@ func Check(proxies chan structs.Proxy, myRemoteAddr string, proxy structs.Proxy,
 			res = httpbinRes
 		}
 		if res != nil {
-			filterProxies(proxies, myRemoteAddr, trp, res, proxy)
+			filterProxies(proxiesChan, myRemoteAddr, trp, res, proxy)
 		}
 	}
 
 }
 
-func filterProxies(proxies chan structs.Proxy, myRemoteAddr string, tp *structs.CustomTransport, res *http.Response, proxy structs.Proxy) {
+func filterProxies(proxiesChan chan structs.Proxy, myRemoteAddr string, tp *structs.CustomTransport, res *http.Response, proxy structs.Proxy) {
 	if res.StatusCode == 200 {
 		// Check if the response is valid JSON
 		// May be HTML stating 500 server error
@@ -68,24 +68,15 @@ func filterProxies(proxies chan structs.Proxy, myRemoteAddr string, tp *structs.
 			// https://stackoverflow.com/a/21198571
 			obj := &HttpResponse{}
 			json.Unmarshal(b, &obj)
-			// Don't add duplicates of proxies
+			// Don't add duplicates of proxies or proxies that origin from my ip address
 			if !strings.Contains(obj.Origin, myRemoteAddr) {
 				// Proxy is High
 				proxy.IsOnline = true
 				proxy.AvgRespTime = tp.Duration()
 				proxy.ConnDuration = tp.ConnDuration()
 				proxy.ReqDuration = tp.ReqDuration()
-				proxies <- proxy
-			} else {
-				proxy.IsOnline = false
-				proxies <- proxy
-			}
-		} else {
-			proxy.IsOnline = false
-			proxies <- proxy
+				proxiesChan <- proxy
+			} 
 		}
-	} else {
-		proxy.IsOnline = false
-		proxies <- proxy
 	}
 }

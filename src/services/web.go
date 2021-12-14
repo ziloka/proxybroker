@@ -57,7 +57,7 @@ func startWebService(assetFS embed.FS, port int, verbose bool) {
 					select {
 					case proxiesArr := <-proxiesChan:
 						for i := range proxiesArr {
-							go Check(checkedProxiesChan, publicIpAddr, proxiesArr[i], verbose)
+							go Check(checkedProxiesChan, &checkedProxies, publicIpAddr, proxiesArr[i], verbose)
 						}
 					case receivedProxy := <-checkedProxiesChan:
 						if verbose {
