@@ -1,6 +1,6 @@
 #include <iostream>
 #include <CLI11/CLI11.hpp>
-#include <cmds/find.hpp>
+#include <proxybroker/cmds/find.hpp>
 
 void setup_subcommands(CLI::App &app){
 

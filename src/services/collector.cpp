@@ -1,6 +1,10 @@
 #include <iostream>
+#include <vector>
 #include <nlohmann/json.hpp>
-#include <services/collector.hpp>
+#include <proxybroker/services/collector.hpp>
+
+#define CURL_STATICLIB
+#include "curl/curl.h"
 
 nlohmann::json Collector::getSources() {
 
@@ -33,4 +37,8 @@ nlohmann::json Collector::getSources() {
     {"https://proxylist.geonode.com/api/proxy-list?limit=200&page=1&sort_by=lastChecked&sort_type=desc&protocols=socks5", "socks5"}
   };
 
+};
+
+nlohmann::json Collector::getProxies(nlohmann::json proxySources){
+  
 };

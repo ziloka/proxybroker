@@ -1,14 +1,9 @@
 #include <nlohmann/json.hpp>
 
-struct proxySource {
-  std::string proxyUrl;
-  std::string type;
-};
-
 class Collector {
 
   public:
     static nlohmann::json getSources();
-    static nlohmann::json getProxies();
+    static nlohmann::json getProxies(nlohmann::json proxieSources);
 
 };
