@@ -2,6 +2,8 @@
 
 Proxy is an open source tool that asynchronously finds public proxies from multiple sources and concurrently checks them.
 
+<img src="https://img.shields.io/github/workflow/status/Ziloka/ProxyBroker/Golang%20Build?event=push" alt="Build Status">
+
 ## Features
 
 - Supported protocols: HTTP(S), SOCKS4/5.
