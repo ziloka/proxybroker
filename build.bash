@@ -35,6 +35,8 @@ do
   fi
     
   env GOOS=$GOOS GOARCH=$GOARCH go build -ldflags="-s -w -X main.SHA_HASH=$(git rev-parse HEAD) -X main.BUILD_TIME=$BUILD_TIME -X main.BUILD_VERSION=$BUILD_VERSION" -o $output_name $package
+  strip --strip-all $output_name
+  upx --lzma --best $output_name
   if [ $? -ne 0 ]; then
     echo 'An error has occurred! Aborting the script execution...'
     exit 1

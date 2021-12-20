@@ -21,10 +21,16 @@ Proxy is an open source tool that asynchronously finds public proxies from multi
 
 ## Building from source
 - [Golang 1.17](https://golang.org/)
+- [UPX 3.96](https://upx.github.io/)
 Run
 ```
 cd src && \
 go build -o ProxyBroker main.go
+```
+To build for Linux, MacOS, and windows run
+```
+cd src && \
+../build.bash github.com/Ziloka/ProxyBroker main.go
 ```
 
 ## Motiviation
