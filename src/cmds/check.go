@@ -12,11 +12,11 @@ import (
 
 func Check(c *cli.Context, assetFS embed.FS) (err error) {
 
-	file := c.String("file")
+	fileName := c.String("file")
 	verbose := c.Bool("verbose")
 	raw := c.Bool("raw")
 
-	dat, err := os.ReadFile(file)
+	fileContents, err := os.ReadFile(fileName)
 	if err != nil {
 		panic(err)
 	}
@@ -27,8 +27,8 @@ func Check(c *cli.Context, assetFS embed.FS) (err error) {
 	}
 
 	proxies := []structs.Proxy{};
-	checkedProxies := make(chan structs.Proxy, 500)
-	for _, proxy := range strings.Split(string(dat), "\n") {
+	checkedProxies := make(chan structs.Proxy, 99999)
+	for _, proxy := range strings.Split(string(fileContents), "\n") {
 		proxyStruct := structs.Proxy{
 			Proxy: proxy,
 		}
