@@ -15,6 +15,20 @@ type HttpResponse struct {
 
 // https://golangbyexample.com/return-value-goroutine-go/
 func Check(proxiesChan chan structs.Proxy, proxies *[]structs.Proxy, myRemoteAddr string, proxy structs.Proxy, verbose bool) {
+
+	includesProxy := func () bool {
+		for _, a := range *proxies {
+			if a.Proxy == proxy.Proxy {
+				return true
+			}
+		}
+		return false
+	}
+
+	if(includesProxy()) {
+		return;
+	}
+
 	// test proxy with provided protocol
 	if proxy.Protocol != "" {
 		trp := structs.NewTransport(proxy.Protocol, proxy.Proxy)
@@ -28,7 +42,7 @@ func Check(proxiesChan chan structs.Proxy, proxies *[]structs.Proxy, myRemoteAdd
 			return
 		}
 		defer res.Body.Close()
-		filterProxies(proxiesChan, myRemoteAddr, trp, res, proxy)
+		filterProxies(proxiesChan, proxies, myRemoteAddr, trp, res, proxy)
 	} else {
 		// test proxy with all protocols
 		protocols := []string{"http", "socks4", "socks5"}
@@ -49,12 +63,12 @@ func Check(proxiesChan chan structs.Proxy, proxies *[]structs.Proxy, myRemoteAdd
 			res = httpbinRes
 		}
 		if res != nil {
-			filterProxies(proxiesChan, myRemoteAddr, trp, res, proxy)
+			filterProxies(proxiesChan, proxies, myRemoteAddr, trp, res, proxy)
 		}
 	}
 }
 
-func filterProxies(proxiesChan chan structs.Proxy, myRemoteAddr string, tp *structs.CustomTransport, res *http.Response, proxy structs.Proxy) {
+func filterProxies(proxiesChan chan structs.Proxy, proxies *[]structs.Proxy, myRemoteAddr string, tp *structs.CustomTransport, res *http.Response, proxy structs.Proxy) {
 	if res.StatusCode == 200 {
 		// Check if the response is valid JSON
 		// May be HTML stating 500 server error
@@ -74,6 +88,7 @@ func filterProxies(proxiesChan chan structs.Proxy, myRemoteAddr string, tp *stru
 				proxy.AvgRespTime = tp.Duration()
 				proxy.ConnDuration = tp.ConnDuration()
 				proxy.ReqDuration = tp.ReqDuration()
+				*proxies = append(*proxies, proxy)
 				proxiesChan <- proxy
 			} 
 		}

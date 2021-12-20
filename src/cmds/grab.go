@@ -14,7 +14,7 @@ import (
 func Grab(c *cli.Context, assetFS embed.FS) (err error) {
 
 	// Set default values for flags
-	outfile := c.String("input")
+	outfile := c.String("outfile")
 	verbose := c.Bool("verbose")
 	types := c.StringSlice("types")
 	countries := c.StringSlice("countries")
