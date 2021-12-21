@@ -4,6 +4,9 @@ import (
 	"embed"
 	"encoding/json"
 	"fmt"
+	"github.com/Ziloka/ProxyBroker/structs"
+	"github.com/Ziloka/ProxyBroker/utils"
+	"github.com/oschwald/geoip2-golang"
 	"io"
 	"net"
 	"net/http"
@@ -11,9 +14,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"github.com/Ziloka/ProxyBroker/structs"
-	"github.com/Ziloka/ProxyBroker/utils"
-	"github.com/oschwald/geoip2-golang"
 )
 
 type sourceStruct struct {
@@ -22,9 +22,9 @@ type sourceStruct struct {
 }
 
 func Collect(assetFS embed.FS, db *geoip2.Reader, quit chan bool, ch chan []structs.Proxy, types []string, countries []string, ports []int, isVerbose bool) {
-	sources := getProxies(assetFS, types);
+	sources := getProxies(assetFS, types)
 	if isVerbose {
-		fmt.Printf("Found %v sources\n", len(sources));
+		fmt.Printf("Found %v sources\n", len(sources))
 	}
 
 	getProxies := func(source sourceStruct, lastElement bool) {
@@ -40,93 +40,93 @@ func Collect(assetFS embed.FS, db *geoip2.Reader, quit chan bool, ch chan []stru
 
 		// https://stackoverflow.com/questions/17156371/how-to-get-json-response-from-http-get
 		// https://stackoverflow.com/a/31129967
-		res, httpErr := httpClient.Get(source.Url);
+		res, httpErr := httpClient.Get(source.Url)
 		if httpErr != nil {
-			return;
+			return
 		}
-		defer res.Body.Close();
-		b, _ := io.ReadAll(res.Body);
-		content := string(b);
-		re, _ := regexp.Compile(`\d+\.\d+\.\d+\.\d+:\d+`);
-		proxies := re.FindAllString(content, -1);
-		valid := []structs.Proxy{};
+		defer res.Body.Close()
+		b, _ := io.ReadAll(res.Body)
+		content := string(b)
+		re, _ := regexp.Compile(`\d+\.\d+\.\d+\.\d+:\d+`)
+		proxies := re.FindAllString(content, -1)
+		valid := []structs.Proxy{}
 		// filter proxies
 		for _, proxy := range proxies {
-			host := strings.Split(proxy, ":")[0];
-			portStr := strings.Split(proxy, ":")[1];
-			port, _ := strconv.Atoi(portStr);
-			ip := net.ParseIP(host);
-			record, recordErr := db.Country(ip);
+			host := strings.Split(proxy, ":")[0]
+			portStr := strings.Split(proxy, ":")[1]
+			port, _ := strconv.Atoi(portStr)
+			ip := net.ParseIP(host)
+			record, recordErr := db.Country(ip)
 			if recordErr != nil {
-				continue;
+				continue
 			}
-			country := record.Country.IsoCode;
+			country := record.Country.IsoCode
 			if (utils.IntContains(ports, port) || len(ports) == 0) && (utils.StringContains(countries, country) || len(countries) == 0) {
 				proxyStruct := structs.Proxy{
 					Proxy:    proxy,
 					Protocol: source.Type,
 					Country:  country,
 				}
-				valid = append(valid, proxyStruct);
+				valid = append(valid, proxyStruct)
 			}
 		}
 		if isVerbose {
-			fmt.Printf("Found %v proxies from source %v\n", len(proxies), source.Url);
+			fmt.Printf("Found %v proxies from source %v\n", len(proxies), source.Url)
 		}
-		ch <- valid;
-		if(lastElement){
-			quit <- true;
+		ch <- valid
+		if lastElement {
+			quit <- true
 		}
 	}
 
 	// proxies that are easy to collect
 	for i, source := range sources {
-		lastSource := false;
-		if (i == len(sources)-1){
-			lastSource = true;
+		lastSource := false
+		if i == len(sources)-1 {
+			lastSource = true
 		}
-		go getProxies(source, lastSource);
+		go getProxies(source, lastSource)
 	}
 
 	if isVerbose {
-		fmt.Printf("Debug there are %d proxies\n", len(ch));
+		fmt.Printf("Debug there are %d proxies\n", len(ch))
 	}
 }
 
 func getProxies(assetFS embed.FS, types []string) []sourceStruct {
 	// https://www.golangprograms.com/golang-read-json-file-into-struct.html
-	file, _ := assetFS.ReadFile("assets/sources.json");
-	sources := []sourceStruct{};
-	json.Unmarshal([]byte(file), &sources);
-	valid := []sourceStruct{};
+	file, _ := assetFS.ReadFile("assets/sources.json")
+	sources := []sourceStruct{}
+	json.Unmarshal([]byte(file), &sources)
+	valid := []sourceStruct{}
 
-	if(len(types) > 0) {
+	if len(types) > 0 {
 		// lowercase all types
-		tempTypes := types;
-		types = []string{};
+		tempTypes := types
+		types = []string{}
 		for _, source := range tempTypes {
-			types = append(types, strings.ToLower(source));
+			types = append(types, strings.ToLower(source))
 		}
 
 		for _, source := range sources {
 			if utils.StringContains(types, source.Type) {
-				valid = append(valid, source);
+				valid = append(valid, source)
 			}
 		}
 	} else {
-		valid = sources;
+		valid = sources
 	}
 
-	return valid;
+	return valid
 }
 
 func GetpublicIpAddr() (string, error) {
-	res, err := http.Get("http://httpbin.org/ip?json");
+	res, err := http.Get("http://httpbin.org/ip?json")
 	if err != nil {
-		return "", err;
+		return "", err
 	}
-	defer res.Body.Close();
-	obj := &HttpResponse{};
-	json.NewDecoder(res.Body).Decode(obj);
-	return obj.Origin, nil;
+	defer res.Body.Close()
+	obj := &HttpResponse{}
+	json.NewDecoder(res.Body).Decode(obj)
+	return obj.Origin, nil
 }
