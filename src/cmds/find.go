@@ -20,6 +20,7 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 	limit := c.Int("limit")
 	countries := c.StringSlice("countries")
 	ports := c.IntSlice("ports")
+	outfile := c.String("outfile")
 
 	bytes, _ := assetFS.ReadFile("assets/GeoLite2-Country.mmdb")
 
@@ -58,17 +59,39 @@ waitForProxies:
 	}
 
 	index := 0
-	for proxy := range checkedProxies {
-		if index < limit {
+	if outfile == "" {
+		for proxy := range checkedProxies {
 			index++
+			if index > limit {
+				break;
+			}
 			if raw {
 				fmt.Println(proxy.Proxy)
 			} else {
 				fmt.Printf("<Proxy %s %s %s %+s>\n", proxy.Country, proxy.ConnDuration, proxy.Protocol, proxy.Proxy)
 			}
-		} else {
-			os.Exit(0)
 		}
+	} else {
+		checkedProxiesList := make([]string, 0)
+		for proxy := range checkedProxies {
+			if index < limit {
+				checkedProxiesList = append(checkedProxiesList, proxy.Proxy)
+			} else {
+				break;
+			}
+			index++
+		}
+		data := []byte(strings.Join(checkedProxiesList, "\n"))
+		f, fileCreateErr := os.Create(outfile)
+		if fileCreateErr != nil {
+			panic(fileCreateErr)
+		}
+		fileWriteErr := os.WriteFile(outfile, data, 0644)
+		if fileWriteErr != nil {
+			panic(fileWriteErr)
+		}
+		defer f.Close()
+		fmt.Printf("Wrote %d proxies to %s\n", len(checkedProxiesList), outfile)
 	}
 
 	return err

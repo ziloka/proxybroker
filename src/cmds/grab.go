@@ -47,7 +47,7 @@ func Grab(c *cli.Context, assetFS embed.FS) (err error) {
 		}
 	} else {
 		data := []byte(strings.Join(displayedProxies, "\n"))
-		f, fileCreateErr := os.Create("proxies.txt")
+		f, fileCreateErr := os.Create(outfile)
 		if fileCreateErr != nil {
 			panic(fileCreateErr)
 		}
@@ -56,6 +56,7 @@ func Grab(c *cli.Context, assetFS embed.FS) (err error) {
 			panic(fileWriteErr)
 		}
 		defer f.Close()
+		fmt.Printf("Wrote %d proxies to %s\n", len(displayedProxies), outfile)
 	}
 
 	return nil
