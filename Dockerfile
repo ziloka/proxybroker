@@ -1,4 +1,4 @@
-FROM golang:1.17.3-alpine3.14 as build
+FROM golang:1.17.5-alpine3.15 as build
 
 # https://medium.com/geekculture/golang-app-build-version-in-containers-3d4833a55094
 ARG BUILD_VERSION
