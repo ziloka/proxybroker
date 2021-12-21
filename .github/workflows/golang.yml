@@ -27,9 +27,11 @@ jobs:
         run: cd src && bash ../build.bash github.com/Ziloka/ProxyBroker bleeding-release
       # - name: Minimize Linux Executable Size (Strip debug data)
       #   run: strip --strip-all src/ProxyBroker-linux-amd64 & strip --strip-all src/ProxyBroker-windows-amd64.exe
+      - name: Install UPX 3.96
+        run: sudo apt-get install wget && wget http://archive.ubuntu.com/ubuntu/pool/universe/u/upx-ucl/upx-ucl_3.96-2_amd64.deb && dpkg -i upx-ucl_3.96-2_amd64.deb && upx --version
       - name: Pack Executables
-        run: upx --best --lzma src/ProxyBroker-linux-amd64 && upx --best --lzma src/ProxyBroker-darwin-amd64 && upx --best --lzma src/ProxyBroker-windows-amd64.exe
-      - name: Archive code
+        run: upx --best --lzma src/ProxyBroker-linux-amd64 & upx --best --lzma src/ProxyBroker-darwin-amd64 & upx --best --lzma src/ProxyBroker-windows-amd64.exe
+      - name: Upload Executables
         uses: actions/upload-artifact@v2
         with:
           name: build-artifacts
