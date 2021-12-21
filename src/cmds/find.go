@@ -13,25 +13,25 @@ import (
 func Find(c *cli.Context, assetFS embed.FS) (err error) {
 
 	// Set default values for flags
-	raw := c.Bool("raw")
-	verbose := c.Bool("verbose")
-	types := c.StringSlice("types")
-	limit := c.Int("limit")
-	countries := c.StringSlice("countries")
-	ports := c.IntSlice("ports")
+	raw := c.Bool("raw");
+	verbose := c.Bool("verbose");
+	types := c.StringSlice("types");
+	limit := c.Int("limit");
+	countries := c.StringSlice("countries");
+	ports := c.IntSlice("ports");
 
-	bytes, _ := assetFS.ReadFile("assets/GeoLite2-Country.mmdb")
+	bytes, _ := assetFS.ReadFile("assets/GeoLite2-Country.mmdb");
 
-	db, _ := geoip2.FromBytes(bytes)
-	defer db.Close()
+	db, _ := geoip2.FromBytes(bytes);
+	defer db.Close();
 
 	// Collect proxies
-	quit := make(chan bool)
-	uncheckedProxies := make(chan []structs.Proxy, 99999)
-	services.Collect(assetFS, db, quit, uncheckedProxies, types, countries, ports, verbose)
-	publicIpAddr, err := services.GetpublicIpAddr()
+	quit := make(chan bool);
+	uncheckedProxies := make(chan []structs.Proxy, 99999);
+	services.Collect(assetFS, db, quit, uncheckedProxies, types, countries, ports, verbose);
+	publicIpAddr, err := services.GetpublicIpAddr();
 	if err != nil {
-		return err
+		return err;
 	}
 
 	// Check Proxies
@@ -44,29 +44,29 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 			select {
 				case proxiesArr := <- uncheckedProxies:
 					if verbose {
-						fmt.Printf("Received %d proxies\n", len(proxiesArr))
+						fmt.Printf("Received %d proxies\n", len(proxiesArr));
 					}
 					for _, proxy := range proxiesArr {
-						go services.Check(checkedProxies, &proxies, publicIpAddr, proxy, verbose)
+						go services.Check(checkedProxies, &proxies, publicIpAddr, proxy, verbose);
 					}
 				case <-quit:
-					break waitForProxies
+					break waitForProxies;
 			}
 		}
 
-	index := 0
+	index := 0;
 	for proxy := range checkedProxies {
 		if index < limit {
-			index++
+			index++;
 			if raw {
-				fmt.Println(proxy.Proxy)
+				fmt.Println(proxy.Proxy);
 			} else {
-				fmt.Printf("<Proxy %v %v %+v>\n", proxy.Country, proxy.ConnDuration, proxy.Proxy)
+				fmt.Printf("<Proxy %v %v %+v>\n", proxy.Country, proxy.ConnDuration, proxy.Proxy);
 			}
 		} else {
-			os.Exit(0)
+			os.Exit(0);
 		}
 	}
 
-	return err
+	return err;
 }

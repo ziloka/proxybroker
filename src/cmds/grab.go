@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/Ziloka/ProxyBroker/services"
 	"github.com/Ziloka/ProxyBroker/structs"
-	"github.com/Ziloka/ProxyBroker/utils"
 	"github.com/oschwald/geoip2-golang"
 	"github.com/urfave/cli/v2"
 	"os"
@@ -15,30 +14,29 @@ import (
 func Grab(c *cli.Context, assetFS embed.FS) (err error) {
 
 	// Set default values for flags
-	outfile := c.String("outfile")
-	verbose := c.Bool("verbose")
-	types := c.StringSlice("types")
-	countries := c.StringSlice("countries")
-	ports := c.IntSlice("ports")
+	outfile := c.String("outfile");
+	verbose := c.Bool("verbose");
+	types := c.StringSlice("types");
+	countries := c.StringSlice("countries");
+	ports := c.IntSlice("ports");
 
-	zipBytes, readFileError := assetFS.ReadFile("assets/GeoLite2-Country.zip")
-	bytes := utils.ReadZIP(zipBytes)
+	bytes, readFileError := assetFS.ReadFile("assets/GeoLite2-Country.mmdb");
 
 	if readFileError != nil {
-		return readFileError
+		return readFileError;
 	}
 
-	db, dbErr := geoip2.FromBytes(bytes)
+	db, dbErr := geoip2.FromBytes(bytes);
 	if err != nil {
-		return dbErr
+		return dbErr;
 	}
-	defer db.Close()
+	defer db.Close();
 
-	quit := make(chan bool)
-	proxies := make(chan []structs.Proxy)
-	go services.Collect(assetFS, db, quit, proxies, types, countries, ports, verbose)
+	quit := make(chan bool);
+	proxies := make(chan []structs.Proxy);
+	services.Collect(assetFS, db, quit, proxies, types, countries, ports, verbose);
 
-	displayedProxies := []string{}
+	displayedProxies := []string{};
 	for _, proxyStruct := range <-proxies {
 		displayedProxies = append(displayedProxies, proxyStruct.Proxy)
 	}
