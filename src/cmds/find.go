@@ -26,7 +26,7 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 	db, _ := geoip2.FromBytes(bytes)
 	defer db.Close()
 
-	fmt.Printf("Collecting %s\n", strings.Join(types, " "))
+	fmt.Printf("Collecting %s proxy types\n", strings.Join(types, ", "))
 
 	// Collect proxies
 	quit := make(chan bool)
@@ -64,7 +64,7 @@ waitForProxies:
 			if raw {
 				fmt.Println(proxy.Proxy)
 			} else {
-				fmt.Printf("<Proxy %v %v %+v>\n", proxy.Country, proxy.ConnDuration, proxy.Proxy)
+				fmt.Printf("<Proxy %s %s %s %+s>\n", proxy.Country, proxy.ConnDuration, proxy.Protocol, proxy.Proxy)
 			}
 		} else {
 			os.Exit(0)
