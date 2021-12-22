@@ -134,7 +134,7 @@ func main() {
 					},
 					&cli.StringFlag{
 						Name: "input",
-						Aliases: []string{"i"},
+						Aliases: []string{"i", "file"},
 						Value: "proxies.txt",
 						DefaultText: "proxies.txt",
 					},

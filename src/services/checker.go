@@ -60,7 +60,6 @@ func Check(proxiesChan chan structs.Proxy, proxies *[]structs.Proxy, myRemoteAdd
 			filterProxies(proxiesChan, proxies, myRemoteAddr, trp, res, proxy)
 		}
 	}
-
 }
 
 func filterProxies(proxiesChan chan structs.Proxy, proxies *[]structs.Proxy, myRemoteAddr string, tp *structs.CustomTransport, res *http.Response, proxy structs.Proxy) {

@@ -40,7 +40,7 @@ func Grab(c *cli.Context, assetFS embed.FS) (err error) {
 	for _, proxyStruct := range <-proxies {
 		displayedProxies = append(displayedProxies, proxyStruct.Proxy)
 	}
-
+	
 	if outfile == "" {
 		for _, proxy := range displayedProxies {
 			fmt.Println("[+] " + proxy)

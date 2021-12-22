@@ -12,12 +12,12 @@ import (
 
 func Check(c *cli.Context, assetFS embed.FS) (err error) {
 
-	inputFile := c.String("input")
+	fileName := c.String("file")
 	verbose := c.Bool("verbose")
 	raw := c.Bool("raw")
 
-	fmt.Printf("Using %s file for proxies\n", inputFile)
-	fileContents, err := os.ReadFile(inputFile)
+	fmt.Printf("Using %s file for proxies\n", fileName);
+	fileContents, err := os.ReadFile(fileName)
 	if err != nil {
 		panic(err)
 	}
