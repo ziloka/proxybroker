@@ -35,6 +35,15 @@ cmake ..
 make
 ```
 
+Note: if you already cloned the repository and it states that
+"The source directory"
+...
+"does not contain a CMakeLists.txt file."
+Run this to download submodules
+```
+git submodule update --init --recursive
+```
+
 ## Motiviation
 - Inspired by [ProxyBroker](https://github.com/constverum/ProxyBroker) (A more maintained version of that [project](https://github.com/bluet/proxybroker2))
 - Web Service inspired by [go-shadowsocks2](https://github.com/shadowsocks/go-shadowsocks2)

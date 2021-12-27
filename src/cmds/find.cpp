@@ -6,5 +6,6 @@
 
 void find(SubcommandFindOptions const& opt){
   nlohmann::json proxySources = Collector::getSources();
-  std::cout << proxySources << std::endl;
+  nlohmann::json proxies = Collector::getProxies(proxySources);
+  // std::cout << proxySources << std::endl;
 }

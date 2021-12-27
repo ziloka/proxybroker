@@ -1,6 +1,9 @@
-FROM mcr.microsoft.com/vscode/devcontainers/base:dev-alpine-3.14
+FROM mcr.microsoft.com/vscode/devcontainers/cpp:debian
 
-RUN apk add --no-cache gcc g++ musl-dev cmake make automake autoconf openssl-dev
+RUN apt-get update \
+    && apt-get install -y libssl-dev libtool autoconf libcurl4-openssl-dev
+# RUN apk add --no-cache gcc g++ musl-dev cmake make automake autoconf openssl-dev
+# RUN sudo chown -R vscode /workspaces/proxybroker
 
 #RUN rm /etc/alpine-release \
 #&&	wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
