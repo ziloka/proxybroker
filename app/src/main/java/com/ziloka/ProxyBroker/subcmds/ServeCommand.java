@@ -1,4 +1,4 @@
-package com.ziloka.ProxyBroker.cmds;
+package com.ziloka.ProxyBroker.subcmds;
 
 import com.ziloka.ProxyBroker.services.web.SpringBootConsoleApplication;
 
@@ -6,6 +6,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Command under proxybroker command
@@ -18,6 +20,8 @@ import picocli.CommandLine.Option;
 @Component
 public class ServeCommand implements Runnable {
 
+    private final Logger LOG = LogManager.getLogger(ServeCommand.class);
+
     @Option(names = { "--host", "-h" }, defaultValue = "127.0.0.1", type = String.class)
     private String host;
 
@@ -26,6 +30,8 @@ public class ServeCommand implements Runnable {
 
     @Option(names = {"--verbose", "-v"}, defaultValue = "false", type = Boolean.class)
     private boolean isVerbose;
+
+    private int exitCode;
 
     /**
      * Here for debugging purposes

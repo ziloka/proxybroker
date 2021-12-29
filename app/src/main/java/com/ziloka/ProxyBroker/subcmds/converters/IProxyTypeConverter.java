@@ -1,4 +1,4 @@
-package com.ziloka.ProxyBroker.cmds.converters;
+package com.ziloka.ProxyBroker.subcmds.converters;
 
 import com.ziloka.ProxyBroker.services.models.ProxyType;
 import picocli.CommandLine.ITypeConverter;

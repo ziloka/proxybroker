@@ -7,6 +7,8 @@ import com.google.gson.JsonParser;
 import com.maxmind.geoip2.DatabaseReader;
 import com.ziloka.ProxyBroker.services.models.ProxyType;
 import com.ziloka.ProxyBroker.utils.JSON;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -28,6 +30,8 @@ import java.util.stream.Collectors;
  * Collect information if proxy is online or not
  */
 public class ProxyChecker {
+
+    private final Logger LOG = LogManager.getLogger(ProxyChecker.class);
 
     DatabaseReader dbReader;
     final ConcurrentHashMap<String, LookupResult> onlineProxies;

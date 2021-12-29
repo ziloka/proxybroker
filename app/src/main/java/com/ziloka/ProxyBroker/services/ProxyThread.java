@@ -4,6 +4,8 @@ import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.ziloka.ProxyBroker.services.models.LookupResult;
 import com.ziloka.ProxyBroker.services.models.ProxyType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,12 +13,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ProxyThread implements Runnable {
 
+    private final Logger LOG = LogManager.getLogger(ProxyCollector.class);
+
     private final ConcurrentHashMap<String, LookupResult> onlineProxies;
-    private String countries;
     private String proxy;
-    private String lvl;
     private String host;
     private int port;
+    private List<ProxyType> types;
+    private String lvl;
     private ProxyChecker proxyChecker;
     private ProxyLookup proxyLookup;
 
@@ -27,15 +31,15 @@ public class ProxyThread implements Runnable {
      * @param types - Proxy types
      * @param lvl - Proxy anonymity level
      */
-    public ProxyThread(ConcurrentHashMap<String, LookupResult> onlineProxies, DatabaseReader dbReader, String externalIpAddr, String proxy, List<ProxyType> types, String countries, String lvl) {
+    public ProxyThread(DatabaseReader dbReader, ConcurrentHashMap<String, LookupResult> onlineProxies, String externalIpAddr, String proxy, List<ProxyType> types, String lvl) {
         this.onlineProxies = onlineProxies;
-        this.countries = countries;
         this.proxy = proxy;
-        this.lvl = lvl;
         this.host = proxy.split(":")[0];
         this.port = Integer.parseInt(proxy.split(":")[1]);
+        this.types = types;
+        this.lvl = lvl;
         this.proxyChecker = new ProxyChecker(dbReader, onlineProxies, externalIpAddr, proxy, types);
-        this.proxyLookup = new ProxyLookup(dbReader, this.host, this.port);
+        this.proxyLookup = new ProxyLookup(dbReader, host, port);
     }
 
     /**
@@ -46,10 +50,9 @@ public class ProxyThread implements Runnable {
             boolean result = this.proxyChecker.check();
             boolean isLvl = this.lvl.length() == 0 || proxyChecker.lvl.equals(this.lvl);
             if(result && isLvl){
-                LookupResult proxyInfo = this.proxyLookup.getInfo(host, port);
-                if(proxyInfo.getIsoCode().equals(countries) || countries.equals("")){
-                  this.onlineProxies.put(this.proxy, proxyInfo);
-                }
+                LookupResult proxyInfo = this.proxyLookup.getInfo();
+//                proxyInfo.setProxyType(this.proxyChecker.getProtocol());
+                this.onlineProxies.put(this.proxy, proxyInfo);
             } else if(this.onlineProxies.get(this.proxy) != null) {
                 this.onlineProxies.remove(this.proxy);
             }
