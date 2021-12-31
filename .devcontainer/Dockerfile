@@ -1,25 +1,25 @@
-# See here for image contents: https://github.com/microsoft/vscode-dev-containers/tree/v0.205.2/containers/java/.devcontainer/base.Dockerfile
+# https://github.com/graalvm/container/pkgs/container/graalvm-ce/9089778?tag=java11-21.3.0-b1
+FROM ghcr.io/graalvm/graalvm-ce:java11-21.3.0-b1
 
-# [Choice] Java version (use -bullseye variants on local arm64/Apple Silicon): 11, 17, 11-bullseye, 17-bullseye, 11-buster, 17-buster
-ARG VARIANT="17-bullseye"
-FROM mcr.microsoft.com/vscode/devcontainers/java:0-${VARIANT}
+# Setup vscode user
+ARG USERNAME=vscode
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+RUN microdnf install sudo && \
+  groupadd $USERNAME && \
+  adduser -u $USER_UID -g $USERNAME -s /bin/bash $USERNAME && \
+  echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME && \
+  chmod 0440 /etc/sudoers.d/$USERNAME
 
-# [Option] Install Maven
-ARG INSTALL_MAVEN="false"
-ARG MAVEN_VERSION=""
-# [Option] Install Gradle
-ARG INSTALL_GRADLE="true"
-ARG GRADLE_VERSION="7.6.2"
-RUN if [ "${INSTALL_MAVEN}" = "true" ]; then su vscode -c "umask 0002 && . /usr/local/sdkman/bin/sdkman-init.sh && sdk install maven \"${MAVEN_VERSION}\""; fi \
-    && if [ "${INSTALL_GRADLE}" = "true" ]; then su vscode -c "umask 0002 && . /usr/local/sdkman/bin/sdkman-init.sh && sdk install gradle \"${GRADLE_VERSION}\""; fi
+# https://github.com/oracle/container-images/issues/16#issuecomment-543459881
+# microdnf install java-11-openjdk
+RUN microdnf update \
+    && microdnf install yum \
+    && yum install -y unzip zip \
+    && curl -s "https://get.sdkman.io" | bash \
+    && source "$HOME/.sdkman/bin/sdkman-init.sh" \
+    && sdk install gradle 7.3.3 \
+    && gu install native-image
 
-# [Choice] Node.js version: none, lts/*, 16, 14, 12, 10
-# ARG NODE_VERSION="none"
-# RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi
-
-# [Optional] Uncomment this section to install additional OS packages.
-# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-#     && apt-get -y install --no-install-recommends <your-package-list-here>
-
-# [Optional] Uncomment this line to install global node packages.
-# RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g <your-package-here>" 2>&1
+# Install Utilities
+RUN yum install -y ncurses
