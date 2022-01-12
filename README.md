@@ -22,6 +22,8 @@ Proxy is an open source tool that asynchronously finds public proxies from multi
 ## Building from source
 - [Golang 1.17](https://golang.org/)
 - [UPX 3.96](https://upx.github.io/)
+- [Strip] 
+
 Run
 ```
 cd src && \
