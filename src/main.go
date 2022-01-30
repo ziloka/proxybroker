@@ -11,7 +11,6 @@ import (
 	"log"
 	"os"
 	"time"
-	"runtime"
 )
 
 var (
@@ -27,8 +26,6 @@ var (
 var assetFS embed.FS
 
 func main() {
-
-	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	app := &cli.App{
 		Name:                   "ProxyBroker",
