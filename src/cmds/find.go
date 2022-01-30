@@ -8,6 +8,7 @@ import (
 	"github.com/oschwald/geoip2-golang"
 	"github.com/urfave/cli/v2"
 	"os"
+	"strings"
 )
 
 func Find(c *cli.Context, assetFS embed.FS) (err error) {
@@ -19,11 +20,14 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 	limit := c.Int("limit")
 	countries := c.StringSlice("countries")
 	ports := c.IntSlice("ports")
+	outfile := c.String("outfile")
 
 	bytes, _ := assetFS.ReadFile("assets/GeoLite2-Country.mmdb")
 
 	db, _ := geoip2.FromBytes(bytes)
 	defer db.Close()
+
+	fmt.Printf("Collecting %s proxy types\n", strings.Join(types, ", "))
 
 	// Collect proxies
 	quit := make(chan bool)
@@ -37,35 +41,57 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 	// Check Proxies
 	// https://stackoverflow.com/questions/41906146/why-go-channels-limit-the-buffer-size
 	// https://stackoverflow.com/a/41906488
-	checkedProxies := make(chan structs.Proxy, 99999);
-	proxies := []structs.Proxy{};
-	waitForProxies:
-		for {
-			select {
-				case proxiesArr := <- uncheckedProxies:
-					if verbose {
-						fmt.Printf("Received %d proxies\n", len(proxiesArr))
-					}
-					for _, proxy := range proxiesArr {
-						go services.Check(checkedProxies, &proxies, publicIpAddr, proxy, verbose)
-					}
-				case <-quit:
-					break waitForProxies
+	checkedProxies := make(chan structs.Proxy, 99999)
+	proxies := []structs.Proxy{}
+waitForProxies:
+	for {
+		select {
+		case proxiesArr := <-uncheckedProxies:
+			if verbose {
+				fmt.Printf("Received %d proxies\n", len(proxiesArr))
 			}
+			for _, proxy := range proxiesArr {
+				go services.Check(checkedProxies, &proxies, publicIpAddr, proxy, verbose)
+			}
+		case <-quit:
+			break waitForProxies
 		}
+	}
 
 	index := 0
-	for proxy := range checkedProxies {
-		if index < limit {
+	if outfile == "" {
+		for proxy := range checkedProxies {
 			index++
+			if index > limit {
+				break;
+			}
 			if raw {
 				fmt.Println(proxy.Proxy)
 			} else {
-				fmt.Printf("<Proxy %v %v %+v>\n", proxy.Country, proxy.ConnDuration, proxy.Proxy)
+				fmt.Printf("<Proxy %s %s %s %+s>\n", proxy.Country, proxy.ConnDuration, proxy.Protocol, proxy.Proxy)
 			}
-		} else {
-			os.Exit(0)
 		}
+	} else {
+		checkedProxiesList := make([]string, 0)
+		for proxy := range checkedProxies {
+			if index < limit {
+				checkedProxiesList = append(checkedProxiesList, proxy.Proxy)
+			} else {
+				break;
+			}
+			index++
+		}
+		data := []byte(strings.Join(checkedProxiesList, "\n"))
+		f, fileCreateErr := os.Create(outfile)
+		if fileCreateErr != nil {
+			panic(fileCreateErr)
+		}
+		fileWriteErr := os.WriteFile(outfile, data, 0644)
+		if fileWriteErr != nil {
+			panic(fileWriteErr)
+		}
+		defer f.Close()
+		fmt.Printf("Wrote %d proxies to %s\n", len(checkedProxiesList), outfile)
 	}
 
 	return err

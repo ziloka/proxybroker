@@ -4,6 +4,9 @@ import (
 	"embed"
 	"encoding/json"
 	"fmt"
+	"github.com/Ziloka/ProxyBroker/structs"
+	"github.com/Ziloka/ProxyBroker/utils"
+	"github.com/oschwald/geoip2-golang"
 	"io"
 	"net"
 	"net/http"
@@ -11,9 +14,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"github.com/Ziloka/ProxyBroker/structs"
-	"github.com/Ziloka/ProxyBroker/utils"
-	"github.com/oschwald/geoip2-golang"
 )
 
 type sourceStruct struct {
@@ -74,7 +74,7 @@ func Collect(assetFS embed.FS, db *geoip2.Reader, quit chan bool, ch chan []stru
 			fmt.Printf("Found %v proxies from source %v\n", len(proxies), source.Url)
 		}
 		ch <- valid
-		if(lastElement){
+		if lastElement {
 			quit <- true
 		}
 	}
@@ -82,7 +82,7 @@ func Collect(assetFS embed.FS, db *geoip2.Reader, quit chan bool, ch chan []stru
 	// proxies that are easy to collect
 	for i, source := range sources {
 		lastSource := false
-		if (i == len(sources)-1){
+		if i == len(sources)-1 {
 			lastSource = true
 		}
 		go getProxies(source, lastSource)
@@ -100,7 +100,7 @@ func getProxies(assetFS embed.FS, types []string) []sourceStruct {
 	json.Unmarshal([]byte(file), &sources)
 	valid := []sourceStruct{}
 
-	if(len(types) > 0) {
+	if len(types) > 0 {
 		// lowercase all types
 		tempTypes := types
 		types = []string{}

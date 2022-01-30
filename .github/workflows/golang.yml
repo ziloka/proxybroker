@@ -1,4 +1,4 @@
-# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# This workflow will build a Golang project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 
 name: Golang Build
@@ -25,7 +25,7 @@ jobs:
           go-version: '^1.17.2'
       - name: Build with Golang
         run: cd src && bash ../build.bash github.com/Ziloka/ProxyBroker bleeding-release
-      - name: Archive code
+      - name: Upload Executables
         uses: actions/upload-artifact@v2
         with:
           name: build-artifacts

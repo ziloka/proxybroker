@@ -41,9 +41,8 @@ func Check(c *cli.Context, assetFS embed.FS) (err error) {
 		if raw {
 			fmt.Println(proxy.Proxy)
 		} else {
-			fmt.Printf("<Proxy %v %v %+v>\n", proxy.Country, proxy.ConnDuration, proxy.Proxy)
+			fmt.Printf("<Proxy %s %s %s %+s>\n", proxy.Country, proxy.ConnDuration, proxy.Protocol, proxy.Proxy)
 		}
-		proxies = append(proxies, proxy);
 	}
 
 	return nil

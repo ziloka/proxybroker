@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"time"
 	"github.com/Ziloka/ProxyBroker/structs"
 	"github.com/Ziloka/ProxyBroker/utils"
 )
@@ -35,7 +36,7 @@ func Check(proxiesChan chan structs.Proxy, proxies *[]structs.Proxy, myRemoteAdd
 		// https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779
 		httpClient := &http.Client{
 			Transport: trp,
-			// Timeout: time.Second * 5,
+			Timeout: time.Second * 5,
 		}
 		res, httpGetErr := httpClient.Get("https://httpbin.org/ip?json")
 		if httpGetErr != nil {
@@ -53,7 +54,7 @@ func Check(proxiesChan chan structs.Proxy, proxies *[]structs.Proxy, myRemoteAdd
 			// https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779
 			httpClient := &http.Client{
 				Transport: trp,
-				// Timeout: time.Second * 5,
+				Timeout: time.Second * 5,
 			}
 			httpbinRes, httpGetErr := httpClient.Get("https://httpbin.org/ip?json")
 			if httpGetErr != nil {
@@ -74,7 +75,7 @@ func filterProxies(proxiesChan chan structs.Proxy, proxies *[]structs.Proxy, myR
 		// May be HTML stating 500 server error
 		b, err := io.ReadAll(res.Body)
 		if err != nil {
-			panic(err)
+			return
 		}
 		if utils.IsJSON(string(b)) {
 			// https://stackoverflow.com/questions/21197239/decoding-json-using-json-unmarshal-vs-json-newdecoder-decode
@@ -90,7 +91,7 @@ func filterProxies(proxiesChan chan structs.Proxy, proxies *[]structs.Proxy, myR
 				proxy.ReqDuration = tp.ReqDuration()
 				*proxies = append(*proxies, proxy)
 				proxiesChan <- proxy
-			} 
+			}
 		}
 	}
 }

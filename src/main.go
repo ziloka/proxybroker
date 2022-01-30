@@ -81,6 +81,10 @@ func main() {
 						Value: 10,
 						DefaultText: "10",
 					},
+					&cli.StringFlag{
+						Name: "outfile",
+						Aliases: []string{"o"},
+					},
 				},
 				Action: func(c *cli.Context) error {
 					// Run cmd using go run main.go find"
@@ -131,6 +135,10 @@ func main() {
 						Value: "proxies.txt",
 						DefaultText: "proxies.txt",
 					},
+					&cli.StringFlag{
+						Name: "outfile",
+						Aliases: []string{"o"},
+					},
 				},
 				Action: func(c *cli.Context) error {
 					err := cmds.Check(c, assetFS)
@@ -142,12 +150,6 @@ func main() {
 				Aliases: []string{"g"},
 				Usage:   "Grab proxies from sites",
 				Flags: []cli.Flag{
-					&cli.StringFlag{
-						Name: "outfile",
-						Aliases: []string{"o"},
-						Value: "proxies.txt",
-						DefaultText: "proxies.txt",
-					},
 					&cli.StringSliceFlag{
 						Name: "types",
 						Aliases: []string{"t"},
@@ -163,6 +165,10 @@ func main() {
 					&cli.StringFlag{
 						Name: "lvl",
 						Aliases: []string{"l"},
+					},
+					&cli.StringFlag{
+						Name: "outfile",
+						Aliases: []string{"o"},
 					},
 				},
 				Action: func(c *cli.Context) error {

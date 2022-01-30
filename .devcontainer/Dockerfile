@@ -12,7 +12,11 @@ FROM golang:1.17.5-alpine3.15
 ENV GOTRACE 1
 
 RUN apk add --no-cache --update musl-dev gcc make git \
+<<<<<<< HEAD
   && apk add --no-cache --update bind-tools binutils util-linux file curl bash upx
+=======
+  && apk add --no-cache --update bind-tools binutils util-linux file curl
+>>>>>>> ce7c0882458566b2353b48da1c48bcdf2ccc2b91
 
 RUN go get -v github.com/ramya-rao-a/go-outline && \
   go get -v golang.org/x/tools/gopls && \
