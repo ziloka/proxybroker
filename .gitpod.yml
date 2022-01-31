@@ -1,0 +1,6 @@
+# https://www.gitpod.io/docs/config-docker#configure-a-custom-dockerfile
+# Commands to start on workspace startup
+image:
+  file: Dockerfile
+tasks:
+  - init: go get
