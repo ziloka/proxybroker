@@ -12,16 +12,13 @@ FROM golang:1.17.5-alpine3.15
 ENV GOTRACE 1
 
 RUN apk add --no-cache --update musl-dev gcc make git \
-<<<<<<< HEAD
   && apk add --no-cache --update bind-tools binutils util-linux file curl bash upx
-=======
-  && apk add --no-cache --update bind-tools binutils util-linux file curl
->>>>>>> ce7c0882458566b2353b48da1c48bcdf2ccc2b91
 
-RUN go get -v github.com/ramya-rao-a/go-outline && \
-  go get -v golang.org/x/tools/gopls && \
-  go get github.com/uudashr/gopkgs/v2/cmd/gopkgs && \
-  go install honnef.co/go/tools/cmd/staticcheck@latest
+RUN go install -v github.com/ramya-rao-a/go-outline@latest && \
+  go install -v golang.org/x/tools/gopls@latest && \
+  go install github.com/uudashr/gopkgs/v2/cmd/gopkgs@latest && \
+  go install honnef.co/go/tools/cmd/staticcheck@latest && \
+  go install github.com/go-swagger/go-swagger/cmd/swagger@latest
 
 # Add ndk-build to environment variables
 # ENV PATH="/${NDK_VERSION}/:${PATH}"
