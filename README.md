@@ -36,6 +36,9 @@ cd src && \
 ../build.bash github.com/Ziloka/ProxyBroker main.go
 ```
 
+## Features to be implemented:
+- Web server has api rest service to serve proxies, as well as let users surf the web something like [NodeUnblocker](https://github.com/nfriedly/nodeunblocker.com) [Npm Package](https://github.com/nfriedly/node-unblocker)
+
 ## Motiviation
 - Inspired by [ProxyBroker](https://github.com/constverum/ProxyBroker) (A more maintained version of that [project](https://github.com/bluet/proxybroker2))
 - Web Service inspired by [go-shadowsocks2](https://github.com/shadowsocks/go-shadowsocks2)
