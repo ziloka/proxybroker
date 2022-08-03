@@ -1,5 +1,4 @@
-use reqwest::StatusCode;
-use serde::{Deserialize};
+use serde::Deserialize;
 use rust_embed::RustEmbed;
 use regex::Regex;
 
@@ -17,7 +16,7 @@ struct Source {
   protocol: String,
 }
 
-struct Proxy {
+pub struct Proxy {
   host: String,
   port: u16
 }
@@ -28,11 +27,11 @@ fn get_proxy_sources () -> Vec<Source> {
     Some(file) => file.data,
     None => panic!("sources.json not there")
   };
-  return serde_json::from_str(&String::from_utf8_lossy(&content.into_owned()))
-    .expect("error while reading or parsing");
+  serde_json::from_str(&String::from_utf8_lossy(&content.into_owned()))
+    .expect("error while reading or parsing")
 }
 
-pub async fn collect() {
+pub async fn collect() -> Vec<Proxy> {
   let sources = get_proxy_sources();
   let re = Regex::new(r"(\d+\.\d+\.\d+\.\d+):(\d+)").unwrap();
   let mut proxies: Vec<Proxy> = Vec::new();
@@ -53,5 +52,5 @@ pub async fn collect() {
       Err(e) => println!("Problem while executing get request: {}", e)
     };
   }
-  println!("{}", proxies.len())
+  proxies
 }
