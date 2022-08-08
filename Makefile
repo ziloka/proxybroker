@@ -15,6 +15,7 @@ LDFLAGS=-ldflags "-w -s -X main.Version=${VERSION} -X main.Build=${BUILD}"
 
 # Builds the project
 build:
+		cd src; \
 		go build ${LDFLAGS} -o ${BINARY}
 
 # Installs our project: copies binaries

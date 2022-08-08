@@ -1,6 +1,7 @@
 package services
 
 import (
+	"time"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -35,7 +36,7 @@ func Check(proxiesChan chan structs.Proxy, proxies *[]structs.Proxy, myRemoteAdd
 		// https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779
 		httpClient := &http.Client{
 			Transport: trp,
-			// Timeout: time.Second * 5,
+			Timeout: time.Second * 5,
 		}
 		res, httpGetErr := httpClient.Get("https://httpbin.org/ip?json")
 		if httpGetErr != nil {

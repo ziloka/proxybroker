@@ -13,8 +13,6 @@ import (
 func StartService(assetFS embed.FS, port int, verbose bool, isRestService bool){
 	if(isRestService){
 		startWebService(assetFS, port, verbose)
-	} else {
-
 	}
 }
 

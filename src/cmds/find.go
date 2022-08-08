@@ -27,7 +27,7 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 
 	// Collect proxies
 	quit := make(chan bool)
-	uncheckedProxies := make(chan []structs.Proxy, 99999)
+	uncheckedProxies := make(chan []structs.Proxy, 100)
 	services.Collect(assetFS, db, quit, uncheckedProxies, types, countries, ports, verbose)
 	publicIpAddr, err := services.GetpublicIpAddr()
 	if err != nil {
@@ -37,7 +37,7 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 	// Check Proxies
 	// https://stackoverflow.com/questions/41906146/why-go-channels-limit-the-buffer-size
 	// https://stackoverflow.com/a/41906488
-	checkedProxies := make(chan structs.Proxy, 99999);
+	checkedProxies := make(chan structs.Proxy, 100);
 	proxies := []structs.Proxy{};
 	waitForProxies:
 		for {
