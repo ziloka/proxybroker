@@ -14,7 +14,8 @@
 	// Note that some extensions may not work in Alpine Linux. See https://aka.ms/vscode-remote/linux.
 	"extensions": [
 		"panicbit.cargo",
-		"rust-lang.rust-analyzer"
+		"rust-lang.rust-analyzer",
+		"serayuzgur.crates"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
