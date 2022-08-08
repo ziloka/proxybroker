@@ -2,6 +2,8 @@ use std::ffi::OsString;
 use clap::{Arg, Command, SubCommand};
 
 mod commands;
+use commands::find;
+mod services;
 
 // https://docs.rs/clap/latest/src/git/git.rs.html#34
 #[tokio::main]
@@ -12,7 +14,7 @@ async fn main() {
     .version("v0.1.0")
     .author("Ziloka (@Ziloka on GitHub)")
     .subcommand(SubCommand::with_name("find")
-      .about("Runs the Foo Server")
+      .about("Find and check proxies")
       .arg(Arg::with_name("debug")
         .short('D')
         .help("Sends debug foos instead of normal foos.")));
@@ -21,8 +23,9 @@ async fn main() {
 
   match matches.subcommand() {
     Some(("find", sub_matches)) => {
-        let proxies = proxybroker::services::collector::collect().await;
-        println!("{}", proxies.len());
+      find::find().await;
+        // let proxies = proxybroker::services::collector::collect().await;
+        // println!("{}", proxies.len());
         // println!(
         //     "Cloning {}",
         //     sub_matches.get_one::<String>("REMOTE").expect("required")
@@ -37,7 +40,7 @@ async fn main() {
       println!("Calling out to {:?} with {:?}", ext, args);
     }
     None => {
-
+      println!("No subcommands found")
     }
   }
 }

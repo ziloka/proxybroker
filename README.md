@@ -18,31 +18,16 @@ Proxy is an open source tool that asynchronously finds public proxies from multi
 - Use Https instead of http, http might leak your ip address if you are using a high level proxy
 
 ## Building from source
-- [gcc](https://gcc.gnu.org/install/download.html)
-- [cmake](https://cmake.org/download/)
-- [make](https://www.gnu.org/software/make/)
-- [OpenSSL Development files](https://www.openssl.org/source/)
+- [git](https://gcc.gnu.org/install/download.html)
+- [rust](https://cmake.org/download/)
 Run
 
-Linux
 ```
-git clone --recurse-submodules -j8 https://github.com/Ziloka/ProxyBroker.git && \
-git switch cpp && \
-git submodule update --init && \
-mkdir build && \
-cd build && \
-cmake ..
-make
+git clone https://github.com/Ziloka/ProxyBroker.git && \
+cargo build --release
 ```
 
-Note: if you already cloned the repository and it states that
-"The source directory"
-...
-"does not contain a CMakeLists.txt file."
-Run this to download submodules
-```
-git submodule update --init --recursive
-```
+The executable can be found in target/release
 
 ## Motiviation
 - Inspired by [ProxyBroker](https://github.com/constverum/ProxyBroker) (A more maintained version of that [project](https://github.com/bluet/proxybroker2))
