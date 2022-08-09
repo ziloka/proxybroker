@@ -1,8 +1,7 @@
 FROM mcr.microsoft.com/vscode/devcontainers/rust:1-bullseye
 
 RUN sudo apt-get update && \
-    sudo apt-get install iputils-ping && \
-    sudo apt-get install upx && \
+    sudo apt-get install -y iputils-ping upx && \
     rustup default stable 
 
 # RUN apk add --no-cache gcc g++ musl-dev cmake make automake autoconf openssl-dev
