@@ -1,8 +1,8 @@
 use std::ffi::OsString;
 use clap::{Arg, Command, SubCommand};
 
-mod commands;
-mod services;
+pub mod commands;
+pub mod services;
 
 // https://docs.rs/clap/latest/src/git/git.rs.html#34
 // https://stackoverflow.com/questions/54837057/how-can-i-display-help-after-calling-claps-get-matches
@@ -36,7 +36,7 @@ async fn main() {
 
   match matches.subcommand() {
     Some(("find", sub_matches)) => {
-      commands::find::find(sub_matches).await;
+      proxybroker::commands::find::find(sub_matches).await;
     },
     Some((ext, sub_matches)) => {
       let args = sub_matches

@@ -1,12 +1,7 @@
 use std::future::Future;
 use futures::stream::FuturesUnordered;
 use serde::Deserialize;
-use rust_embed::RustEmbed;
 use regex::Regex;
-
-#[derive(RustEmbed)]
-#[folder = "src/assets/"]
-struct Assets;
 
 // https://serde.rs/field-attrs.html
 #[derive(Deserialize, Debug)]
@@ -24,13 +19,9 @@ pub struct Proxy {
 }
 
 fn get_proxy_sources () -> Vec<Source> {
-  let sources = Assets::get("sources.json");
-  let content = match sources {
-    Some(file) => file.data,
-    None => panic!("sources.json not there")
-  };
-  serde_json::from_str(&String::from_utf8_lossy(&content.into_owned()))
-    .expect("error while reading or parsing")
+  // https://stackoverflow.com/questions/27140634/how-to-embed-resources-in-rust-executable
+  // https://stackoverflow.com/questions/25505275/is-there-a-good-way-to-include-external-resource-data-into-rust-source-code
+  serde_json::from_str(&String::from_utf8_lossy(include_bytes!("../assets/sources.json"))).unwrap()
 }
 
 async fn get_proxies_from_site(url: String) -> Vec<Proxy> {

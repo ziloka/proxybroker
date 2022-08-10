@@ -24,17 +24,6 @@ async fn send_proxy_request(proxy: Proxy) -> Result<CheckProxyResponse, reqwest:
     host: proxy.host,
     port: proxy.port,
   });
-  // if response.origin.eq(proxy.host) {
-  //   return Ok(CheckProxyResponse{
-  //     host: proxy.host,
-  //     port: proxy.port,
-  //   });
-  // } else {
-  //   return Ok(CheckProxyResponse{
-  //     host: proxy.host,
-  //     port: proxy.port,
-  //   });
-  // }
 }
 
 pub fn check(proxies: Vec<Proxy>) -> FuturesUnordered<impl Future<Output = Result<CheckProxyResponse, reqwest::Error>>> {
