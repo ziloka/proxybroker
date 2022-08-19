@@ -30,18 +30,19 @@ func Collect(assetFS embed.FS, db *geoip2.Reader, quit chan bool, ch chan []stru
 	getProxies := func(source sourceStruct, lastElement bool) {
 
 		httpClient := &http.Client{
-			Timeout: 16 * time.Second,
-			Transport: &http.Transport{
-				MaxIdleConns:        100,
-				MaxConnsPerHost:     100,
-				MaxIdleConnsPerHost: 100,
-			},
+			Timeout: 5 * time.Second,
 		}
 
 		// https://stackoverflow.com/questions/17156371/how-to-get-json-response-from-http-get
 		// https://stackoverflow.com/a/31129967
 		res, httpErr := httpClient.Get(source.Url)
+		if(lastElement){
+			quit <- true
+		}
+		// fmt.Printf("%s\n", source.Url)
 		if httpErr != nil {
+			// check if website that was down was last website
+			fmt.Printf("%s\n", httpErr)
 			return
 		}
 		defer res.Body.Close()
@@ -74,18 +75,11 @@ func Collect(assetFS embed.FS, db *geoip2.Reader, quit chan bool, ch chan []stru
 			fmt.Printf("Found %v proxies from source %v\n", len(proxies), source.Url)
 		}
 		ch <- valid
-		if(lastElement){
-			quit <- true
-		}
 	}
 
 	// proxies that are easy to collect
 	for i, source := range sources {
-		lastSource := false
-		if (i == len(sources)-1){
-			lastSource = true
-		}
-		go getProxies(source, lastSource)
+		go getProxies(source, i == len(sources)-1)
 	}
 
 	if isVerbose {
