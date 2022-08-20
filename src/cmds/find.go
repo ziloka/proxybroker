@@ -55,7 +55,7 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 						if raw {
 							fmt.Println(proxy.Proxy)
 						} else {
-							fmt.Printf("<Proxy %v %v %+v>\n", index, proxy.Country, proxy.ConnDuration, proxy.Proxy)
+							fmt.Printf("<Proxy %v %v %+v>\n", proxy.Country, proxy.ConnDuration, proxy.Proxy)
 						}
 					} else {
 						os.Exit(0)
