@@ -3,11 +3,11 @@ package cmds
 import (
 	"embed"
 	"fmt"
+	"os"
 	"github.com/Ziloka/ProxyBroker/services"
 	"github.com/Ziloka/ProxyBroker/structs"
 	"github.com/oschwald/geoip2-golang"
 	"github.com/urfave/cli/v2"
-	"os"
 )
 
 func Find(c *cli.Context, assetFS embed.FS) (err error) {
@@ -39,7 +39,7 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 	// https://stackoverflow.com/a/41906488
 	checkedProxies := make(chan structs.Proxy, 100);
 	proxies := []structs.Proxy{};
-	waitForProxies:
+	index := 0;
 		for {
 			select {
 				case proxiesArr := <- uncheckedProxies:
@@ -49,24 +49,17 @@ func Find(c *cli.Context, assetFS embed.FS) (err error) {
 					for _, proxy := range proxiesArr {
 						go services.Check(checkedProxies, &proxies, publicIpAddr, proxy, verbose)
 					}
-				case <-quit:
-					break waitForProxies
+				case proxy := <- checkedProxies:
+					if index < limit {
+						index++
+						if raw {
+							fmt.Println(proxy.Proxy)
+						} else {
+							fmt.Printf("<Proxy %v %v %+v>\n", index, proxy.Country, proxy.ConnDuration, proxy.Proxy)
+						}
+					} else {
+						os.Exit(0)
+					}
 			}
 		}
-
-	index := 0
-	for proxy := range checkedProxies {
-		if index < limit {
-			index++
-			if raw {
-				fmt.Println(proxy.Proxy)
-			} else {
-				fmt.Printf("<Proxy %v %v %+v>\n", proxy.Country, proxy.ConnDuration, proxy.Proxy)
-			}
-		} else {
-			os.Exit(0)
-		}
-	}
-
-	return err
 }

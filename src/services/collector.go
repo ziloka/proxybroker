@@ -39,7 +39,6 @@ func Collect(assetFS embed.FS, db *geoip2.Reader, quit chan bool, ch chan []stru
 		if(lastElement){
 			quit <- true
 		}
-		// fmt.Printf("%s\n", source.Url)
 		if httpErr != nil {
 			// check if website that was down was last website
 			fmt.Printf("%s\n", httpErr)

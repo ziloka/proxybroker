@@ -28,7 +28,7 @@ func Check(c *cli.Context, assetFS embed.FS) (err error) {
 	}
 
 	proxies := []structs.Proxy{};
-	checkedProxies := make(chan structs.Proxy, 99999)
+	checkedProxies := make(chan structs.Proxy, 100)
 	for _, proxy := range strings.Split(string(fileContents), "\n") {
 		proxyStruct := structs.Proxy{
 			Proxy: proxy,

@@ -19,7 +19,7 @@ func StartService(assetFS embed.FS, port int, verbose bool, isRestService bool){
 func startWebService(assetFS embed.FS, port int, verbose bool) {
 
 	checkedProxies := []structs.Proxy{}
-	checkedProxiesChan := make(chan structs.Proxy, 99999)
+	checkedProxiesChan := make(chan structs.Proxy, 100)
 	bytes, readFileError := assetFS.ReadFile("assets/GeoLite2-Country.mmdb")
 
 	if readFileError != nil {

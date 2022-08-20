@@ -33,7 +33,7 @@ func Grab(c *cli.Context, assetFS embed.FS) (err error) {
 	defer db.Close()
 
 	quit := make(chan bool)
-	proxies := make(chan []structs.Proxy)
+	proxies := make(chan []structs.Proxy, 100)
 	services.Collect(assetFS, db, quit, proxies, types, countries, ports, verbose)
 
 	displayedProxies := []string{}
