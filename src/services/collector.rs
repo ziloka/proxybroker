@@ -1,7 +1,6 @@
-use futures::{stream::futures_unordered::FuturesUnordered, Future, FutureExt};
 use regex::Regex;
 use serde::Deserialize;
-use std::pin::Pin;
+use tokio::sync::mpsc::Sender;
 
 // https://serde.rs/field-attrs.html
 #[derive(Deserialize, Debug)]
@@ -27,7 +26,7 @@ fn get_proxy_sources() -> Vec<Source> {
     .unwrap()
 }
 
-async fn get_proxies_from_site(url: String) -> Vec<Proxy> {
+async fn get_proxies_from_site(sender: Sender<Vec<Proxy>>, url: String) {
     let re = Regex::new(r"(\d+\.\d+\.\d+\.\d+):(\d+)").unwrap();
     let mut proxies: Vec<Proxy> = Vec::new();
     let request = reqwest::get(&url);
@@ -42,19 +41,23 @@ async fn get_proxies_from_site(url: String) -> Vec<Proxy> {
                         })
                     }
                 }
-                Err(e) => println!("Problem while getting request body: {}", e),
+                Err(_) => {}
+                // Err(e) => println!("Problem while getting request body: {}", e),
             };
         }
-        Err(e) => println!("Problem while executing get request: {}", e),
+        Err(_) => {}
+        // Err(e) => println!("Problem while executing get request: {}", e),
     };
-    proxies
+    match sender.send(proxies).await {
+        Ok(_) => {}
+        Err(e) => println!("Could not send proxies from collector file: {}", e),
+    };
 }
 
 // https://www.reddit.com/r/rust/comments/dh99xn/help_multiple_http_requests_on_a_singlethread/
-pub fn collect() -> FuturesUnordered<tokio::task::JoinHandle<Vec<Proxy>>> {
-  let list_of_futures = FuturesUnordered::new();
-  for proxy_source in get_proxy_sources() {
-    list_of_futures.push(tokio::spawn(get_proxies_from_site(proxy_source.url)));
-  }
-  list_of_futures
+pub fn collect(sender: Sender<Vec<Proxy>>) {
+    let sources = get_proxy_sources();
+    for proxy_source in sources {
+        tokio::spawn(get_proxies_from_site(sender.clone(), proxy_source.url));
+    }
 }

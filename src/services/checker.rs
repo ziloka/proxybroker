@@ -1,5 +1,6 @@
-use std::future::Future;
-use futures::stream::FuturesUnordered;
+use std::sync::mpsc::SendError;
+
+use tokio::sync::mpsc::Sender;
 use serde::Deserialize;
 use crate::services::collector::Proxy;
 
@@ -9,27 +10,47 @@ struct HttpBinResponse {
 }
 
 pub struct CheckProxyResponse {
-  pub alive: bool,
-  pub host: String,
-  pub port: u16
+    pub alive: bool,
+    pub host: String,
+    pub port: u16,
 }
 
 /**
  * checks if it is possible to use proxy
  */
-async fn send_proxy_request(proxy: Proxy) -> Result<CheckProxyResponse, reqwest::Error> {
-  let response = reqwest::Client::builder().proxy(reqwest::Proxy::http(format!("http://{}:{}", proxy.host, proxy.port))?).build()?.get("http://httpbin.org/ip").send().await?.json::<HttpBinResponse>().await?;
-  return Ok(CheckProxyResponse{
-    alive: response.origin.eq(&proxy.host),
-    host: proxy.host,
-    port: proxy.port,
-  });
+async fn send_proxy_request(sender: Sender<CheckProxyResponse>, proxy: Proxy) {
+  match reqwest::Client::builder().proxy(
+    reqwest::Proxy::http(format!("http://{}:{}", proxy.host, proxy.port))
+    .expect("Cannot build proxy")
+  ).build() {
+    Ok(client) => {
+      match client.get("http://httpbin.org/ip").send().await {
+        Ok(response) => {
+          match response.json::<HttpBinResponse>().await {
+            Ok(body) => {
+              match sender.send(CheckProxyResponse {
+                alive: body.origin.eq(&proxy.host),
+                host: proxy.host,
+                port: proxy.port,
+              }).await {
+                Ok(_) => {},
+                Err(err) => println!("failed to send proxy through channel: {}", err)
+              }
+            },
+            Err(_) => {}
+            // Err(err) => println!("Could not get httpbin body: {}", err)
+          }
+        },
+        Err(_) => {}
+        // Err(err) => println!("Cannot get a response: {}", err)
+      }
+    },
+    Err(e) => println!("Cannot build client: {}", e)
+  }
 }
 
-pub fn check(proxies: Vec<Proxy>) -> FuturesUnordered<impl Future<Output = Result<CheckProxyResponse, reqwest::Error>>> {
-  let list_of_futures = FuturesUnordered::new();
-  for proxy in proxies {
-    list_of_futures.push(send_proxy_request(proxy));
-  }
-  list_of_futures
+pub fn check(sender: Sender<CheckProxyResponse>, proxies: Vec<Proxy>) {
+    for proxy in proxies {
+      tokio::spawn(send_proxy_request(sender.clone(), proxy));
+    }
 }

@@ -1,7 +1,8 @@
 use std::fs::File;
-use clap::ArgMatches;
 use std::io::prelude::*;
-use futures::StreamExt;
+use tokio::sync::mpsc::channel;
+use clap::ArgMatches;
+use tokio::sync::mpsc::error::TryRecvError;
 use crate::services;
 
 pub async fn find(sub_matches: &ArgMatches) {
@@ -12,41 +13,39 @@ pub async fn find(sub_matches: &ArgMatches) {
   }
   let limit = sub_matches.get_one::<u64>("limit").unwrap();
 
-  let mut counter: u64 = 0;
-  let mut vecs_of_unchecked_proxies = services::collector::collect();
-  'unchecked_proxies_loop: while let Some(unchecked_proxies) = vecs_of_unchecked_proxies.next().await {
-    match unchecked_proxies {
-      Ok(unchecked_proxies) => {
-        let mut list_of_checked_proxies = services::checker::check(unchecked_proxies);
-        while let Some(proxy) = list_of_checked_proxies.next().await {
-          match proxy {
-            Ok(proxy) => {
-              if proxy.alive {
-                if let Some(ref mut value) = file {
-                  match &value {
-                    Ok(file) => {
-                      match file.clone().write(format!("{}:{}\n", proxy.host, proxy.port).as_bytes()) {
-                        Ok(_is_ok) => {
-                        },
-                        Err(err) => println!("Could not write to file: {}", err)
-                      }
-                    },
-                    Err(err) => println!("Could not write to file: {}", err)
-                  }
-                }
-                counter+=1;
-                println!("{}:{}", proxy.host, proxy.port);
-              }
-            },
-            Err(_err) => {}
-          }
-          if counter >= *limit {
-            break 'unchecked_proxies_loop;
-          }
-        }
-      }
-      Err(err) => println!("Could not join task: {}", err)
-    }
+  // https://medium.com/@polyglot_factotum/rust-concurrency-patterns-communicate-by-sharing-your-sender-re-visited-9d42e6dfecfa
+  // https://dhghomon.github.io/easy_rust/Chapter_50.html
+  // https://stackoverflow.com/questions/60577867/non-blocking-recv-on-an-async-channel
+  // https://stackoverflow.com/questions/59447577/how-to-peek-on-channels-without-blocking-and-still-being-able-to-detect-hangup
+  // https://doc.rust-lang.org/book/ch16-02-message-passing.html
+  // https://www.reddit.com/r/learnrust/comments/iavolt/okay_to_drop_original_mpscsender_when_creating/
 
+  let (unchecked_proxies_tx, mut unchecked_proxies_rx) = channel::<Vec<crate::services::collector::Proxy>>(100);
+  let (checked_proxies_tx, mut checked_proxies_rx) = channel::<crate::services::checker::CheckProxyResponse>(100);
+  services::collector::collect(unchecked_proxies_tx.clone());// if not cloned throws Disconnected Error, otherwise throws Empty
+  let mut counter: u64 = 0;
+ 
+  loop {
+    match unchecked_proxies_rx.try_recv() {
+      Ok(proxies) => {
+        println!("{} proxies", proxies.len());
+        services::checker::check(checked_proxies_tx.clone(), proxies);
+      },
+      Err(TryRecvError::Disconnected) => println!("Handle sender disconnected"),
+      Err(TryRecvError::Empty) => {}
+      // Err(TryRecvError::Empty) => println!("No data yet")
+    }
+    match checked_proxies_rx.try_recv() {
+      Ok(proxy) => {
+        counter+=1;
+        println!("{}:{}", proxy.host, proxy.port);
+        if counter >= *limit {
+          std::process::exit(0);
+        }
+      },
+      Err(TryRecvError::Disconnected) => println!("Handle sender disconnected"),
+      Err(TryRecvError::Empty) => {}
+      // Err(TryRecvError::Empty) => println!("No data yet")
+    }
   }
 }
