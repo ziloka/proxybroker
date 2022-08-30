@@ -32,3 +32,7 @@ The executable can be found in target/release
 ## Motiviation
 - Inspired by [ProxyBroker](https://github.com/constverum/ProxyBroker) (A more maintained version of that [project](https://github.com/bluet/proxybroker2))
 - Web Service inspired by [go-shadowsocks2](https://github.com/shadowsocks/go-shadowsocks2)
+
+# Coding Notes
+
+- Rust program was significantly harder to write compared to golang, or java.
