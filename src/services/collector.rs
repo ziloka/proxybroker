@@ -1,6 +1,6 @@
 use regex::Regex;
 use serde::Deserialize;
-use tokio::sync::mpsc::Sender;
+use crossbeam::channel::Sender;
 
 // https://serde.rs/field-attrs.html
 #[derive(Deserialize, Debug)]
@@ -48,7 +48,7 @@ async fn get_proxies_from_site(sender: Sender<Vec<Proxy>>, url: String) {
         Err(_) => {}
         // Err(e) => println!("Problem while executing get request: {}", e),
     };
-    match sender.send(proxies).await {
+    match sender.send(proxies) {
         Ok(_) => {}
         Err(e) => println!("Could not send proxies from collector file: {}", e),
     };

@@ -2,8 +2,7 @@ use crate::services;
 use clap::ArgMatches;
 use std::fs::File;
 use std::io::prelude::*;
-use tokio::sync::mpsc::channel;
-use tokio::sync::mpsc::error::TryRecvError;
+use crossbeam::channel::bounded;
 
 pub async fn find(sub_matches: &ArgMatches) {
     let mut file: Option<Result<File, std::io::Error>> = None;
@@ -36,9 +35,9 @@ pub async fn find(sub_matches: &ArgMatches) {
         .build()
         .unwrap();
     let (unchecked_proxies_tx, mut unchecked_proxies_rx) =
-        channel::<Vec<crate::services::collector::Proxy>>(100);
+    bounded::<Vec<crate::services::collector::Proxy>>(100);
     let (checked_proxies_tx, mut checked_proxies_rx) =
-        channel::<crate::services::checker::CheckProxyResponse>(100);
+    bounded::<crate::services::checker::CheckProxyResponse>(100);
     services::collector::collect(&runtime, unchecked_proxies_tx.clone()); // if not cloned throws Disconnected Error, otherwise throws Empty
     let mut counter: u64 = 0;
 
@@ -51,16 +50,20 @@ pub async fn find(sub_matches: &ArgMatches) {
                     std::process::exit(0);
                 }
             }
-            Err(TryRecvError::Disconnected) => println!("Handle sender disconnected"),
-            Err(TryRecvError::Empty) => {} // Err(TryRecvError::Empty) => println!("No data yet")
+            Err(_) => {}
+            // Err(e) => println!("Something went wrong while getting proxy: {}", e)
+            // Err(TryRecvError::Disconnected) => println!("Handle sender disconnected"),
+            // Err(TryRecvError::Empty) => {} // Err(TryRecvError::Empty) => println!("No data yet")
         }
         match unchecked_proxies_rx.try_recv() {
             Ok(proxies) => {
                 // println!("{} proxies", proxies.len());
                 services::checker::check(&runtime, checked_proxies_tx.clone(), proxies);
             }
-            Err(TryRecvError::Disconnected) => println!("Handle sender disconnected"),
-            Err(TryRecvError::Empty) => {} // Err(TryRecvError::Empty) => println!("No data yet")
+            Err(_) => {}
+            // Err(e) => println!("Something went wrong while checking proxy: {}", e)
+            // Err(TryRecvError::Disconnected) => println!("Handle sender disconnected"),
+            // Err(TryRecvError::Empty) => {} // Err(TryRecvError::Empty) => println!("No data yet")
         }
     }
 }

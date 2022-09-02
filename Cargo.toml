@@ -10,7 +10,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
 clap = { version = "3.2.15" }
-# crossbeam = { version = "0.8.2" }
+crossbeam = { version = "0.8.2" }
 # flume = { version = "0.10.14" }
 reqwest = { version = "0.11", features = ["json", "socks"] }
 tokio = { version = "1", features = ["full"] }

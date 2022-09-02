@@ -1,6 +1,6 @@
 use std::sync::mpsc::SendError;
 
-use tokio::sync::mpsc::Sender;
+use crossbeam::channel::Sender;
 use serde::Deserialize;
 use crate::services::collector::Proxy;
 
@@ -32,7 +32,7 @@ async fn send_proxy_request(sender: Sender<CheckProxyResponse>, proxy: Proxy) {
                 alive: body.origin.eq(&proxy.host),
                 host: proxy.host,
                 port: proxy.port,
-              }).await {
+              }) {
                 Ok(_) => {},
                 Err(err) => println!("failed to send proxy through channel: {}", err)
               }
