@@ -55,7 +55,7 @@ async fn get_proxies_from_site(sender: Sender<Vec<Proxy>>, url: String) {
 }
 
 // https://www.reddit.com/r/rust/comments/dh99xn/help_multiple_http_requests_on_a_singlethread/
-pub fn collect(runtime: &tokio::runtime::Runtime,  sender: Sender<Vec<Proxy>>) {
+pub fn collect(sender: Sender<Vec<Proxy>>) {
     let sources = get_proxy_sources();
     for proxy_source in sources {
         tokio::task::spawn(get_proxies_from_site(sender.clone(), proxy_source.url));

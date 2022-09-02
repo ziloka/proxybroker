@@ -1,5 +1,3 @@
-use std::sync::mpsc::SendError;
-
 use crossbeam::channel::Sender;
 use serde::Deserialize;
 use crate::services::collector::Proxy;
@@ -49,7 +47,7 @@ async fn send_proxy_request(sender: Sender<CheckProxyResponse>, proxy: Proxy) {
   }
 }
 
-pub fn check(runtime: &tokio::runtime::Runtime, sender: Sender<CheckProxyResponse>, proxies: Vec<Proxy>) {
+pub fn check(sender: Sender<CheckProxyResponse>, proxies: Vec<Proxy>) {
     for proxy in proxies {
       tokio::task::spawn(send_proxy_request(sender.clone(), proxy));
     }
