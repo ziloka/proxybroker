@@ -1,24 +1,23 @@
-FROM mcr.microsoft.com/vscode/devcontainers/rust:1-bullseye
+FROM mcr.microsoft.com/vscode/devcontainers/rust:0.202.5-bullseye
 
 RUN sudo apt-get update && \
-    sudo apt-get install -y iputils-ping upx-ucl
+    sudo apt-get install -y iputils-ping upx-ucl neofetch
 
-# RUN apk add --no-cache gcc g++ musl-dev cmake make automake autoconf openssl-dev
-# RUN sudo chown -R vscode /workspaces/proxybroker
+# Rename current perf version to kernel version (5.4) can be found out by uname -r
+# This solution does not work at all
+# https://stackoverflow.com/questions/56259373/perf-version-not-matching-with-my-kernel-version
 
-#RUN rm /etc/alpine-release \
-#&&	wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
-#&&	wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.33-r0/glibc-2.33-r0.apk \
-#&&	apk add glibc-2.33-r0.apk
-#&&  apk add --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing mono gdb
+# Resources to generate flamegraphs
+# https://github.com/jonhoo/inferno
+# https://github.com/flamegraph-rs/flamegraph
+# https://gist.github.com/KodrAus/97c92c07a90b1fdd6853654357fd557a
 
-#ENV LD_LIBRARY_PATH=/usr/glibc-compat/lib:/usr/lib:/lib
-
-# RUN apk add --no-cache coreutils wget file \
-# 	bash icu-libs krb5-libs libgcc libintl libssl1.1 libstdc++ zlib \
-# &&	wget https://dot.net/v1/dotnet-install.sh \
-# &&	chmod +x dotnet-install.sh \
-# &&	./dotnet-install.sh -c 5.0
-
-# mono OpenDebugAD7.dll --help
-# ~/.dotnet/dotnet OpenDebugAD7.dll --help
+# https://askubuntu.com/questions/50145/how-to-install-perf-monitoring-tool
+# https://askubuntu.com/a/753796
+RUN sudo apt-get install -y build-essential flex bison && \
+    git clone --depth 1 https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git /tmp/linux && \
+    cd /tmp/linux/tools/perf && \ 
+    make && \
+    sudo cp perf /usr/bin && \
+    cargo install flamegraph
+# Usage: flamegraph -o flamegraph.svg -- ./target/release/proxybroker find

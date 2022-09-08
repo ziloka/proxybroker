@@ -22,12 +22,15 @@ maxminddb = { version = "0.23.0", optional = true }
 [features]
 maxminddb = ["dep:maxminddb"]
 
+[profile.release]
+debug = true
+
 # https://github.com/johnthagen/min-sized-rust
 # https://lifthrasiir.github.io/rustlog/why-is-a-rust-executable-large.html
-[profile.release]
-strip = true  # Automatically strip symbols from the binary.
-opt-level = "z"  # Optimize for size.
-# opt-level = 3
-lto = true
-codegen-units = 1
-panic = "abort"
+# [profile.release]
+# strip = true  # Automatically strip symbols from the binary.
+# opt-level = "z"  # Optimize for size.
+# # opt-level = 3
+# lto = true
+# codegen-units = 1
+# panic = "abort"

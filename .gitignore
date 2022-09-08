@@ -1,2 +1,5 @@
 /target
 proxies*.*
+perf.*
+rust-unmangle
+*.svg
