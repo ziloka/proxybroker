@@ -16,6 +16,9 @@ RUN sudo apt-get install -y build-essential flex bison && \
     git sparse-checkout set tools && \
     cd /tmp/linux/tools/perf && \ 
     make && \
-    sudo cp perf /usr/bin && \
-    cargo install flamegraph
+    sudo cp perf /usr/bin
+
+USER vscode
+
+RUN cargo install flamegraph
 # Usage: flamegraph -o flamegraph.svg -- ./target/release/proxybroker find

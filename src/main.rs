@@ -36,7 +36,7 @@ async fn main() {
 
   match matches.subcommand() {
     Some(("find", sub_matches)) => {
-      proxybroker::commands::find::find(sub_matches).await;
+      proxybroker::commands::find::find(sub_matches);
     },
     Some((ext, sub_matches)) => {
       let args = sub_matches

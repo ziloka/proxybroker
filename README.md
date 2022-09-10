@@ -24,7 +24,7 @@ Run
 
 ```
 git clone https://github.com/Ziloka/ProxyBroker.git && \
-cargo build --release
+../build.sh
 ```
 
 The executable can be found in target/release

@@ -4,7 +4,7 @@ use crossbeam::channel::bounded;
 use std::fs::File;
 use std::io::prelude::*;
 
-pub async fn find(sub_matches: &ArgMatches) {
+pub fn find(sub_matches: &ArgMatches) {
     let mut file: Option<Result<File, std::io::Error>> = None;
     if sub_matches.is_present("file") {
         file = Some(File::create(
@@ -25,11 +25,13 @@ pub async fn find(sub_matches: &ArgMatches) {
     loop {
         match checked_proxies_rx.try_recv() {
             Ok(proxy) => {
+              if proxy.alive {
                 counter += 1;
                 println!("{}:{}", proxy.host, proxy.port);
                 if counter >= *limit {
                     std::process::exit(0);
                 }
+              }
             }
             Err(_) => {}
         }
