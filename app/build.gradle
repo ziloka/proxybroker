@@ -11,7 +11,7 @@ plugins {
     id 'com.google.cloud.tools.jib' version '3.1.4'
 }
 
-sourceCompatibility = '11'
+sourceCompatibility = '17'
 
 repositories {
     // Use Maven Central for resolving dependencies.
@@ -20,6 +20,8 @@ repositories {
 
 dependencies {
     implementation 'info.picocli:picocli:4.6.1'
+    // http://jctools.github.io/JCTools/
+    implementation 'org.jctools:jctools-core:3.1.0'
     implementation 'com.google.code.gson:gson:2.8.8'
     implementation 'com.maxmind.geoip2:geoip2:2.15.0'
     implementation 'org.springframework.boot:spring-boot-starter-parent:2.5.5'

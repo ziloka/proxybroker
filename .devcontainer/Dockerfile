@@ -1,5 +1,5 @@
-# https://github.com/graalvm/container/pkgs/container/graalvm-ce/9089778?tag=java11-21.3.0-b1
-FROM ghcr.io/graalvm/graalvm-ce:java11-21.3.0-b1
+# https://github.com/graalvm/container/pkgs/container/graalvm-ce/29791026?tag=ol8-java17-22.2.0-b1
+FROM ghcr.io/graalvm/graalvm-ce:ol8-java17-22.2.0-b1
 
 # Setup vscode user
 ARG USERNAME=vscode
@@ -22,4 +22,5 @@ RUN microdnf update \
     && gu install native-image
 
 # Install Utilities
-RUN yum install -y ncurses
+# RUN yum install -y ncurses
+RUN yum install -y wget curl

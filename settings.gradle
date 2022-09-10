@@ -5,5 +5,5 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'ProxyChecker'
+rootProject.name = 'ProxyBroker'
 include('app')

@@ -26,6 +26,14 @@ public class LookupResult {
         this.proxyType = proxyType;
     }
 
+    public String getProxyHost() {
+      return proxyHost;
+    }
+
+    public Integer getProxyPort() {
+      return proxyPort;
+    }
+
     public ProxyType getProxyType() {
         return proxyType;
     }

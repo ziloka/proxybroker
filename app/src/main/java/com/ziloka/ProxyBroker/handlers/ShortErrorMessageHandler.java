@@ -7,7 +7,6 @@ import java.io.PrintWriter;
 public class ShortErrorMessageHandler implements CommandLine.IParameterExceptionHandler {
 
     public int handleParseException(CommandLine.ParameterException ex, String[] args) {
-        System.out.println("gets here");
         CommandLine cmd = ex.getCommandLine();
         PrintWriter err = cmd.getErr();
 
