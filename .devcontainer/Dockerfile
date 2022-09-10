@@ -4,8 +4,8 @@ RUN sudo apt-get update && \
     sudo apt-get install -y iputils-ping upx-ucl neofetch
 
 # Resources to generate flamegraphs
-# https://github.com/jonhoo/inferno
 # https://github.com/flamegraph-rs/flamegraph
+# https://github.com/jonhoo/inferno
 # https://gist.github.com/KodrAus/97c92c07a90b1fdd6853654357fd557a
 
 # https://askubuntu.com/questions/50145/how-to-install-perf-monitoring-tool
