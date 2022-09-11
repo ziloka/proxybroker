@@ -12,15 +12,6 @@ RUN microdnf install sudo && \
   chmod 0440 /etc/sudoers.d/$USERNAME
 
 # https://github.com/oracle/container-images/issues/16#issuecomment-543459881
-# microdnf install java-11-openjdk
 RUN microdnf update \
-    && microdnf install yum \
-    && yum install -y unzip zip \
-    && curl -s "https://get.sdkman.io" | bash \
-    && source "$HOME/.sdkman/bin/sdkman-init.sh" \
-    && sdk install gradle 7.3.3 \
-    && gu install native-image
-
-# Install Utilities
-# RUN yum install -y ncurses
-RUN yum install -y wget curl
+  && microdnf install git unzip zip wget curl \
+  && gu install native-image
