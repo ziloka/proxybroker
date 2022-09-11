@@ -1,6 +1,7 @@
+use crossbeam::channel::Sender;
 use regex::Regex;
 use serde::Deserialize;
-use crossbeam::channel::Sender;
+use std::time::Duration;
 
 // https://serde.rs/field-attrs.html
 #[derive(Deserialize, Debug)]
@@ -29,29 +30,35 @@ fn get_proxy_sources() -> Vec<Source> {
 async fn get_proxies_from_site(sender: Sender<Vec<Proxy>>, url: String) {
     let re = Regex::new(r"(\d+\.\d+\.\d+\.\d+):(\d+)").unwrap();
     let mut proxies: Vec<Proxy> = Vec::new();
-    let request = reqwest::get(&url);
-    match request.await {
-        Ok(response) => {
-            match response.text().await {
-                Ok(body) => {
-                    for caps in re.captures_iter(&body) {
-                        proxies.push(Proxy {
-                            host: caps.get(1).unwrap().as_str().to_string(),
-                            port: caps.get(2).unwrap().as_str().parse::<u16>().unwrap(),
-                        })
-                    }
+    match reqwest::Client::builder()
+        .timeout(Duration::from_secs(5))
+        .build()
+    {
+        Ok(client) => {
+            let request = client.get(&url).send();
+            match request.await {
+                Ok(response) => {
+                    match response.text().await {
+                        Ok(body) => {
+                            for caps in re.captures_iter(&body) {
+                                proxies.push(Proxy {
+                                    host: caps.get(1).unwrap().as_str().to_string(),
+                                    port: caps.get(2).unwrap().as_str().parse::<u16>().unwrap(),
+                                })
+                            }
+                        }
+                        Err(_) => {} // Err(e) => println!("Problem while getting request body: {}", e),
+                    };
                 }
-                Err(_) => {}
-                // Err(e) => println!("Problem while getting request body: {}", e),
+                Err(_) => {} // Err(e) => println!("Problem while executing get request: {}", e),
+            };
+            match sender.send(proxies) {
+                Ok(_) => {}
+                Err(e) => println!("Could not send proxies from collector file: {}", e),
             };
         }
-        Err(_) => {}
-        // Err(e) => println!("Problem while executing get request: {}", e),
-    };
-    match sender.send(proxies) {
-        Ok(_) => {}
-        Err(e) => println!("Could not send proxies from collector file: {}", e),
-    };
+        Err(e) => println!("{}", e),
+    }
 }
 
 // https://www.reddit.com/r/rust/comments/dh99xn/help_multiple_http_requests_on_a_singlethread/

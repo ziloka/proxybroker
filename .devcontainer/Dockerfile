@@ -16,7 +16,8 @@ RUN sudo apt-get install -y build-essential flex bison && \
     git sparse-checkout set tools && \
     cd /tmp/linux/tools/perf && \ 
     make && \
-    sudo cp perf /usr/bin
+    sudo cp perf /usr/bin && \
+    sudo sh -c " echo 0 > /proc/sys/kernel/kptr_restrict"
 
 USER vscode
 

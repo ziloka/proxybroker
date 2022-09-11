@@ -19,19 +19,19 @@ pub fn find(sub_matches: &ArgMatches) {
         bounded::<Vec<crate::services::collector::Proxy>>(100);
     let (checked_proxies_tx, checked_proxies_rx) =
         bounded::<crate::services::checker::CheckProxyResponse>(100);
-    services::collector::collect( unchecked_proxies_tx.clone()); // if not cloned throws Disconnected Error, otherwise throws Empty
+    services::collector::collect(unchecked_proxies_tx.clone()); // if not cloned throws Disconnected Error, otherwise throws Empty
     let mut counter: u64 = 0;
 
     loop {
         match checked_proxies_rx.try_recv() {
             Ok(proxy) => {
-              if proxy.alive {
-                counter += 1;
-                println!("{}:{}", proxy.host, proxy.port);
-                if counter >= *limit {
-                    std::process::exit(0);
+                if proxy.alive {
+                    counter += 1;
+                    println!("{}:{}", proxy.host, proxy.port);
+                    if counter >= *limit {
+                        std::process::exit(0);
+                    }
                 }
-              }
             }
             Err(_) => {}
         }

@@ -52,6 +52,5 @@
 	"remoteUser": "vscode",
 	"features": {
 		"docker-in-docker": "latest"
-		// "docker-from-docker": "latest"
 	}
 }
