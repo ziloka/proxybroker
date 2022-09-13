@@ -1,7 +1,6 @@
 use crate::services::collector::Proxy;
 use crossbeam::channel::Sender;
 use serde::Deserialize;
-use std::time::Duration;
 
 #[derive(Deserialize)]
 struct HttpBinResponse {
@@ -18,8 +17,8 @@ pub struct CheckProxyResponse {
  * checks if it is possible to use proxy
  */
 async fn send_proxy_request(sender: Sender<CheckProxyResponse>, proxy: Proxy) {
+  // puffin::profile_function!("send_proxy_request");
     match reqwest::Client::builder()
-        .timeout(Duration::from_secs(5))
         .proxy(
             reqwest::Proxy::http(format!("http://{}:{}", proxy.host, proxy.port))
                 .expect("Cannot build proxy"),
@@ -31,15 +30,13 @@ async fn send_proxy_request(sender: Sender<CheckProxyResponse>, proxy: Proxy) {
                 Ok(response) => {
                     match response.json::<HttpBinResponse>().await {
                         Ok(body) => {
-                            match sender.send(CheckProxyResponse {
+                            match sender.try_send(CheckProxyResponse {
                                 alive: body.origin.eq(&proxy.host),
                                 host: proxy.host,
                                 port: proxy.port,
                             }) {
                                 Ok(_) => {}
-                                Err(err) => {
-                                    println!("failed to send proxy through channel: {}", err)
-                                }
+                                Err(err) => println!("failed to send proxy through channel: {}", err)
                             }
                         }
                         Err(_) => {} // Err(err) => println!("Could not get httpbin body: {}", err)

@@ -11,12 +11,14 @@ edition = "2021"
 [dependencies]
 clap = { version = "3.2" }
 crossbeam = { version = "0.8" }
+maxminddb = { version = "0.23", optional = true }
+# puffin = { version = "0.13"}
+# puffin_egui = { version = "0.16" }
 reqwest = { version = "0.11", features = ["json", "socks"] }
-tokio = { version = "1.21", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
 regex = { version = "1.6" }
-maxminddb = { version = "0.23", optional = true }
+tokio = { version = "1.21", features = ["full"] }
 
 [features]
 maxminddb = ["dep:maxminddb"]
