@@ -27,7 +27,6 @@ fn get_proxy_sources() -> Vec<Source> {
 }
 
 async fn get_proxies_from_site(sender: Sender<Vec<Proxy>>, url: String) {
-    // puffin::profile_function!();
     let re = Regex::new(r"(\d+\.\d+\.\d+\.\d+):(\d+)").unwrap();
     let mut proxies: Vec<Proxy> = Vec::new();
     match reqwest::Client::builder().build() {
@@ -35,14 +34,8 @@ async fn get_proxies_from_site(sender: Sender<Vec<Proxy>>, url: String) {
             let request = client.get(&url).send();
             match request.await {
                 Ok(response) => {
-                    let start = std::time::SystemTime::now();
                     match response.text().await {
                         Ok(body) => {
-                            println!(
-                                "took {}ms for {}",
-                                start.elapsed().expect("Duration").as_millis(),
-                                url
-                            );
                             for caps in re.captures_iter(&body) {
                                 proxies.push(Proxy {
                                     host: caps.get(1).unwrap().as_str().to_string(),
