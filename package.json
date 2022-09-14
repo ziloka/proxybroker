@@ -1,0 +1,47 @@
+{
+  "name": "proxybroker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/proxybroker.js",
+  "bin": "dist/proxybroker.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node src/proxybroker.ts",
+    "build": "tsc",
+    "compileNative": "pkg ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ziloka/proxybroker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ziloka/proxybroker/issues"
+  },
+  "homepage": "https://github.com/ziloka/proxybroker#readme",
+  "dependencies": {
+    "commander": "^9.4.0",
+    "maxmind": "^4.3.6",
+    "undici": "^5.10.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.17",
+    "nexe": "^4.0.0-rc.1",
+    "pkg": "^5.8.0",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.4.0",
+    "typescript": "^4.8.3"
+  },
+  "pkg": {
+    "scripts": "src/**/*.js",
+    "assets": "assets/**/*",
+    "targets": [
+      "node18-linux-x64",
+      "node18-macos-x64",
+      "node18-win-x64"
+    ],
+    "outputPath": "build"
+  }
+}
