@@ -7,7 +7,8 @@ commands:
   generate-and-upload-executable:
     parameters:
       artifact_location:
-      default: target/release/proxybroker
+        type: string
+        default: target/release/proxybroker
     steps:
       - run:
           name: Rust Version
@@ -19,7 +20,7 @@ commands:
           name: Strip Executable
           command: upx --best --lzma << parameters.artifact_location >>
       - store_artifacts:
-        path: << parameters.artifact_location >>
+          path: << parameters.artifact_location >>
 
 jobs:
   build-linux:
@@ -66,12 +67,11 @@ jobs:
           name: Install UPX
           command: choco install -y upx
       - generate-and-upload-executable:
-          artifact_location: << parameters.artifact_location >>
+          artifact_location: 'target/release/proxybroker.exe'
 
 workflows:
   build-executables:
     jobs:
       - build-linux
       - build-macos
-      - build-windows:
-          artifact_location: 'target/release/proxybroker.exe'
+      - build-windows
