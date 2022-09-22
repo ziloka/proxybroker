@@ -22,7 +22,8 @@ RUN rustup target add x86_64-unknown-linux-musl && \
     upx target/x86_64-unknown-linux-musl/release/proxybroker
 
 # Alpine 3.16.1
-FROM alpine@sha256:7580ece7963bfa863801466c0a488f11c86f85d9988051a9f9c68cb27f6b7872
+FROM scratch
+# FROM alpine@sha256:7580ece7963bfa863801466c0a488f11c86f85d9988051a9f9c68cb27f6b7872
 
 WORKDIR /app
 COPY --from=build-env /workspace/proxybroker/target/x86_64-unknown-linux-musl/release/proxybroker .

@@ -10,15 +10,17 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
 clap = { version = "3.2" }
-crossbeam = { version = "0.8" }
+# futures = { version = "0.3" }
+lazy_static = { version = "1.4" }
 maxminddb = { version = "0.23", optional = true }
-# puffin = { version = "0.13"}
-# puffin_egui = { version = "0.16" }
+# may = { version = "0.3" }
 reqwest = { version = "0.11", features = ["json", "socks"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
 regex = { version = "1.6" }
 tokio = { version = "1.21", features = ["full"] }
+# tracing = { version = "0.1.36" }
+# tracing-subscriber = { version = "0.3", features = ["fmt", "ansi"]  }
 
 [features]
 maxminddb = ["dep:maxminddb"]

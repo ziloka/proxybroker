@@ -1,6 +1,8 @@
-use crossbeam::channel::Sender;
+// use crossbeam::channel::Sender;
+use lazy_static::lazy_static;
 use regex::Regex;
 use serde::Deserialize;
+use tokio::sync::mpsc::Sender;
 
 // https://serde.rs/field-attrs.html
 #[derive(Deserialize, Debug)]
@@ -12,6 +14,11 @@ struct Source {
     protocol: String,
 }
 
+lazy_static! {
+    static ref PROXY_REGEX: Regex = Regex::new(r"(\d+\.\d+\.\d+\.\d+):(\d+)").unwrap();
+}
+
+#[derive(Debug)]
 pub struct Proxy {
     pub host: String,
     pub port: u16,
@@ -27,34 +34,28 @@ fn get_proxy_sources() -> Vec<Source> {
 }
 
 async fn get_proxies_from_site(sender: Sender<Vec<Proxy>>, url: String) {
-    let re = Regex::new(r"(\d+\.\d+\.\d+\.\d+):(\d+)").unwrap();
-    let mut proxies: Vec<Proxy> = Vec::new();
-    match reqwest::Client::builder().build() {
-        Ok(client) => {
-            let request = client.get(&url).send();
-            match request.await {
-                Ok(response) => {
-                    match response.text().await {
-                        Ok(body) => {
-                            for caps in re.captures_iter(&body) {
-                                proxies.push(Proxy {
-                                    host: caps.get(1).unwrap().as_str().to_string(),
-                                    port: caps.get(2).unwrap().as_str().parse::<u16>().unwrap(),
-                                })
-                            }
-                            match sender.try_send(proxies) {
-                                Ok(_) => {}
-                                Err(e) => println!("Could not send proxies from collector file: {}", e)
-                            };
-                        }
-                        Err(e) => println!("Problem while getting request body: {}", e),
+    let request = reqwest::get(&url);
+    match request.await {
+        Ok(response) => {
+            match response.text().await {
+                Ok(body) => {
+                    let mut proxies: Vec<Proxy> = Vec::new();
+                    for caps in PROXY_REGEX.captures_iter(&body) {
+                        proxies.push(Proxy {
+                            host: caps.get(1).unwrap().as_str().to_string(),
+                            port: caps.get(2).unwrap().as_str().parse::<u16>().unwrap(),
+                        })
+                    }
+                    match sender.try_send(proxies) {
+                        Ok(_) => {}
+                        Err(e) => println!("Could not send proxies from collector file: {}", e),
                     };
                 }
-                Err(e) => println!("Problem while executing get request: {}", e),
+                Err(e) => println!("Problem while getting request body: {}", e),
             };
         }
-        Err(e) => println!("{}", e),
-    }
+        Err(e) => println!("Problem while executing get request: {}", e),
+    };
 }
 
 // https://www.reddit.com/r/rust/comments/dh99xn/help_multiple_http_requests_on_a_singlethread/

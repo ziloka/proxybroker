@@ -1,5 +1,5 @@
 use crate::services::collector::Proxy;
-use crossbeam::channel::Sender;
+use tokio::sync::mpsc::Sender;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -17,7 +17,6 @@ pub struct CheckProxyResponse {
  * checks if it is possible to use proxy
  */
 async fn send_proxy_request(sender: Sender<CheckProxyResponse>, proxy: Proxy) {
-  // puffin::profile_function!("send_proxy_request");
     match reqwest::Client::builder()
         .proxy(
             reqwest::Proxy::http(format!("http://{}:{}", proxy.host, proxy.port))
@@ -48,6 +47,27 @@ async fn send_proxy_request(sender: Sender<CheckProxyResponse>, proxy: Proxy) {
         Err(e) => println!("Cannot build client: {}", e),
     }
 }
+
+// async fn send_proxy_request(
+//   sender: Sender<CheckProxyResponse>,
+//   proxy: Proxy,
+// ) -> Result<(), Box<dyn std::error::Error>> {
+//   let client = reqwest::Client::builder()
+//       .proxy(reqwest::Proxy::http(format!(
+//           "http://{}:{}",
+//           proxy.host, proxy.port
+//       ))?)
+//       .build()?;
+
+//   let response = client.get("http://httpbin.org/ip").send().await?;
+//   let body = response.json::<HttpBinResponse>().await?;
+//   sender.try_send(CheckProxyResponse {
+//       alive: body.origin.eq(&proxy.host),
+//       host: proxy.host,
+//       port: proxy.port,
+//   });
+//   Ok(())
+// }
 
 pub fn check(sender: Sender<CheckProxyResponse>, proxies: Vec<Proxy>) {
     for proxy in proxies {

@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/vscode/devcontainers/rust:0.202.5-bullseye
 
 RUN sudo apt-get update && \
-    sudo apt-get install -y iputils-ping upx-ucl neofetch
+    sudo apt-get install -y software-properties-common iputils-ping upx-ucl neofetch
 
 # Resources to generate flamegraphs
 # https://github.com/flamegraph-rs/flamegraph
@@ -10,7 +10,7 @@ RUN sudo apt-get update && \
 
 # https://askubuntu.com/questions/50145/how-to-install-perf-monitoring-tool
 # https://askubuntu.com/a/753796
-RUN sudo apt-get install -y build-essential flex bison && \
+RUN apt-get install -y build-essential flex bison && \
     git clone --depth 1 --filter=blob:none --sparse https://github.com/torvalds/linux.git /tmp/linux && \
     cd /tmp/linux && \
     git sparse-checkout set tools && \
@@ -20,5 +20,5 @@ RUN sudo apt-get install -y build-essential flex bison && \
 
 USER vscode
 
-RUN cargo install flamegraph
+RUN cargo install flamegraph cross
 # Usage: flamegraph -o flamegraph.svg -- ./target/release/proxybroker find

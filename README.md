@@ -29,10 +29,7 @@ git clone https://github.com/Ziloka/ProxyBroker.git && \
 
 The executable can be found in target/release
 
-## Motiviation
-- Inspired by [ProxyBroker](https://github.com/constverum/ProxyBroker) (A more maintained version of that [project](https://github.com/bluet/proxybroker2))
-- Web Service inspired by [go-shadowsocks2](https://github.com/shadowsocks/go-shadowsocks2)
-
 # Coding Notes
 
 - Rust program was significantly harder to write compared to golang, or java.
+- Rust does not have [green threads](https://users.rust-lang.org/t/green-threads-vs-async/42159/4) making this depend on operating system threads. This means if you have a good cpu that supports lots of threads, this program will run faster than that compared to running it on a bad cpu that doesn't support as many threads.

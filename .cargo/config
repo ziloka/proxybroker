@@ -1,0 +1,6 @@
+# https://github.com/carver/trin/blob/0cdf253d0460a13f4d11d1bb58f54d705302d27d/.cargo/config
+# https://github.com/rust-lang/cargo/issues/3900#issuecomment-292030161
+# https://github.com/rust-lang/cargo/issues/3381#issuecomment-308460530
+
+[net]
+git-fetch-with-cli = true
