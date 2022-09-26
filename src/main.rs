@@ -9,18 +9,6 @@ pub mod services;
 // https://github.com/clap-rs/clap/blob/master/examples/tutorial_builder/04_02_parse.rs
 #[tokio::main]
 async fn main() {
-    // Subscribe to traces
-    // https://tokio.rs/tokio/topics/tracing
-    // tracing::subscriber::set_global_default(
-    //     tracing_subscriber::fmt()
-    //         .compact()
-            
-    //         .with_thread_ids(true)
-    //         .with_target(false)
-    //         .finish(),
-    // )
-    // .expect("Set global subscriber");
-
     let mut app = Command::new("ProxyBroker")
         .about("Serves foos to the world!")
         .version("v0.1.0")

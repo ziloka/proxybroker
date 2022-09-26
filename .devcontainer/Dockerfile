@@ -22,3 +22,12 @@ USER vscode
 
 RUN cargo install flamegraph cross
 # Usage: flamegraph -o flamegraph.svg -- ./target/release/proxybroker find
+
+# FROM mcr.microsoft.com/vscode/devcontainers/base:ubuntu-22.04
+# https://github.com/sfackler/rust-openssl/issues/855#issuecomment-796384141
+# RUN sudo apt-get update && \
+#     sudo apt-get install -y build-essential pkg-config libssl-dev
+
+# # https://github.com/rust-lang/rustup/issues/1031#issuecomment-354025515
+# RUN curl https://sh.rustup.rs -sSf | sh -s -- -y && \
+#     source "$HOME/.cargo/env"
