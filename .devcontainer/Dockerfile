@@ -1,3 +1,4 @@
+# bullseye (debian 11) or buster (debian 10)
 FROM mcr.microsoft.com/vscode/devcontainers/rust:0.202.5-bullseye
 
 RUN sudo apt-get update && \
@@ -16,7 +17,13 @@ RUN apt-get install -y build-essential flex bison && \
     git sparse-checkout set tools && \
     cd /tmp/linux/tools/perf && \ 
     make && \
-    sudo cp perf /usr/bin
+    sudo cp perf /usr/bin && \
+    cd / && \
+    rm -rf /tmp/linux
+
+# docker run -it ubuntu:22.04 /bin/bash
+# apt-get update && apt-get install -y wget unzip libssl1.1
+# wget http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
 
 USER vscode
 

@@ -32,4 +32,5 @@ The executable can be found in target/release
 # Coding Notes
 
 - Rust program was significantly harder to write compared to golang, or java.
-- Rust does not have [green threads](https://users.rust-lang.org/t/green-threads-vs-async/42159/4) making this depend on operating system threads. This means if you have a good cpu that supports lots of threads, this program will run faster than that compared to running it on a bad cpu that doesn't support as many threads.
+- Compile on Debian for better performance (~5s) than ubuntu (~1min)
+- https://github.com/openssl/openssl/issues/17064

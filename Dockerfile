@@ -2,11 +2,11 @@
 # https://chemidy.medium.com/create-the-smallest-and-secured-golang-docker-image-based-on-scratch-4752223b7324
 # https://github.com/rust-lang/cargo/issues/7563#issuecomment-636248861
 
-# Rust 1.62
-FROM rust@sha256:26d3406ed01076d53cf13b95397f2695fbb965e42aa685bca8045dcf11055904 AS build-env
+# Rust 1.64 Alpine 3.16
+FROM rust@sha256:3963de6b13ca26a8ca3e8964fe82810b9e84814e97feb8a7319578d1fcd045fd AS build-env
 
 # Set the working directory
-WORKDIR /workspace/proxybroker/
+WORKDIR /workspaces/proxybroker/
 
 # We want dependencies cached, so copy those first.
 COPY Cargo.toml Cargo.lock ./
@@ -17,18 +17,18 @@ RUN apk add build-base ca-certificates curl g++ gcc libressl-dev make openssl-de
 COPY src/ ./src/
 
 # This is the actual application build.
-RUN rustup target add x86_64-unknown-linux-musl && \
-    cargo build --target x86_64-unknown-linux-musl --release && \
-    upx target/x86_64-unknown-linux-musl/release/proxybroker
+RUN cargo build --release && \
+    upx target/release/proxybroker
 
+# FROM gcr.io/distroless/cc-debian11
 # Alpine 3.16.1
-FROM scratch
-# FROM alpine@sha256:7580ece7963bfa863801466c0a488f11c86f85d9988051a9f9c68cb27f6b7872
+FROM alpine@sha256:7580ece7963bfa863801466c0a488f11c86f85d9988051a9f9c68cb27f6b7872
+# FROM scratch
 
 WORKDIR /app
-COPY --from=build-env /workspace/proxybroker/target/x86_64-unknown-linux-musl/release/proxybroker .
+COPY --from=build-env /workspace/proxybroker/target/release/proxybroker .
 
 # This command runs your application, comment out this line to compile only
-CMD ["./proxybroker"]
+ENTRYPOINT ["./proxybroker"]
 
 LABEL Name=ProxyBroker Version=0.0.1
