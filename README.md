@@ -8,7 +8,7 @@ Proxy is an open source tool that asynchronously finds public proxies from multi
 - Proxies may be filtered by type, anonymity level, response time, country and status
 - Work as a proxy server that distributes incoming requests to external proxies. With automatic proxy rotation.
 - Automatically removes duplicate proxies
-- Is asynchrous
+- Is asynchronous 
 
 ## Requirements
 - Operating system must be Windows, MacOS, or Linux
@@ -32,5 +32,7 @@ The executable can be found in target/release
 # Coding Notes
 
 - Rust program was significantly harder to write compared to golang, or java.
-- Compile on Debian for better performance (~5s) than ubuntu (~1min)
-- https://github.com/openssl/openssl/issues/17064
+- Compile with openssl v1 on the system (or with openssl v3.0.5+, otherwise don't make a [github issue on performance if you compile with openssl v3](https://github.com/sysown/proxysql/pull/3937))
+- The runtime environment doesn't matter as long as it doesn't use musl and uses glibc
+- https://github.com/openssl/openssl/issues/17064#issuecomment-973444945
+- https://developers.redhat.com/articles/2021/12/17/why-glibc-234-removed-libpthread
