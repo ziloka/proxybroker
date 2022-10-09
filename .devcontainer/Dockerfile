@@ -1,6 +1,9 @@
 # bullseye (debian 11) or buster (debian 10)
 FROM mcr.microsoft.com/vscode/devcontainers/rust:0.202.5-bullseye
 
+RUN apt-get update && \
+    apt-get install -y git build-essential curl pkg-config software-properties-common iputils-ping upx-ucl neofetch
+
 # Ubuntu 22.04 setup
 
 # FROM ubuntu:22.04

@@ -1,4 +1,4 @@
-If the project was compiled with Openssl v1 and glibc 2.34>, it will outperform with a system that compiled with openssl v3 and glibc 2.34+
+If the the system has Openssl v1, it will outperform with a system that compiled with openssl <v3.0.5
 
 These two articles are what I found
 - https://github.com/openssl/openssl/issues/17064#issuecomment-973444945

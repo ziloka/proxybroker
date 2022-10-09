@@ -6,12 +6,9 @@ use tokio::sync::mpsc::channel;
 
 pub fn find(sub_matches: &ArgMatches) {
     let mut file: Option<Result<File, std::io::Error>> = None;
-    if sub_matches.is_present("file") {
-        file = Some(File::create(
-            sub_matches
-                .get_one::<String>("file")
-                .expect("Specify filename to write proxies to"),
-        ));
+    let file_str = sub_matches.get_one::<String>("file");
+    if let Some(file_path) = file_str {
+        file = Some(File::create(file_path));
     }
 
     let limit = sub_matches.get_one::<u64>("limit").unwrap();

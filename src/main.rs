@@ -1,4 +1,4 @@
-use clap::{Arg, Command, SubCommand};
+use clap::{Arg, Command};
 use std::ffi::OsString;
 
 pub mod commands;
@@ -14,23 +14,23 @@ async fn main() {
         .version("v0.1.0")
         .author("Ziloka (@Ziloka on GitHub)")
         .subcommand(
-            SubCommand::with_name("find")
+          Command::new("find")
                 .about("Find and check proxies")
                 .arg(
-                    Arg::with_name("limit")
+                    Arg::new("limit")
                         .long("limit")
                         .short('l')
-                        .takes_value(true)
+                        // .takes_value(true)
                         .default_value("10")
                         .default_missing_value("10")
                         .value_parser(clap::value_parser!(u64).range(1..))
                         .help("Number of proxies to check and collect"),
                 )
                 .arg(
-                    Arg::with_name("file")
+                    Arg::new("file")
                         .long("file")
                         .short('f')
-                        .takes_value(true)
+                        // .takes_value(true)
                         .help("Send proxies to file"),
                 ),
         );
