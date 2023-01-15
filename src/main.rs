@@ -8,7 +8,8 @@ pub mod services;
 // https://stackoverflow.com/questions/54837057/how-can-i-display-help-after-calling-claps-get-matches
 // https://github.com/clap-rs/clap/blob/master/examples/tutorial_builder/04_02_parse.rs
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+
     let mut app = Command::new("ProxyBroker")
         .about("Serves foos to the world!")
         .version("v0.1.0")
@@ -20,7 +21,6 @@ async fn main() {
                     Arg::new("limit")
                         .long("limit")
                         .short('l')
-                        // .takes_value(true)
                         .default_value("10")
                         .default_missing_value("10")
                         .value_parser(clap::value_parser!(u64).range(1..))
@@ -30,18 +30,17 @@ async fn main() {
                     Arg::new("file")
                         .long("file")
                         .short('f')
-                        // .takes_value(true)
                         .help("Send proxies to file"),
                 ),
         );
 
     let mut help = Vec::new();
-    app.write_long_help(&mut help).unwrap();
+    app.write_long_help(&mut help)?;
     let matches = app.get_matches();
 
     match matches.subcommand() {
         Some(("find", sub_matches)) => {
-            proxybroker::commands::find::find(sub_matches);
+            proxybroker::commands::find::find(sub_matches)?;
         }
         Some((ext, sub_matches)) => {
             let args = sub_matches
@@ -52,7 +51,9 @@ async fn main() {
             println!("Calling out to {:?} with {:?}", ext, args);
         }
         None => {
-            println!("{}", std::str::from_utf8(&help).unwrap());
+            println!("{}", std::str::from_utf8(&help)?);
         }
     }
+
+    Ok(())
 }

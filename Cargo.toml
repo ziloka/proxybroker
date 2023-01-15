@@ -15,8 +15,8 @@ maxminddb = { version = "0.23", optional = true }
 reqwest = { version = "0.11", default-features = false, features = ["rustls-tls", "json", "socks"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
-regex = { version = "1.6" }
-tokio = { version = "1.21", default-features = false, features = ["rt", "rt-multi-thread", "macros"] }
+regex = { version = "1.7" }
+tokio = { version = "1.24", default-features = false, features = ["rt", "rt-multi-thread", "macros"] }
 
 [features]
 maxminddb = ["dep:maxminddb"]
