@@ -67,8 +67,6 @@ std::vector<std::string> Collector::getProxies(nlohmann::json proxySources){
       }
     }
     curl_global_cleanup();
-    
-    // std::cout << result << std::endl;
 
     std::regex proxyRegex("\\d+\\.\\d+\\.\\d+\\.\\d+:\\d+", std::regex_constants::ECMAScript | std::regex_constants::icase);
     auto words_begin = std::sregex_iterator(result.begin(), result.end(), proxyRegex);

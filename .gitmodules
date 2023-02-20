@@ -1,6 +1,3 @@
-[submodule "libs/curl"]
-	path = libs/curl
-	url = https://github.com/curl/curl
 [submodule "libs/libmaxminddb"]
 	path = libs/libmaxminddb
 	url = https://github.com/maxmind/libmaxminddb
