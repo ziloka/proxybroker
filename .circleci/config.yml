@@ -25,14 +25,12 @@ commands:
 jobs:
   build-linux:
     working_directory: ~/proxybroker
-    docker:
-      - image: cimg/rust:1.63.0
     resource_class: large
     steps:
       - checkout
       - run:
-          name: Install UPX
-          command: sudo apt-get update && sudo apt-get install -y upx
+          name: Install Rustup
+          command: curl https://sh.rustup.rs -sSf | sh -s -- -y
       - generate-and-upload-executable
   build-macos:
     working_directory: ~/proxybroker
@@ -43,9 +41,6 @@ jobs:
       - run:
           name: Install Rustup
           command: curl https://sh.rustup.rs -sSf | sh -s -- -y
-      - run:
-          name: Install UPX
-          command: brew install upx
       - generate-and-upload-executable
   build-windows:
     working_directory: ~/proxybroker
@@ -60,12 +55,9 @@ jobs:
       - run:
           name: Run rustup init
           command: .\rustup-init.exe -y
-      - run: 
-          name: Change Rust ToolChain to x84_64 windows msvc
-          command: rustup default stable-x86_64-pc-windows-msvc
-      - run:
-          name: Install UPX
-          command: choco install -y upx
+      # - run: 
+      #     name: Change Rust ToolChain to x84_64 windows msvc
+      #     command: rustup default stable-x86_64-pc-windows-msvc
       - generate-and-upload-executable:
           artifact_location: 'target/release/proxybroker.exe'
 
