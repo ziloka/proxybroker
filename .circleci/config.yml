@@ -54,6 +54,9 @@ jobs:
       - run:
           name: Run rustup init
           command: .\rustup-init.exe -y
+      - run: 
+          name: Change Rust ToolChain to x84_64 windows msvc
+          command: rustup default stable-x86_64-pc-windows-msvc
       - generate-and-upload-executable:
           artifact_location: 'target/release/proxybroker.exe'
 
