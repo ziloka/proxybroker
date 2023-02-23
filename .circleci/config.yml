@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs: 
-  win: circleci/windows@4.1.1
+  win: circleci/windows@5.0
 
 commands:
   generate-and-upload-executable:
@@ -25,6 +25,8 @@ commands:
 jobs:
   build-linux:
     working_directory: ~/proxybroker
+    machine:
+      image: ubuntu-2004:2022.07.1
     resource_class: large
     steps:
       - checkout
@@ -55,9 +57,6 @@ jobs:
       - run:
           name: Run rustup init
           command: .\rustup-init.exe -y
-      # - run: 
-      #     name: Change Rust ToolChain to x84_64 windows msvc
-      #     command: rustup default stable-x86_64-pc-windows-msvc
       - generate-and-upload-executable:
           artifact_location: 'target/release/proxybroker.exe'
 
