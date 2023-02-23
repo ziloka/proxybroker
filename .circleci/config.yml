@@ -16,9 +16,6 @@ commands:
       - run:
           name: Build Artifact
           command: cargo build --release
-      - run:
-          name: Strip Executable
-          command: upx --best --lzma << parameters.artifact_location >>
       - store_artifacts:
           path: << parameters.artifact_location >>
 
