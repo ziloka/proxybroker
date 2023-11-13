@@ -10,7 +10,7 @@
 				"isDefault": true
 			},
 			"type": "shell",
-			"command": "clang++ -static-libstdc++ -static-libgcc -g main.cpp -o main"
+			"command": "cmake --build build"
 		}
 	]
 }

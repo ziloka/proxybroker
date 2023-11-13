@@ -34,52 +34,35 @@ git submodule update --init --recursive --remote --no-fetch --depth=1
 
 2. Prerequisites 
 
-### Unix
-
-#### Requirements
-- [gcc](https://gcc.gnu.org/install/download.html)
-- [cmake](https://cmake.org/download/)
-- [make](https://www.gnu.org/software/make/)
-- [OpenSSL Development files](https://www.openssl.org/source/)
-- [Boost](https://www.boost.org/)
-- *Optional: [ninja-build](https://ninja-build.org/)*
-
-Ubuntu
-```
-sudo apt-get install libcurl4-openssl-dev libboost-all-dev
+Install dependencies
+```sh
+.\vcpkg\bootstrap-vcpkg.bat
+# .\vcpkg\vcpkg integrate install
+# .\vcpkg\vcpkg add port boost-lockfree curl
+.\vcpkg\vcpkg install
+# .\vcpkg\vcpkg install --target-triplet x64-windows boost-lockfree curl
 ```
 
-### Windows
+build packages
+```sh
+cmake --preset=default
+cmake --build build
+.\build\Debug\ProxyBroker.exe --help
 
-These components are usually installed via the visual studio installer
-Components that were last compiled with
+# mkdir build
+# cd build
+# cmake .. -G "Unix Makefiles" 
+# make
+# make install prefix=artifacts
 
-#### Requirements
-- MSVC v143 - VS 2022 C++ x64/x86 build tools
-- Windows 11 SDK (10.0.22000.0)
-- C++ Cmake tools for windows
-- [Boost](https://www.boost.org/)
-- *Optional: [ninja-build](https://ninja-build.org/)*
-
-Add environment variables to path
-*As well as ninja if you installed it*
+# cmake ..
+# cmake --build .
+# cmake --install . --prefix artifacts
 ```
-C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe
-```
+- From [MSFT vcpkg with cmake tutorial](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started?pivots=shell-cmd)
 
-Somehow add boost to path?
-
-3. Compile
-
-Compiling with ninja
-```
-sudo cmake -Bbuild -H. -GNinja .. \
-&& cd build \
-&& sudo cmake --build . --target ProxyBroker --config Release
-```
-
-Alternative:
-
+*If you are using powershell, and the application does not provide any output, [You may not be able to see the missing libraries error](https://github.com/PowerShell/PowerShell/issues/16468) when executed the application*
+- On [Command Prompt it is fixed]((https://github.com/microsoft/terminal/issues/9788)
 
 ## Motiviation
 - Inspired by [ProxyBroker](https://github.com/constverum/ProxyBroker) (A more maintained version of that [project](https://github.com/bluet/proxybroker2))

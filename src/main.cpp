@@ -1,5 +1,5 @@
 #include <iostream>
-#include <CLI11/CLI11.hpp>
+#include <CLI/CLI.hpp>
 #include <proxybroker/cmds/find.hpp>
 
 void setup_subcommands(CLI::App &app){
@@ -14,13 +14,15 @@ void setup_subcommands(CLI::App &app){
   sub->callback([opt]() {
     find(*opt);
   });
+  // app->formatter->
 
 }
 
 int main(int argc, char **argv) {
     CLI::App app{"ProxyBroker is a open source tool that asynchrously finds public proxies from multiple sources and concurrencly checks them."};
 
-    app.require_subcommand(0, 1);
+    // app.require_subcommand(0, 1);
+    
 
     setup_subcommands(app);
 

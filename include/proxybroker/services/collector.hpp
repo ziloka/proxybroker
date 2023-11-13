@@ -3,7 +3,7 @@
 class Collector {
 
   public:
-    static nlohmann::json getSources();
-    static std::vector<std::string> getProxies(nlohmann::json proxieSources);
+    static std::vector<std::vector<char*>> getSources();
+    static std::vector<std::string> getProxies(std::vector<std::vector<char*>> proxySources);
 
 };

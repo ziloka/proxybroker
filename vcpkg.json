@@ -1,0 +1,8 @@
+{
+  "dependencies": [
+    "boost-lockfree",
+    "curl",
+    "cli11",
+    "nlohmann-json"
+  ]
+}

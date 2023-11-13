@@ -1,3 +1,6 @@
 [submodule "libs/libmaxminddb"]
 	path = libs/libmaxminddb
 	url = https://github.com/maxmind/libmaxminddb
+[submodule "vcpkg"]
+	path = vcpkg
+	url = https://github.com/microsoft/vcpkg

@@ -1,7 +1,5 @@
 build
-.vscode/configurationCache.log
-.vscode/dryrun.log
-.vscode/targets.log
+*.log
 CMakeCache.txt
 CPackConfig.cmake
 CPackSourceConfig.cmake

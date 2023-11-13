@@ -1,4 +1,8 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.21.0)
+
+option(X_VCPKG_APPLOCAL_DEPS_INSTALL ON)
+set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "Vcpkg toolchain file")
+
 project(ProxyBroker VERSION 1.0.0)
 set(CMAKE_CXX_STANDARD 17)
 
@@ -7,6 +11,18 @@ enable_testing()
 
 include_directories("include")
 
+find_package(CURL REQUIRED)
+
+find_path(BoostLockfree_INCLUDE_DIR boost/lockfree)
+if(BoostLockfree_INCLUDE_DIR STREQUAL "BoostLockfree_INCLUDE_DIR-NOTFOUND")
+  message(FATAL_ERROR "Could not find Boost Lockfree header Library.")
+endif()
+include_directories(${BoostLockfree_INCLUDE_DIR})
+
+find_package(CLI11 CONFIG REQUIRED)
+
+find_package(nlohmann_json CONFIG REQUIRED)
+
 add_executable(
   ProxyBroker 
   src/main.cpp
@@ -14,24 +30,20 @@ add_executable(
   src/cmds/find.cpp
 )
 
-# https://stackoverflow.com/questions/6141147/how-do-i-include-a-path-to-libraries-in-g
-# https://stackoverflow.com/a/6141166
-set(CURL_LIBRARY "-lcurl")
-find_package(CURL REQUIRED)
-include_directories(${CURL_INCLUDE_DIR})
-target_link_libraries(ProxyBroker ${CURL_LIBRARIES})
+target_link_libraries(ProxyBroker PRIVATE CURL::libcurl nlohmann_json::nlohmann_json CLI11::CLI11)
 
-# https://stackoverflow.com/questions/6646405/how-do-you-add-boost-libraries-in-cmakelists-txt
-# https://stackoverflow.com/a/6646518
-set(Boost_USE_STATIC_LIBS OFF) 
-set(Boost_USE_MULTITHREADED ON)  
-set(Boost_USE_STATIC_RUNTIME OFF) 
-find_package(Boost 1.74.0 REQUIRED) 
+# add_custom_command(
+#         TARGET ProxyBroker POST_BUILD
+#         COMMAND ${CMAKE_COMMAND} -E copy
+#                 $<TARGET_RUNTIME_DLLS:ProxyBroker>
+#                 ${CMAKE_CURRENT_BINARY_DIR})
 
-if(Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-    target_link_libraries(ProxyBroker ${Boost_LIBRARIES})
-endif()
+install(
+  TARGETS ProxyBroker
+  # RUNTIME DESTINATION bin
+  # LIBRARY DESTINATION lib
+  # ARCHIVE DESTINATION lib
+)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

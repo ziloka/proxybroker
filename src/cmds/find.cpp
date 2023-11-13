@@ -1,5 +1,5 @@
 #include <iostream>
-#include <CLI11/CLI11.hpp>
+#include <CLI/CLI.hpp>
 #include <nlohmann/json.hpp>
 #include <proxybroker/services/collector.hpp>
 #include <proxybroker/cmds/find.hpp>
