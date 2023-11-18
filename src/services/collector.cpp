@@ -5,13 +5,13 @@
 #include <proxybroker/services/collector.hpp>
 #include "curl/curl.h"
 
-std::vector<std::vector<char*>> Collector::getSources() {
+std::vector<std::vector<std::string>> Collector::getSources() {
 
   // vector of proxySources
   // first index is url
   // second index is protocol
 
-  std::vector<std::vector<char*>> array = {
+  std::vector<std::vector<std::string>> array = {
     {"https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=10000&country=all&ssl=all&anonymity=all", "http"},
     {"https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list-raw.txt", "http"},
     {"https://www.freeproxylists.net/", "http"},
@@ -41,21 +41,31 @@ std::vector<std::vector<char*>> Collector::getSources() {
 
 };
 
+// https://everything.curl.dev/libcurl/drive/multi-socket
 static size_t my_write(void* buffer, size_t size, size_t nmemb, void* param)
 {
   std::string& text = *static_cast<std::string*>(param);
   size_t totalsize = size * nmemb;
   text.append(static_cast<char*>(buffer), totalsize);
 
-  std::cout << text << std::endl;
+  std::vector<std::string> proxies;
+  std::regex proxyRegex("\\d+\\.\\d+\\.\\d+\\.\\d+:\\d+", std::regex_constants::ECMAScript | std::regex_constants::icase);
+  auto words_begin = std::sregex_iterator(text.begin(), text.end(), proxyRegex);
+  auto words_end = std::sregex_iterator();
+  for(std::sregex_iterator i = words_begin; i != words_end; ++i) {
+    std::smatch match = *i;
+    std::string match_str = match.str();
+    proxies.push_back(match_str);
+  }
+
+  std::cout << "Found " << proxies.size() << " proxies" << std::endl;
 
   return totalsize;
 }
 
 // https://curl.se/libcurl/c/curl_multi_poll.html
 // https://curl.se/libcurl/c/multi-app.html
-std::vector<std::string> Collector::getProxies(std::vector<std::vector<char*>> proxySources) {
-  std::vector<std::string> proxies;
+void Collector::getProxies(std::vector<std::vector<std::string>> proxySources) {
 
   // proxySources.size()
 
@@ -82,15 +92,6 @@ std::vector<std::string> Collector::getProxies(std::vector<std::vector<char*>> p
       curl_multi_add_handle(multi_handle, easy_handle);
     }
     handles[i] = easy_handle;
-    
-    // std::regex proxyRegex("\\d+\\.\\d+\\.\\d+\\.\\d+:\\d+", std::regex_constants::ECMAScript | std::regex_constants::icase);
-    // auto words_begin = std::sregex_iterator(result.begin(), result.end(), proxyRegex);
-    // auto words_end = std::sregex_iterator();
-    // for(std::sregex_iterator i = words_begin; i != words_end; ++i) {
-    //   std::smatch match = *i;
-    //   std::string match_str = match.str();
-    //   proxies.push_back(match_str);
-    // }
   }
 
   int still_running = 1;  
@@ -130,6 +131,4 @@ std::vector<std::string> Collector::getProxies(std::vector<std::vector<char*>> p
     //   break;
     }
   }
-
-  return proxies;
 }

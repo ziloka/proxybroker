@@ -1,7 +1,8 @@
 {
 	"cmake.configureOnOpen": true,
 	"cmake.configureSettings": {
-		"CMAKE_TOOLCHAIN_FILE": "${workspaceFolder}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+		"CMAKE_TOOLCHAIN_FILE": "${workspaceFolder}/vcpkg/scripts/buildsystems/vcpkg.cmake",
+		"CMAKE_MODULE_PATH": "${workspaceFolder}/vcpkg"
 	},
 	"cmake.generator": "Visual Studio 16 2019",
 	"files.associations": {

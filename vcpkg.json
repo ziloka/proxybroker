@@ -3,6 +3,7 @@
     "boost-lockfree",
     "curl",
     "cli11",
-    "nlohmann-json"
+    "nlohmann-json",
+    "libuv"
   ]
 }

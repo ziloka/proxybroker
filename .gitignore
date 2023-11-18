@@ -1,5 +1,8 @@
 build
+.cache
 *.log
+*.download
+compile_commands.json
 CMakeCache.txt
 CPackConfig.cmake
 CPackSourceConfig.cmake

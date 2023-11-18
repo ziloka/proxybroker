@@ -9,8 +9,8 @@
 boost::lockfree::queue<char *> queue(128);
 
 void find(SubcommandFindOptions const& opt){
-  nlohmann::json proxies = Collector::getProxies(Collector::getSources());
-  for (std::string proxies : proxies) {
-    std::cout << proxies << std::endl;
-  }
+  Collector::getProxies(Collector::getSources());
+  // for (std::string proxies : proxies) {
+  //   std::cout << proxies << std::endl;
+  // }
 }

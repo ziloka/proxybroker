@@ -3,7 +3,7 @@
 class Collector {
 
   public:
-    static std::vector<std::vector<char*>> getSources();
-    static std::vector<std::string> getProxies(std::vector<std::vector<char*>> proxySources);
+    static std::vector<std::vector<std::string>> getSources();
+    static void getProxies(std::vector<std::vector<std::string>> proxySources);
 
 };

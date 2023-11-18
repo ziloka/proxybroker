@@ -23,6 +23,8 @@ find_package(CLI11 CONFIG REQUIRED)
 
 find_package(nlohmann_json CONFIG REQUIRED)
 
+find_package(libuv CONFIG REQUIRED)
+
 add_executable(
   ProxyBroker 
   src/main.cpp
@@ -30,7 +32,7 @@ add_executable(
   src/cmds/find.cpp
 )
 
-target_link_libraries(ProxyBroker PRIVATE CURL::libcurl nlohmann_json::nlohmann_json CLI11::CLI11)
+target_link_libraries(ProxyBroker PRIVATE CURL::libcurl nlohmann_json::nlohmann_json CLI11::CLI11 $<IF:$<TARGET_EXISTS:libuv::uv_a>,libuv::uv_a,libuv::uv>)
 
 # add_custom_command(
 #         TARGET ProxyBroker POST_BUILD
