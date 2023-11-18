@@ -103,6 +103,8 @@ static void add_download(const char *url, int num)
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, file);
   curl_easy_setopt(handle, CURLOPT_PRIVATE, file);
   curl_easy_setopt(handle, CURLOPT_URL, url);
+  curl_easy_setopt(handle, CURLOPT_FOLLOWLOCATION, 1L);
+  curl_easy_setopt(handle, CURLOPT_MAXREDIRS, 3L);
   curl_multi_add_handle(curl_handle, handle);
   fprintf(stderr, "Added download %s -> %s\n", url, filename);
 }

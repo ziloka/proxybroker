@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/devcontainers/base:alpine-3.18
 
 RUN sudo apk update \
-    && sudo apk add build-base alpine-sdk linux-headers cmake make ninja file util-linux gcompat clang clang-extra-tools
+    && sudo apk add build-base alpine-sdk linux-headers cmake make ninja file util-linux gcompat
 
 # RUN apk add --no-cache gcc g++ musl-dev cmake make automake autoconf openssl-dev
 # RUN sudo chown -R vscode /workspaces/proxybroker

@@ -58,7 +58,8 @@ mv build/compile_commands.json compile_commands.json
 cmake --build build
 .\build\Debug\ProxyBroker.exe --help
 ```
-Then type `Ctrl + Shift + P` and `> clangd: restart language server`
+Then type `Ctrl + Shift + P` and `> C/C++: Change Configuration Provider`
+- Select CMake
 
 # mkdir build
 # cd build
