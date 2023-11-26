@@ -1,9 +1,20 @@
 {
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "$futureDependencies": ["rxcpp", "uvw", "libuv", "cpr", "curlpp", "poxygen"],
   "dependencies": [
     "boost-lockfree",
     "curl",
     "cli11",
     "nlohmann-json",
-    "libuv"
-  ]
+    {
+      "name": "folly",
+      "default-features": false
+    },
+    "range-v3"
+  ],
+  "vcpkg-configuration": {
+    "overlay-ports": [
+      "ports/folly"
+    ]
+  }
 }

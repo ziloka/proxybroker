@@ -42,6 +42,8 @@ std::vector<std::vector<std::string>> Collector::getSources() {
 };
 
 // https://everything.curl.dev/libcurl/drive/multi-socket
+// use rxcpp to implement additional stuff to go back to find.cpp file
+// https://kirkshoop.github.io/introductionToRxcpp/#68
 static size_t my_write(void* buffer, size_t size, size_t nmemb, void* param)
 {
   std::string& text = *static_cast<std::string*>(param);
@@ -66,16 +68,8 @@ static size_t my_write(void* buffer, size_t size, size_t nmemb, void* param)
 // https://curl.se/libcurl/c/curl_multi_poll.html
 // https://curl.se/libcurl/c/multi-app.html
 void Collector::getProxies(std::vector<std::vector<std::string>> proxySources) {
-
-  // proxySources.size()
-
-  // CURL *handles[];
-  // auto handles = std::vector<std::make_shared<CURL*>>
-  std::vector<CURL*> handles = std::vector<CURL*> (proxySources.size());
-  CURLM* multi_handle;
-  // CURLcode res;
   curl_global_init(CURL_GLOBAL_DEFAULT);
-  multi_handle = curl_multi_init();
+  CURLM* multi_handle = curl_multi_init();
 
   // https://json.nlohmann.me/features/iterators/
   for(int i = 0; i < proxySources.size(); i++) {
@@ -91,7 +85,6 @@ void Collector::getProxies(std::vector<std::vector<std::string>> proxySources) {
       curl_easy_setopt(easy_handle, CURLOPT_WRITEDATA, &result);
       curl_multi_add_handle(multi_handle, easy_handle);
     }
-    handles[i] = easy_handle;
   }
 
   int still_running = 1;  
@@ -106,29 +99,11 @@ void Collector::getProxies(std::vector<std::vector<std::string>> proxySources) {
       break;
   }
 
-  CURLMsg *msg;
-  int msgs_left;
-  while((msg = curl_multi_info_read(multi_handle, &msgs_left))) {
-  if(msg->msg == CURLMSG_DONE) {
-
-    std::cout << "result: " << msg->data.result << std::endl;
-    // msg->data.whatever
-    // int idx;
-
-    // /* Find out which handle this message is about */
-    // for(idx = 0; idx<proxySources.size(); idx++) {
-    //   int found = (msg->easy_handle == handles[idx]);
-    //   if(found)
-    //     break;
-    // }
-
-    // switch(idx) {
-    // case HTTP_HANDLE:
-    //   printf("HTTP transfer completed with status %d\n", msg->data.result);
-    //   break;
-    // case FTP_HANDLE:
-    //   printf("FTP transfer completed with status %d\n", msg->data.result);
-    //   break;
-    }
-  }
+  // CURLMsg *msg;
+  // int msgs_left;
+  // while((msg = curl_multi_info_read(multi_handle, &msgs_left))) {
+  // if(msg->msg == CURLMSG_DONE) {
+  //   std::cout << "result: " << msg->data.result << std::endl;
+  //   }
+  // }
 }

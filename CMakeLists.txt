@@ -4,7 +4,8 @@ option(X_VCPKG_APPLOCAL_DEPS_INSTALL ON)
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "Vcpkg toolchain file")
 
 project(ProxyBroker VERSION 1.0.0)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -std=c++20 -Wno-multichar")
 
 include(CTest)
 enable_testing()
@@ -23,6 +24,8 @@ find_package(CLI11 CONFIG REQUIRED)
 
 find_package(nlohmann_json CONFIG REQUIRED)
 
+find_package(range-v3 CONFIG REQUIRED)
+
 find_package(libuv CONFIG REQUIRED)
 
 add_executable(
@@ -32,7 +35,7 @@ add_executable(
   src/cmds/find.cpp
 )
 
-target_link_libraries(ProxyBroker PRIVATE CURL::libcurl nlohmann_json::nlohmann_json CLI11::CLI11 $<IF:$<TARGET_EXISTS:libuv::uv_a>,libuv::uv_a,libuv::uv>)
+target_link_libraries(ProxyBroker PRIVATE CURL::libcurl nlohmann_json::nlohmann_json CLI11::CLI11 $<IF:$<TARGET_EXISTS:libuv::uv_a>,libuv::uv_a,libuv::uv> range-v3::meta range-v3::concepts range-v3::range-v3)
 
 # add_custom_command(
 #         TARGET ProxyBroker POST_BUILD

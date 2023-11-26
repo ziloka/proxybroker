@@ -1,22 +1,7 @@
 {
-    "env": {
-        "myDefaultIncludePath": [
-            "${workspaceFolder}",
-            "${workspaceFolder}/include"
-        ],
-        "myCompilerPath": "/usr/local/bin/gcc-7"
-    },
     "configurations": [
         {
-            "name": "Linux",
-            "intelliSenseMode": "linux-gcc-x64",
-            "includePath": [
-                "${myDefaultIncludePath}"
-            ],
-            "defines": [
-                "FOO",
-                "BAR=100"
-            ],
+            "name": "Cmake",
             "cStandard": "c11",
             "cppStandard": "c++17",
             "browse": {
